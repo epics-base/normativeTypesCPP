@@ -18,6 +18,9 @@ namespace epics { namespace pvData {
  */
 
 class NTTable
+typedef std::tr1::shared_ptr<NTTable> NTTablePtr;
+
+class NTTable
 {
 public:
     POINTER_DEFINITIONS(NTTable);
@@ -26,7 +29,7 @@ public:
      * @param pvStructure The pvStructure to test.
      * @return (false,true) if (is not, is) an NTNameValuePair.
      */
-    static bool isNTTable(PVStructurePtr pvStructure);
+    static bool isNTTable(PVStructurePtr const &pvStructure);
     /**
      * Create an  NTTable pvStructure.
      * @param hasFunction Create a PVString field named function.
@@ -36,16 +39,16 @@ public:
      * @param valueFields The fields that follow the label field.
      * @return an NTTable pvStructure.
      */
-    static PVStructure::shared_pointer create(
+    static PVStructurePtr create(
         bool hasFunction,bool hasTimeStamp, bool hasAlarm,
-        int numberValues,
-        FieldConstPtrArray valueFields);
+        size_t numberValues,
+        FieldConstPtrArray const &valueFields);
     /**
      * Constructor
      * @param pvStructure The pvStructure to which to attach.
      * @return A NTTable that is attached to the pvStructure
      */
-    NTTable(PVStructure::shared_pointer const & pvStructure);
+    NTTable(PVStructurePtr const & pvStructure);
     /**
      * Destructor
      */
@@ -54,7 +57,7 @@ public:
      * Get the function field.
      * @return The pvString or null if no function field.
      */
-    PVString *getFunction();
+    PVStringPtr getFunction();
      /**
       * Attach a pvTimeStamp.
       * @param pvTimeStamp The pvTimeStamp that will be attached.
@@ -71,7 +74,7 @@ public:
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    PVStructurePtr getPVStructure(){return pvNTTable.get();}
+    PVStructurePtr getPVStructure(){return pvNTTable;}
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
@@ -86,7 +89,7 @@ public:
      * Get the label field.
      * @return The pvStringArray for the label.
      */
-    PVStringArray *getLabel();
+    PVStringArrayPtr getLabel();
     /**
      * Get the the number of fields that follow the label field.
      * @return The number of fields.
@@ -105,12 +108,12 @@ public:
      */
     PVFieldPtr getPVField(int index);
 private:
-    PVStructure::shared_pointer pvNTTable;
-    PVString *pvFunction;
+    PVStructurePtr pvNTTable;
+    PVStringPtr pvFunction;
     PVStructurePtr pvTimeStamp;
     PVStructurePtr pvAlarm;
-    PVStringArray *pvLabel;
-    int offsetFields;
+    PVStringArrayPtr pvLabel;
+    size_t offsetFields;
 };
 
 }}

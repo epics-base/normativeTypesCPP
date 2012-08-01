@@ -18,6 +18,9 @@ namespace epics { namespace pvData {
  */
 
 class NTNameValue 
+typedef std::tr1::shared_ptr<NTNameValue> NTNameValuePtr;
+
+class NTNameValue 
 {
 public:
     POINTER_DEFINITIONS(NTNameValue);
@@ -26,7 +29,7 @@ public:
      * @param pvStructure The pvStructure to test.
      * @return (false,true) if (is not, is) an NTNameValue.
      */
-    static bool isNTNameValue(PVStructurePtr pvStructure);
+    static bool isNTNameValue(PVStructurePtr const & pvStructure);
     /**
      * Create an  NTNameValue pvStructure.
      * @param hasFunction Create a PVString field named function.
@@ -34,14 +37,14 @@ public:
      * @param hasAlarm Create an alarm structure field.
      * @return a NTNameValue pvStructure.
      */
-    static PVStructure::shared_pointer create(
+    static PVStructurePtr create(
         bool hasFunction,bool hasTimeStamp, bool hasAlarm);
     /**
      * Constructor
      * @param pvStructure The pvStructure to which to attach.
      * @return A NTNameValue that is attached to the pvStructure
      */
-    NTNameValue(PVStructure::shared_pointer const & pvStructure);
+    NTNameValue(PVStructurePtr const & pvStructure);
     /**
      * Destructor
      */
@@ -50,7 +53,7 @@ public:
      * Get the function field.
      * @return The pvString or null if no function field.
      */
-    PVString* getFunction();
+    PVStringPtr getFunction();
     /**
      * Attach a pvTimeStamp.
      * @param pvTimeStamp The pvTimeStamp that will be attached.
@@ -67,7 +70,7 @@ public:
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    PVStructurePtr getPVStructure(){return pvNTNameValue.get();}
+    PVStructurePtr getPVStructure(){return pvNTNameValue;}
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
@@ -82,19 +85,19 @@ public:
      * Get the string array on names.
      * @return The array of names.
      */
-    PVStringArray *getNames();
+    PVStringArrayPtr getNames();
     /**
      * Get the string array on values.
      * @return The array of values.
      */
-    PVStringArray *getValues();
+    PVStringArrayPtr getValues();
 private:
-    PVStructure::shared_pointer pvNTNameValue;
-    PVString * pvFunction;
+    PVStructurePtr pvNTNameValue;
+    PVStringPtr pvFunction;
     PVStructurePtr pvTimeStamp;
     PVStructurePtr pvAlarm;
-    PVStringArray *pvNames;
-    PVStringArray *pvValues;
+    PVStringArrayPtr pvNames;
+    PVStringArrayPtr pvValues;
 };
 
 }}

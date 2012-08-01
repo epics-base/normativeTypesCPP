@@ -8,16 +8,18 @@
 #include <pv/lock.h>
 #include <pv/ntfield.h>
 
+using std::tr1::static_pointer_cast;
+
 namespace epics { namespace pvData { 
 
-
-
-NTField *NTField::get()
+NTFieldPtr NTField::get()
 {
     static Mutex mutex;
-    static NTField *ntstructureField = 0;
+    static NTFieldPtr ntstructureField;
     Lock xx(mutex);
-    if(ntstructureField==0) ntstructureField = new NTField();
+    if(ntstructureField.get()==NULL) {
+         ntstructureField = NTFieldPtr(new NTField());
+    }
     return ntstructureField;
 }
 
@@ -27,189 +29,195 @@ NTField::NTField()
 {
 }
 
-bool NTField::isEnumerated(FieldConstPtr field)
+bool NTField::isEnumerated(FieldConstPtr const & field)
 {
    if(field->getType()!=structure) return false;
-   const Structure *st = static_cast<const Structure *>(field.get());
-   FieldConstPtrArray fields = st->getFields();
-   int n = st->getNumberFields();
+   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
+   FieldConstPtrArray fields = structurePtr->getFields();
+   StringArray names = structurePtr->getFieldNames();
+   size_t n = structurePtr->getNumberFields();
    if(n!=2) return false;
    FieldConstPtr f = fields[0];
-   if(f->getFieldName().compare("index")!=0) return false;
+   if(names[0].compare("index")!=0) return false;
    if(f->getType()!=scalar) return false;
-   const Scalar* s = static_cast<const Scalar*>(f.get());
+   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvInt) return false;
    f = fields[1];
-   if(f->getFieldName().compare("choices")!=0) return false;
+   if(names[1].compare("choices")!=0) return false;
    if(f->getType()!=scalarArray) return false;
-   const ScalarArray* sa = static_cast<const ScalarArray*>(f.get());
-   if(sa->getElementType()!=pvString) return false;
+   ScalarConstPtr sa = static_pointer_cast<const Scalar>(f);
+   if(sa->getScalarType()!=pvString) return false;
    return true;
 }
 
-bool NTField::isTimeStamp(FieldConstPtr field)
+bool NTField::isTimeStamp(FieldConstPtr const & field)
 {
    if(field->getType()!=structure) return false;
-   const Structure *st = static_cast<const Structure *>(field.get());
-   if(field->getFieldName().compare("timeStamp")!=0) return false;
-   FieldConstPtrArray fields = st->getFields();
-   int n = st->getNumberFields();
+   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
+   FieldConstPtrArray fields = structurePtr->getFields();
+   StringArray names = structurePtr->getFieldNames();
+   size_t  n = structurePtr->getNumberFields();
    if(n!=3) return false;
    FieldConstPtr f = fields[0];
-   if(f->getFieldName().compare("secondsPastEpoch")!=0) return false;
+   if(names[0].compare("secondsPastEpoch")!=0) return false;
    if(f->getType()!=scalar) return false;
-   const Scalar* s = static_cast<const Scalar*>(f.get());
+   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvLong) return false;
    f = fields[1];
-   if(f->getFieldName().compare("nanoSeconds")!=0) return false;
+   if(names[1].compare("nanoSeconds")!=0) return false;
    if(f->getType()!=scalar) return false;
-   s = static_cast<const Scalar*>(f.get());
+   s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvInt) return false;
    f = fields[2];
-   if(f->getFieldName().compare("userTag")!=0) return false;
+   if(names[2].compare("userTag")!=0) return false;
    if(f->getType()!=scalar) return false;
-   s = static_cast<const Scalar*>(f.get());
+   s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvInt) return false;
    return true;
 }
 
-bool NTField::isAlarm(FieldConstPtr field)
+bool NTField::isAlarm(FieldConstPtr const & field)
 {
    if(field->getType()!=structure) return false;
-   const Structure *st = static_cast<const Structure *>(field.get());
-   if(field->getFieldName().compare("alarm")!=0) return false;
-   FieldConstPtrArray fields = st->getFields();
-   int n = st->getNumberFields();
+   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
+   FieldConstPtrArray fields = structurePtr->getFields();
+   StringArray names = structurePtr->getFieldNames();
+   size_t n = structurePtr->getNumberFields();
    if(n!=3) return false;
    FieldConstPtr f = fields[0];
-   if(f->getFieldName().compare("severity")!=0) return false;
+   if(names[0].compare("severity")!=0) return false;
    if(f->getType()!=scalar) return false;
-   const Scalar* s = static_cast<const Scalar*>(f.get());
+   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvInt) return false;
    f = fields[1];
-   if(f->getFieldName().compare("status")!=0) return false;
+   if(names[1].compare("status")!=0) return false;
    if(f->getType()!=scalar) return false;
-   s = static_cast<const Scalar*>(f.get());
+   s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvInt) return false;
    f = fields[2];
-   if(f->getFieldName().compare("message")!=0) return false;
+   if(names[2].compare("message")!=0) return false;
    if(f->getType()!=scalar) return false;
-   s = static_cast<const Scalar*>(f.get());
+   s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvString) return false;
    return true;
 }
 
-bool NTField::isDisplay(FieldConstPtr field)
+bool NTField::isDisplay(FieldConstPtr const & field)
 {
    if(field->getType()!=structure) return false;
-   const Structure *st = static_cast<const Structure *>(field.get());
-   if(field->getFieldName().compare("display")!=0) return false;
-   FieldConstPtrArray fields = st->getFields();
-   int n = st->getNumberFields();
-   if(n!=4) return false;
-   // look at limit first
-   FieldConstPtr f = fields[3];
-   if(f->getFieldName().compare("limit")!=0) return false;
-   if(f->getType()!=structure) return false;
-   const Structure* s = static_cast<const Structure*>(f.get());
-   FieldConstPtrArray subfields = s->getFields();
-   n = s->getNumberFields();
-   if(n!=2) return false;
-   f = subfields[0];
-   if(f->getFieldName().compare("low")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   const Scalar* sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
-   f = subfields[1];
-   if(f->getFieldName().compare("high")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
-   f = fields[0];
-   if(f->getFieldName().compare("description")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvString) return false;
-   f = fields[1];
-   if(f->getFieldName().compare("format")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvString) return false;
-   f = fields[2];
-   if(f->getFieldName().compare("units")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvString) return false;
-   return true;
-}
-
-bool NTField::isAlarmLimit(FieldConstPtr field)
-{
-   if(field->getType()!=structure) return false;
-   const Structure *st = static_cast<const Structure *>(field.get());
-   if(field->getFieldName().compare("alarmLimit")!=0) return false;
-   FieldConstPtrArray fields = st->getFields();
-   int n = st->getNumberFields();
-   if(n!=4) return false;
+   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
+   FieldConstPtrArray fields = structurePtr->getFields();
+   StringArray names = structurePtr->getFieldNames();
+   size_t n = structurePtr->getNumberFields();
+   if(n!=5) return false;
    FieldConstPtr f = fields[0];
-   if(f->getFieldName().compare("highAlarm")!=0) return false;
+   if(names[0].compare("limitLow")!=0) return false;
    if(f->getType()!=scalar) return false;
-   const Scalar *sc = static_cast<const Scalar *>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
+   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
    f = fields[1];
-   if(f->getFieldName().compare("highWarning")!=0) return false;
+   if(names[1].compare("limitHigh")!=0) return false;
    if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar *>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
    f = fields[2];
-   if(f->getFieldName().compare("lowWarning")!=0) return false;
+   if(names[2].compare("description")!=0) return false;
    if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar *>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvString) return false;
    f = fields[3];
-   if(f->getFieldName().compare("lowAlarm")!=0) return false;
+   if(names[3].compare("format")!=0) return false;
    if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar *>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvString) return false;
+   f = fields[4];
+   if(names[4].compare("units")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvString) return false;
    return true;
 }
 
-bool NTField::isControl(FieldConstPtr field)
+bool NTField::isAlarmLimit(FieldConstPtr const & field)
 {
    if(field->getType()!=structure) return false;
-   const Structure *st = static_cast<const Structure *>(field.get());
-   if(field->getFieldName().compare("control")!=0) return false;
-   FieldConstPtrArray fields = st->getFields();
-   int n = st->getNumberFields();
-   if(n!=2) return false;
-   FieldConstPtr f = fields[1];
-   if(f->getFieldName().compare("minStep")!=0) return false;
+   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
+   FieldConstPtrArray fields = structurePtr->getFields();
+   StringArray names = structurePtr->getFieldNames();
+   size_t n = structurePtr->getNumberFields();
+   if(n!=10) return false;
+   FieldConstPtr f = fields[0];
+   if(names[0].compare("active")!=0) return false;
    if(f->getType()!=scalar) return false;
-   const Scalar* sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
-   f = fields[0];
-   if(f->getFieldName().compare("limit")!=0) return false;
-   if(f->getType()!=structure) return false;
-   const Structure* s = static_cast<const Structure*>(f.get());
-   fields = s->getFields();
-   n = s->getNumberFields();
-   if(n!=2) return false;
-   f = fields[0];
-   if(f->getFieldName().compare("low")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
+   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
    f = fields[1];
-   if(f->getFieldName().compare("high")!=0) return false;
+   if(names[1].compare("lowAlarmLimit")!=0) return false;
    if(f->getType()!=scalar) return false;
-   sc = static_cast<const Scalar*>(f.get());
-   if(sc->getScalarType()!=pvDouble) return false;
+   f = fields[2];
+   if(names[2].compare("lowWarningLimit")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   f = fields[3];
+   if(names[3].compare("highWarningLimit")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   f = fields[4];
+   if(names[4].compare("highAlarmLimit")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   f = fields[5];
+   if(names[5].compare("lowAlarmSeverity")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvInt) return false;
+   f = fields[6];
+   if(names[6].compare("lowWarningSeverity")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvInt) return false;
+   f = fields[7];
+   if(names[7].compare("highWarningSeverity")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvInt) return false;
+   f = fields[8];
+   if(names[8].compare("highAlarmSeverity")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvInt) return false;
+   f = fields[9];
+   if(names[9].compare("hystersis")!=0) return false;
+   if(f->getType()!=scalar) return false;
    return true;
 }
 
-StructureConstPtr NTField::createEnumerated(String fieldName)
+bool NTField::isControl(FieldConstPtr const & field)
 {
-    return standardField->enumerated(fieldName);
+   if(field->getType()!=structure) return false;
+   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
+   FieldConstPtrArray fields = structurePtr->getFields();
+   StringArray names = structurePtr->getFieldNames();
+   size_t n = structurePtr->getNumberFields();
+   if(n!=3) return false;
+   FieldConstPtr f = fields[0];
+   if(names[0].compare("limitLow")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
+   f = fields[1];
+   if(names[1].compare("limitHigh")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
+   f = fields[2];
+   if(names[2].compare("minStep")!=0) return false;
+   if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
+   return true;
+}
+
+StructureConstPtr NTField::createEnumerated()
+{
+    return standardField->enumerated();
 }
 
 StructureConstPtr NTField::createTimeStamp()
@@ -229,13 +237,7 @@ StructureConstPtr NTField::createDisplay()
 
 StructureConstPtr NTField::createAlarmLimit()
 {
-    int numFields = 4;
-    FieldConstPtrArray fields = new FieldConstPtr[numFields];
-    fields[0] = fieldCreate->createScalar(String("highAlarm"),pvDouble);
-    fields[1] = fieldCreate->createScalar(String("highWarning"),pvDouble);
-    fields[2] = fieldCreate->createScalar(String("lowWarning"),pvDouble);
-    fields[3] = fieldCreate->createScalar(String("lowAlarm"),pvDouble);
-    return fieldCreate->createStructure(String("alarmLimit"),numFields,fields);
+    return standardField->doubleAlarm();
 }
 
 StructureConstPtr NTField::createControl()
@@ -243,35 +245,37 @@ StructureConstPtr NTField::createControl()
     return standardField->control();
 }
 
-StructureArrayConstPtr NTField::createEnumeratedArray(String fieldName)
+StructureArrayConstPtr NTField::createEnumeratedArray()
 {
-    StructureConstPtr st = createEnumerated(fieldName);
-    return fieldCreate->createStructureArray(fieldName,st);
+    return fieldCreate->createStructureArray(createEnumerated());
 }
 
-StructureArrayConstPtr NTField::createTimeStampArray(String fieldName)
+StructureArrayConstPtr NTField::createTimeStampArray()
 {
     StructureConstPtr st = createTimeStamp();
-    return fieldCreate->createStructureArray(fieldName,st);
+    return fieldCreate->createStructureArray(st);
 }
 
-StructureArrayConstPtr NTField::createAlarmArray(String fieldName)
+StructureArrayConstPtr NTField::createAlarmArray()
 {
     StructureConstPtr st = createAlarm();
-    return fieldCreate->createStructureArray(fieldName,st);
+    return fieldCreate->createStructureArray(st);
 }
 
-PVNTField *PVNTField::get()
+PVNTFieldPtr PVNTField::get()
 {
     static Mutex mutex;
-    static PVNTField *pvntstructureField = 0;
+    static PVNTFieldPtr pvntstructureField;
     Lock xx(mutex);
-    if(pvntstructureField==0) pvntstructureField = new PVNTField();
+    if(pvntstructureField.get()==NULL) {
+         pvntstructureField = PVNTFieldPtr(new PVNTField());
+    }
     return pvntstructureField;
 }
 
 PVNTField::PVNTField()
 : pvDataCreate(getPVDataCreate()),
+  standardField(getStandardField()),
   standardPVField(getStandardPVField()),
   ntstructureField(NTField::get())
 {
@@ -279,60 +283,60 @@ PVNTField::PVNTField()
 
 
 PVStructurePtr PVNTField::createEnumerated(
-    PVStructurePtr parent,
-    String fieldName,
-    StringArray choices,
-    int numberChoices)
+    StringArray const & choices)
 {
-    return standardPVField->enumerated(parent,fieldName,choices,numberChoices);
+    return standardPVField->enumerated(choices);
 }
 
-PVStructurePtr PVNTField::createTimeStamp(PVStructurePtr parent)
+PVStructurePtr PVNTField::createTimeStamp()
 {
-    return standardPVField->timeStamp(parent);
+    StructureConstPtr timeStamp = standardField->timeStamp();
+    return pvDataCreate->createPVStructure(timeStamp);
 }
 
-PVStructurePtr PVNTField::createAlarm(PVStructurePtr parent)
+PVStructurePtr PVNTField::createAlarm()
 {
-    return standardPVField->alarm(parent);
+    StructureConstPtr alarm = standardField->alarm();
+    return pvDataCreate->createPVStructure(alarm);
 }
 
-PVStructurePtr PVNTField::createDisplay(PVStructurePtr parent)
+PVStructurePtr PVNTField::createDisplay()
 {
-    return standardPVField->display(parent);
+    StructureConstPtr display = standardField->display();
+    return pvDataCreate->createPVStructure(display);
 }
 
-PVStructurePtr PVNTField::createAlarmLimit(PVStructurePtr parent)
+PVStructurePtr PVNTField::createAlarmLimit()
 {
     StructureConstPtr structure = NTField::get()->createAlarmLimit();
-    return pvDataCreate->createPVStructure(parent,structure);
+    return pvDataCreate->createPVStructure(structure);
 }
 
 
-PVStructurePtr PVNTField::createControl(PVStructurePtr parent)
+PVStructurePtr PVNTField::createControl()
 {
-    return standardPVField->control(parent);
+    StructureConstPtr control = standardField->control();
+    return pvDataCreate->createPVStructure(control);
 }
 
-PVStructureArray *PVNTField::createEnumeratedArray(
-    PVStructurePtr parent,String fieldName)
+PVStructureArrayPtr PVNTField::createEnumeratedArray()
 {
-    StructureArrayConstPtr sa = ntstructureField->createEnumeratedArray(fieldName);
-    return pvDataCreate->createPVStructureArray(parent,sa);
+    StructureArrayConstPtr sa =
+        ntstructureField->createEnumeratedArray();
+    return pvDataCreate->createPVStructureArray(sa);
 }
 
-PVStructureArray *PVNTField::createTimeStampArray(
-    PVStructurePtr parent,String fieldName)
+PVStructureArrayPtr PVNTField::createTimeStampArray()
 {
-    StructureArrayConstPtr sa = ntstructureField->createTimeStampArray(fieldName);
-    return pvDataCreate->createPVStructureArray(parent,sa);
+    StructureArrayConstPtr sa =
+         ntstructureField->createTimeStampArray();
+    return pvDataCreate->createPVStructureArray(sa);
 }
 
-PVStructureArray *PVNTField::createAlarmArray(
-    PVStructurePtr parent,String fieldName)
+PVStructureArrayPtr PVNTField::createAlarmArray()
 {
-    StructureArrayConstPtr sa = ntstructureField->createAlarmArray(fieldName);
-    return pvDataCreate->createPVStructureArray(parent,sa);
+    StructureArrayConstPtr sa = ntstructureField->createAlarmArray();
+    return pvDataCreate->createPVStructureArray(sa);
 }
 
 }}

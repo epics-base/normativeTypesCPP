@@ -22,13 +22,23 @@ namespace epics { namespace pvData {
  * @author mrk
  * 
  */
-class NTField: NoDefaultMethods {
+
+typedef std::tr1::shared_ptr<epics::pvData::StringArray> StringArrayPtr;
+
+class NTField;
+typedef std::tr1::shared_ptr<NTField> NTFieldPtr;
+
+class PVNTField;
+typedef std::tr1::shared_ptr<PVNTField> PVNTFieldPtr;
+
+class NTField {
 public:
+    POINTER_DEFINITIONS(NTField);
     /**
      * get the single implementation of this class.
      * @return the implementation
      */
-    static NTField * get();
+    static NTFieldPtr get();
     /**
      * destructor
      */
@@ -38,44 +48,43 @@ public:
      * @param field The field to test.
      * @return (false,true) if field (is not,is) an enumerated structure.
      */
-    bool isEnumerated(FieldConstPtr field);
+    bool isEnumerated(FieldConstPtr const & field);
     /**
      * Is field a timeStamp structure.
      * @param field The field to test.
      * @return (false,true) if field (is not,is) a timeStamp structure.
      */
-    bool isTimeStamp(FieldConstPtr field);
+    bool isTimeStamp(FieldConstPtr const & field);
     /**
      * Is field an alarm structure.
      * @param field The field to test.
      * @return (false,true) if field (is not,is) an alarm structure.
      */
-    bool isAlarm(FieldConstPtr field);
+    bool isAlarm(FieldConstPtr const & field);
     /**
      * Is field a display structure.
      * @param field The field to test.
      * @return (false,true) if field (is not,is) a display structure.
      */
-    bool isDisplay(FieldConstPtr field);
+    bool isDisplay(FieldConstPtr const & field);
     /**
      * Is field an alarmLimit structure.
      * @param field The field to test.
      * @return (false,true) if field (is not,is) an alarmLimit structure.
      */
-    bool isAlarmLimit(FieldConstPtr field);
+    bool isAlarmLimit(FieldConstPtr const & field);
     /**
      * Is field a control structure.
      * @param field The field to test.
      * @return (false,true) if field (is not,is) a control structure.
      */
-    bool isControl(FieldConstPtr field);
+    bool isControl(FieldConstPtr const & field);
 
     /**
      * Create an enumerated structure.
-     * @param fieldName The fieldName for the structure.
      * @return an enumerated structure.
      */
-    StructureConstPtr createEnumerated(String fieldName);
+    StructureConstPtr createEnumerated();
     /**
      * Create a timeStamp structure.
      * @return a timeStamp structure.
@@ -104,26 +113,23 @@ public:
 
     /**
      * Create an array of enumerated structures.
-     * @param fieldName The fieldName for the array.
      * @return an array of enumerated structures.
      */
-    StructureArrayConstPtr createEnumeratedArray(String fieldName);
+    StructureArrayConstPtr createEnumeratedArray();
     /**
      * Create an array of timeStamp structures.
-     * @param fieldName The fieldName for the array.
      * @return an array of timeStamp structures.
      */
-    StructureArrayConstPtr createTimeStampArray(String fieldName);
+    StructureArrayConstPtr createTimeStampArray();
     /**
      * Create an array of alarm structures.
-     * @param fieldName The fieldName for the array.
      * @return an array of alarm structures.
      */
-    StructureArrayConstPtr createAlarmArray(String fieldName);
+    StructureArrayConstPtr createAlarmArray();
 private:
     NTField();
-    FieldCreate *fieldCreate;
-    StandardField *standardField;
+    FieldCreatePtr fieldCreate;
+    StandardFieldPtr standardField;
 };
 
 /**
@@ -131,90 +137,72 @@ private:
  * @author mrk
  * 
  */
-class PVNTField: NoDefaultMethods {
+class PVNTField {
 public:
+    POINTER_DEFINITIONS(PVNTField);
     /**
      * get the single implementation of this class.
      * @return the implementation
      */
-    static PVNTField * get();
+    static PVNTFieldPtr get();
     /**
      * destructor
      */
     ~PVNTField() {}
     /**
      * Create an enumerated PVStructure.
-     * @param parent The parent structure.
-     * @param fieldName The fieldName for the structure.
      * @param choices The array of choices.
-     * @param numberChoices The number of choices.
      * @return an enumerated PVStructure..
      */
     PVStructurePtr createEnumerated(
-        PVStructurePtr parent,
-        String fieldName,
-        StringArray choices,
-        int numberChoices);
+        StringArray const & choices);
     /**
      * Create a timeStamp PVStructure.
-     * @param parent The parent structure.
      * @return a timeStamp PVStructure..
      */
-    PVStructurePtr createTimeStamp(PVStructurePtr parent);
+    PVStructurePtr createTimeStamp();
     /**
      * Create an alarm PVStructure.
-     * @param parent The parent structure.
      * @return an alarm PVStructure..
      */
-    PVStructurePtr createAlarm(PVStructurePtr parent);
+    PVStructurePtr createAlarm();
     /**
      * Create a display PVStructure.
-     * @param parent The parent structure.
      * @return a display PVStructure..
      */
-    PVStructurePtr createDisplay(PVStructurePtr parent);
+    PVStructurePtr createDisplay();
     /**
      * Create an alarmLimit PVStructure.
-     * @param parent The parent structure.
      * @return an alarmLimit PVStructure..
      */
-    PVStructurePtr createAlarmLimit(PVStructurePtr parent);
+    PVStructurePtr createAlarmLimit();
     /**
      * Create a control PVStructure.
-     * @param parent The parent structure.
      * @return a control PVStructure..
      */
-    PVStructurePtr createControl(PVStructurePtr parent);
+    PVStructurePtr createControl();
 
     /**
      * Create an enumerated PVStructureArray.
-     * @param parent The parent structure.
-     * @param fieldName The fieldName for the structure.
      * @return an enumerated PVStructureArray..
      */
-    PVStructureArray * createEnumeratedArray(
-        PVStructurePtr parent,String fieldName);
+    PVStructureArrayPtr createEnumeratedArray();
     /**
      * Create a timeStamp PVStructureArray.
-     * @param parent The parent structure.
-     * @param fieldName The fieldName for the structure.
      * @return a timeStamp PVStructureArray
      */
-    PVStructureArray * createTimeStampArray(
-        PVStructurePtr parent,String fieldName);
+    PVStructureArrayPtr createTimeStampArray();
     /**
      * Create an alarm PVStructureArray.
-     * @param parent The parent structure.
-     * @param fieldName The fieldName for the structure.
      * @return an alarm PVStructureArray..
      */
-    PVStructureArray * createAlarmArray(
-        PVStructurePtr parent,String fieldName);
+    PVStructureArrayPtr createAlarmArray();
 private:
     PVNTField();
-    PVDataCreate *pvDataCreate;
-    StandardPVField *standardPVField;
-    NTField *ntstructureField;
+    PVDataCreatePtr pvDataCreate;
+    StandardFieldPtr standardField;
+    StandardPVFieldPtr standardPVField;
+    NTFieldPtr ntstructureField;
 };
 
 }}
