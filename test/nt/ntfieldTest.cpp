@@ -23,22 +23,19 @@
 
 #include <pv/nt.h>
 
-#include <epicsExit.h>
-#include <pv/CDRMonitor.h>
-
 using namespace epics::pvData;
 
-static FieldCreate * fieldCreate = 0;
-static PVDataCreate * pvDataCreate = 0;
-static StandardField *standardField = 0;
-static StandardPVField *standardPVField = 0;
-static NTField *ntField = 0;
-static PVNTField *pvntField = 0;
-static String builder("");
+static FieldCreatePtr fieldCreate = getFieldCreate();
+static PVDataCreatePtr pvDataCreate = getPVDataCreate();
+static StandardFieldPtr standardField = getStandardField();
+static StandardPVFieldPtr standardPVField = getStandardPVField();
+static NTFieldPtr ntField = NTField::get();
+static PVNTFieldPtr pvntField = PVNTField::get();
+static String builder;
 
 static void testNTField(FILE * fd)
 {
-    StructureConstPtr structureConstPtr = ntField->createEnumerated("value");
+    StructureConstPtr structureConstPtr = ntField->createEnumerated();
     builder.clear();
     structureConstPtr->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
@@ -75,17 +72,17 @@ static void testNTField(FILE * fd)
     assert(ntField->isControl(structureConstPtr));
 
     StructureArrayConstPtr structureArrayConstPtr
-        = ntField->createEnumeratedArray("value");
+        = ntField->createEnumeratedArray();
     builder.clear();
     structureArrayConstPtr->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
 
-    structureArrayConstPtr = ntField->createTimeStampArray("value");
+    structureArrayConstPtr = ntField->createTimeStampArray();
     builder.clear();
     structureArrayConstPtr->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
 
-    structureArrayConstPtr = ntField->createAlarmArray("value");
+    structureArrayConstPtr = ntField->createAlarmArray();
     builder.clear();
     structureArrayConstPtr->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
@@ -93,40 +90,44 @@ static void testNTField(FILE * fd)
 
 static void testPVNTField(FILE * fd)
 {
-    String choices[] = {"one","two","three"};
-    PVStructure::shared_pointer pvStructure = PVStructure::shared_pointer(
-        pvntField->createEnumerated(0,"enumerated",choices, 3));
+    StringArray choices;
+    choices.resize(3);
+    choices[0] = "one";
+    choices[1] = "two";
+    choices[2] = "three";
+    PVStructurePtr pvStructure = PVStructurePtr(
+        pvntField->createEnumerated(choices));
     builder.clear();
     pvStructure->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
     assert(ntField->isEnumerated(pvStructure->getStructure()));
 
-    pvStructure = PVStructure::shared_pointer(pvntField->createTimeStamp(0));
+    pvStructure = PVStructurePtr(pvntField->createTimeStamp());
     builder.clear();
     pvStructure->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
     assert(ntField->isTimeStamp(pvStructure->getStructure()));
 
-    pvStructure = PVStructure::shared_pointer(pvntField->createAlarm(0));
+    pvStructure = PVStructurePtr(pvntField->createAlarm());
     builder.clear();
     pvStructure->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
     assert(ntField->isAlarm(pvStructure->getStructure()));
 
-    pvStructure = PVStructure::shared_pointer(pvntField->createDisplay(0));
+    pvStructure = PVStructurePtr(pvntField->createDisplay());
     builder.clear();
     pvStructure->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
     assert(ntField->isDisplay(pvStructure->getStructure()));
 
-    pvStructure = PVStructure::shared_pointer(pvntField->createAlarmLimit(0));
+    pvStructure = PVStructurePtr(pvntField->createAlarmLimit());
     builder.clear();
     pvStructure->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
     assert(ntField->isAlarmLimit(pvStructure->getStructure()));
 
-    PVStructureArray::shared_pointer pvStructureArray = PVStructureArray::shared_pointer(
-        pvntField->createEnumeratedArray(0,"enumArray"));
+    PVStructureArrayPtr pvStructureArray = PVStructureArrayPtr(
+        pvntField->createEnumeratedArray());
     builder.clear();
     pvStructureArray->toString(&builder);
     fprintf(fd,"\n%s\n",builder.c_str());
@@ -134,8 +135,8 @@ static void testPVNTField(FILE * fd)
     pvStructureArray->getStructureArray()->getStructure()->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
 
-    pvStructureArray = PVStructureArray::shared_pointer(
-        pvntField->createTimeStampArray(0,"timeStampArray"));
+    pvStructureArray = PVStructureArrayPtr(
+        pvntField->createTimeStampArray());
     builder.clear();
     pvStructureArray->toString(&builder);
     fprintf(fd,"\n%s\n",builder.c_str());
@@ -143,8 +144,8 @@ static void testPVNTField(FILE * fd)
     pvStructureArray->getStructureArray()->getStructure()->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
 
-    pvStructureArray = PVStructureArray::shared_pointer(
-        pvntField->createAlarmArray(0,"alarmArray"));
+    pvStructureArray = PVStructureArrayPtr(
+        pvntField->createAlarmArray());
     builder.clear();
     pvStructureArray->toString(&builder);
     fprintf(fd,"\n%s\n",builder.c_str());
@@ -161,16 +162,8 @@ int main(int argc,char *argv[])
     if(fileName!=0 && fileName[0]!=0) {
         fd = fopen(fileName,"w+");
     }
-    fieldCreate = getFieldCreate();
-    pvDataCreate = getPVDataCreate();
-    standardField = getStandardField();
-    standardPVField = getStandardPVField();
-    ntField = NTField::get();
-    pvntField = PVNTField::get();
     testNTField(fd);
     testPVNTField(fd);
-    epicsExitCallAtExits();
-    CDRMonitor::get().show(fd,true);
     return(0);
 }
 

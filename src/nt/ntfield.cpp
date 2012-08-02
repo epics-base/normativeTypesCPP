@@ -150,7 +150,7 @@ bool NTField::isAlarmLimit(FieldConstPtr const & field)
    if(names[0].compare("active")!=0) return false;
    if(f->getType()!=scalar) return false;
    ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
+   if(s->getScalarType()!=pvBoolean) return false;
    f = fields[1];
    if(names[1].compare("lowAlarmLimit")!=0) return false;
    if(f->getType()!=scalar) return false;

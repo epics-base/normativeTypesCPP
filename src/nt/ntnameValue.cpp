@@ -11,15 +11,14 @@ namespace epics { namespace pvData {
 
 using std::tr1::static_pointer_cast;
 
-bool NTNameValue::isNTNameValue(PVStructurePtr pvStructure)
+bool NTNameValue::isNTNameValue(PVStructurePtr const & pvStructure)
 {
-    String name = pvStructure->getField()->getFieldName();
-    if(name.compare("NTNameValue")!=0) return false;
     PVFieldPtr pvField = pvStructure->getSubField("names");
-    if(pvField==0) return false;
+    if(pvField.get()==NULL) return false;
     FieldConstPtr field = pvField->getField();
     if(field->getType()!=scalarArray) return false;
-    ScalarArrayConstPtr pscalarArray = static_pointer_cast<const ScalarArray>(field);
+    ScalarArrayConstPtr pscalarArray =
+        static_pointer_cast<const ScalarArray>(field);
     if(pscalarArray->getElementType()!=pvString) return false;
     pvField = pvStructure->getSubField("values");
     if(pvField==0) return false;
@@ -30,100 +29,76 @@ bool NTNameValue::isNTNameValue(PVStructurePtr pvStructure)
     return true;
 }
 
-PVStructure::shared_pointer NTNameValue::create(
+NTNameValuePtr NTNameValue::create(
     bool hasFunction,bool hasTimeStamp, bool hasAlarm)
 {
-    StandardField *standardField = getStandardField();
-    int nfields = 2;
+    StandardFieldPtr standardField = getStandardField();
+    size_t nfields = 2;
     if(hasFunction) nfields++;
     if(hasTimeStamp) nfields++;
     if(hasAlarm) nfields++;
-    FieldCreate *fieldCreate = getFieldCreate();
-    PVDataCreate *pvDataCreate = getPVDataCreate();
-    FieldConstPtrArray fields = new FieldConstPtr[nfields];
-    fields[0] = fieldCreate->createScalarArray("names",pvString);
-    fields[1] = fieldCreate->createScalarArray("values",pvString);
+    FieldCreatePtr fieldCreate = getFieldCreate();
+    PVDataCreatePtr pvDataCreate = getPVDataCreate();
+    FieldConstPtrArray fields;
+    StringArray names;
+    fields.resize(nfields);
+    names.resize(nfields);
+    names[0] = "names";
+    fields[0] = fieldCreate->createScalarArray(pvString);
+    names[1] = "values";
+    fields[1] = fieldCreate->createScalarArray(pvString);
     int ind = 2;
     if(hasFunction) {
-        fields[ind++] = fieldCreate->createScalar(String("function"),pvString);
+        names[ind] = "function";
+        fields[ind++] = fieldCreate->createScalar(pvString);
     }
     if(hasTimeStamp) {
+        names[ind] = "timeStamp";
         fields[ind++] = standardField->timeStamp();
     }
     if(hasAlarm) {
+        names[ind] = "alarm";
         fields[ind++] = standardField->alarm();
     }
-    return PVStructure::shared_pointer(
-        pvDataCreate->createPVStructure(0,"NTNameValue",ind,fields));
+    StructureConstPtr st = fieldCreate->createStructure(names,fields);
+    PVStructurePtr pvStructure = pvDataCreate->createPVStructure(st);
+    return NTNameValuePtr(new NTNameValue(pvStructure));
 }
 
 NTNameValue::NTNameValue(PVStructure::shared_pointer const & pvStructure)
-: pvNTNameValue(pvStructure),
-  pvFunction(0),
-  pvTimeStamp(0),
-  pvAlarm(0),
-  pvNames(0),
-  pvValues(0)
+: pvNTNameValue(pvStructure)
 {
-    NTField *ntfield = NTField::get();
-    String name = pvStructure->getField()->getFieldName();
-    if(name.compare("NTNameValue")!=0) {
-        throw std::invalid_argument(
-            "pvArgument does not have name NTNameValue");
-    }
-    PVArray * pvArray = pvStructure->getScalarArrayField("names",pvString);
-    if(pvArray==0) {
-        throw std::invalid_argument(
-            "pvArgument does not have a string array field names");
-    }
-    pvNames = static_cast<PVStringArray *>(pvArray);
+    NTFieldPtr ntfield = NTField::get();
+    PVScalarArrayPtr pvArray =
+        pvStructure->getScalarArrayField("names",pvString);
+    pvNames = static_pointer_cast<PVStringArray>(pvArray);
     pvArray = pvStructure->getScalarArrayField("values",pvString);
-    if(pvArray==0) {
-        throw std::invalid_argument(
-            "pvArgument does not have a string array field values");
-    }
-    pvValues = static_cast<PVStringArray *>(pvArray);
+    pvValues = static_pointer_cast<PVStringArray>(pvArray);
     PVFieldPtr pvField = pvStructure->getSubField("function");
-    if(pvField!=0) {
+    if(pvField.get()!=NULL) {
         pvFunction = pvStructure->getStringField("function");
     }
     pvField = pvStructure->getSubField("timeStamp");
-    if(pvField!=0 && ntfield->isTimeStamp(pvField->getField())) {
-        pvTimeStamp = static_cast<PVStructure *>(pvField);
+    if(pvField.get()!=NULL && ntfield->isTimeStamp(pvField->getField())) {
+        pvTimeStamp = static_pointer_cast<PVStructure>(pvField);
     }
     pvField = pvStructure->getSubField("alarm");
-    if(pvField!=0 && ntfield->isAlarm(pvField->getField())) {
-        pvAlarm = static_cast<PVStructure *>(pvField);
+    if(pvField.get()!=NULL && ntfield->isAlarm(pvField->getField())) {
+        pvAlarm = static_pointer_cast<PVStructure>(pvField);
     }
 }
 
-NTNameValue::~NTNameValue()
+
+void  NTNameValue::attachTimeStamp(PVTimeStamp &pv)
 {
+    if(pvTimeStamp.get()==NULL) return;
+    pv.attach(pvTimeStamp);
 }
 
-PVString * NTNameValue::getFunction()
+void  NTNameValue::attachAlarm(PVAlarm &pv)
 {
-    return pvFunction;
-}
-
-void  NTNameValue::attachTimeStamp(PVTimeStamp &pvTimeStamp)
-{
-    if(this->pvTimeStamp==0) return;
-    pvTimeStamp.attach(this->pvTimeStamp);
-}
-
-void  NTNameValue::attachAlarm(PVAlarm &pvAlarm)
-{
-    if(this->pvAlarm==0) return;
-    pvAlarm.attach(this->pvAlarm);
-}
-
-PVStringArray * NTNameValue::getNames() {
-    return pvNames;
-}
-
-PVStringArray * NTNameValue::getValues() {
-    return pvValues;
+    if(pvAlarm.get()==NULL) return;
+    pv.attach(pvAlarm);
 }
 
 }}

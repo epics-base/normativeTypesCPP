@@ -23,46 +23,46 @@
 
 #include <pv/nt.h>
 
-#include <epicsExit.h>
-#include <pv/CDRMonitor.h>
-
 using namespace epics::pvData;
+using std::tr1::static_pointer_cast;
 
-
-static FieldCreate * fieldCreate = 0;
-static PVDataCreate * pvDataCreate = 0;
-static NTField *ntField = 0;
-static PVNTField *pvntField = 0;
-static String builder("");
+static FieldCreatePtr fieldCreate = getFieldCreate();
+static PVDataCreatePtr pvDataCreate = getPVDataCreate();
+static NTFieldPtr ntField = NTField::get();
+static PVNTFieldPtr pvntField = PVNTField::get();
+static String builder;
 
 static void test(FILE * fd)
 {
-    int n = 2;
-    FieldConstPtr fields[2];
-    fields[0] = fieldCreate->createScalarArray("position",pvDouble);
-    fields[1] = ntField->createAlarmArray("alarms");
-    PVStructure::shared_pointer pvStructure = NTTable::create(
-        true,true,true,n,fields);
+    size_t n = 2;
+    FieldConstPtrArray fields(n);
+    StringArray names(n);
+    names[0] = "position";
+    names[1] = "alarms";
+    fields[0] = fieldCreate->createScalarArray(pvDouble);
+    fields[1] = ntField->createAlarmArray();
+    NTTablePtr ntTable = NTTable::create(
+        true,true,true,names,fields);
+    PVStructurePtr pvStructure = ntTable->getPVStructure();
     builder.clear();
     pvStructure->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
     builder.clear();
     pvStructure->getStructure()->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
-    NTTable ntTable(pvStructure);
-    PVDoubleArray *pvPositions
-        = static_cast<PVDoubleArray *>(ntTable.getPVField(0));
-    double positions[2];
+    PVDoubleArrayPtr pvPositions
+        = static_pointer_cast<PVDoubleArray>(ntTable->getPVField(0));
+    DoubleArray positions(2);
     positions[0] = 1.0;
     positions[1] = 2.0;
-    pvPositions->put(0,n,positions,0);
-    PVStructureArray *pvAlarms
-        = static_cast<PVStructureArray *>(ntTable.getPVField(1));
+    pvPositions->put(0,2,positions,0);
+    PVStructureArrayPtr pvAlarms
+        = static_pointer_cast<PVStructureArray>(ntTable->getPVField(1));
     PVAlarm pvAlarm;
     Alarm alarm;
-    PVStructurePtr palarms[n];
-    for(int i=0; i<n; i++) {
-        palarms[i] = pvntField->createAlarm(0);
+    PVStructurePtrArray palarms(n);
+    for(size_t i=0; i<n; i++) {
+        palarms[i] = pvntField->createAlarm();
         pvAlarm.attach(palarms[i]);
         alarm.setMessage("test");
         alarm.setSeverity(majorAlarm);
@@ -70,27 +70,26 @@ static void test(FILE * fd)
         pvAlarm.set(alarm);
     }
     pvAlarms->put(0,n,palarms,0);
-    String labels[n];
-    labels[0] = pvPositions->getField()->getFieldName();
-    labels[1] = pvAlarms->getField()->getFieldName();
-    PVStringArray *label = ntTable.getLabel();
+    StringArray labels(n);
+    labels[0] = pvPositions->getFieldName();
+    labels[1] = pvAlarms->getFieldName();
+    PVStringArrayPtr label = ntTable->getLabel();
     label->put(0,n,labels,0);
-    
-    PVString *function = ntTable.getFunction();
+    PVStringPtr function = ntTable->getFunction();
     function->put("test");
-    ntTable.attachAlarm(pvAlarm);
+    ntTable->attachAlarm(pvAlarm);
     alarm.setMessage("test alarm");
     alarm.setSeverity(majorAlarm);
     alarm.setStatus(clientStatus);
     pvAlarm.set(alarm);
     PVTimeStamp pvTimeStamp;
-    ntTable.attachTimeStamp(pvTimeStamp);
+    ntTable->attachTimeStamp(pvTimeStamp);
     TimeStamp timeStamp(1000,1000,10);
     pvTimeStamp.set(timeStamp);
     builder.clear();
     pvStructure->toString(&builder);
     fprintf(fd,"%s\n",builder.c_str());
-    assert(NTTable::isNTTable(pvStructure.get()));
+    assert(NTTable::isNTTable(pvStructure));
 }
 
 
@@ -102,13 +101,7 @@ int main(int argc,char *argv[])
     if(fileName!=0 && fileName[0]!=0) {
         fd = fopen(fileName,"w+");
     }
-    fieldCreate = getFieldCreate();
-    pvDataCreate = getPVDataCreate();
-    ntField = NTField::get();
-    pvntField = PVNTField::get();
     test(fd);
-    epicsExitCallAtExits();
-    CDRMonitor::get().show(fd,true);
     return(0);
 }
 

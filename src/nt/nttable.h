@@ -17,7 +17,7 @@ namespace epics { namespace pvData {
  *
  */
 
-class NTTable
+class NTTable;
 typedef std::tr1::shared_ptr<NTTable> NTTablePtr;
 
 class NTTable
@@ -37,27 +37,21 @@ public:
      * @param hasAlarm Create an alarm structure field.
      * @param numberValues The number of fields that follow the label field.
      * @param valueFields The fields that follow the label field.
-     * @return an NTTable pvStructure.
+     * @return an NTTablePtr
      */
-    static PVStructurePtr create(
+    static NTTablePtr create(
         bool hasFunction,bool hasTimeStamp, bool hasAlarm,
-        size_t numberValues,
+        StringArray const & valueNames,
         FieldConstPtrArray const &valueFields);
-    /**
-     * Constructor
-     * @param pvStructure The pvStructure to which to attach.
-     * @return A NTTable that is attached to the pvStructure
-     */
-    NTTable(PVStructurePtr const & pvStructure);
     /**
      * Destructor
      */
-    ~NTTable();
+    ~NTTable() {}
     /**
      * Get the function field.
      * @return The pvString or null if no function field.
      */
-    PVStringPtr getFunction();
+    PVStringPtr & getFunction() {return pvFunction;}
      /**
       * Attach a pvTimeStamp.
       * @param pvTimeStamp The pvTimeStamp that will be attached.
@@ -74,40 +68,41 @@ public:
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    PVStructurePtr getPVStructure(){return pvNTTable;}
+    PVStructurePtr & getPVStructure(){return pvNTTable;}
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr getTimeStamp(){return pvTimeStamp;}
+    PVStructurePtr & getTimeStamp(){return pvTimeStamp;}
     /**
      * Get the alarm.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr getAlarm() {return pvAlarm;}
+    PVStructurePtr & getAlarm() {return pvAlarm;}
     /**
      * Get the label field.
      * @return The pvStringArray for the label.
      */
-    PVStringArrayPtr getLabel();
+    PVStringArrayPtr & getLabel() {return pvLabel;}
     /**
      * Get the the number of fields that follow the label field.
      * @return The number of fields.
      */
-    int getNumberValues();
+    size_t getNumberValues();
     /**
      * Get the Field for a field that follows the label field.
      * @param index The index of the field desired.
      * @return The FieldConstPtr for the field.
      */
-    FieldConstPtr getField(int index);
+    FieldConstPtr & getField(size_t index);
     /**
      * Get the PVField for a field that follows the label field.
      * @param index The index of the field desired.
      * @return The PVFieldPtr for the field.
      */
-    PVFieldPtr getPVField(int index);
+    PVFieldPtr & getPVField(size_t index);
 private:
+    NTTable(PVStructurePtr const & pvStructure);
     PVStructurePtr pvNTTable;
     PVStringPtr pvFunction;
     PVStructurePtr pvTimeStamp;

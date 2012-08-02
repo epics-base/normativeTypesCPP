@@ -9,25 +9,26 @@
 
 namespace epics { namespace pvData { 
 
-bool NTTable::isNTTable(PVStructurePtr pvStructure)
+using std::tr1::static_pointer_cast;
+
+bool NTTable::isNTTable(PVStructurePtr const & pvStructure)
 {
-    NTField *ntfield = NTField::get();
+    NTFieldPtr ntfield = NTField::get();
     //StandardField *standardField = getStandardField();
-    String name = pvStructure->getField()->getFieldName();
-    if(name.compare("NTTable")!=0) return false;
-    PVStringArray *pvLabel = static_cast<PVStringArray *>
+    PVStringArrayPtr pvLabel = static_pointer_cast<PVStringArray>
         (pvStructure->getScalarArrayField("label",pvString));
-    if(pvLabel==0) return false;
-    int nfields = pvLabel->getLength();
-    int nextra = 1; // label is 1 field
+    if(pvLabel.get()==NULL) return false;
+    size_t nfields = pvLabel->getLength();
+    size_t nextra = 1; // label is 1 field
     PVFieldPtr pvField = pvStructure->getSubField("function");
-    if(pvField!=0 && pvStructure->getStringField("function")) nextra++;
+    if(pvField.get()!=NULL
+    && pvStructure->getStringField("function").get()!=NULL) nextra++;
     pvField = pvStructure->getSubField("timeStamp");
     if(pvField!=0 && ntfield->isTimeStamp(pvField->getField())) {
         nextra++;
     }
     pvField = pvStructure->getSubField("alarm");
-    if(pvField!=0 && ntfield->isAlarm(pvField->getField())) {
+    if(pvField.get()!=NULL && ntfield->isAlarm(pvField->getField())) {
         nextra++;
     }
     if(nfields!=(pvStructure->getStructure()->getNumberFields()-nextra)) return false;
@@ -41,122 +42,104 @@ bool NTTable::isNTTable(PVStructurePtr pvStructure)
     return true;
 }
 
-PVStructure::shared_pointer NTTable::create(
+NTTablePtr NTTable::create(
     bool hasFunction,bool hasTimeStamp, bool hasAlarm,
-    int numberValues,
-    FieldConstPtrArray valueFields)
+    StringArray const & valueNames,
+    FieldConstPtrArray const &valueFields)
 {
-    StandardField *standardField = getStandardField();
-    int nfields = 1;
+    StandardFieldPtr standardField = getStandardField();
+    size_t nfields = 1;
     if(hasFunction) nfields++;
     if(hasTimeStamp) nfields++;
     if(hasAlarm) nfields++;
-    nfields += numberValues;
-    FieldCreate *fieldCreate = getFieldCreate();
-    PVDataCreate *pvDataCreate = getPVDataCreate();
-    FieldConstPtrArray fields = new FieldConstPtr[nfields];
-    int ind = 0;
+    nfields += valueFields.size();
+    FieldCreatePtr fieldCreate = getFieldCreate();
+    PVDataCreatePtr pvDataCreate = getPVDataCreate();
+    FieldConstPtrArray fields;
+    StringArray names;
+    fields.resize(nfields);
+    names.resize(nfields);
+    size_t ind = 0;
     if(hasFunction) {
-        fields[ind++] = fieldCreate->createScalar(String("function"),pvString);
+        names[ind] = "function";
+        fields[ind++] = fieldCreate->createScalar(pvString);
     }
     if(hasTimeStamp) {
+        names[ind] = "timeStamp";
         fields[ind++] = standardField->timeStamp();
     }
     if(hasAlarm) {
+        names[ind] = "alarm";
         fields[ind++] = standardField->alarm();
     }
-    fields[ind++] = standardField->scalarArray("label",pvString);
-    for(int i=0; i<numberValues ; i++) fields[ind++] = valueFields[i];
-    PVStructure::shared_pointer pvStructure = PVStructure::shared_pointer(
-        pvDataCreate->createPVStructure(0,"NTTable",nfields,fields));
-    String label[numberValues];
-    for(int i=0; i<numberValues; i++) {
-        FieldConstPtr field = fields[nfields - numberValues +i];
-        label[i] = field->getFieldName();
+    names[ind] = "label";
+    fields[ind++] = fieldCreate->createScalarArray(pvString);
+    size_t numberValues = valueNames.size();
+    for(size_t i=0; i<numberValues ; i++) {
+        names[ind] = valueNames[i];
+        fields[ind++] = valueFields[i];
     }
-    PVStringArray *pvLabel = static_cast<PVStringArray *>
+    StructureConstPtr st = fieldCreate->createStructure(names,fields);
+    PVStructurePtr pvStructure = pvDataCreate->createPVStructure(st);
+    PVStringArrayPtr pvLabel = static_pointer_cast<PVStringArray>
         (pvStructure->getScalarArrayField("label",pvString));
-    pvLabel->put(0,numberValues,label,0);
-    return pvStructure;
+    pvLabel->put(0,numberValues,valueNames,0);
+    return NTTablePtr(new NTTable(pvStructure));
 }
 
-NTTable::NTTable(PVStructure::shared_pointer const & pvStructure)
+NTTable::NTTable(PVStructurePtr const & pvStructure)
 : pvNTTable(pvStructure),
-  pvFunction(0),
-  pvTimeStamp(0),
-  pvAlarm(0),
-  pvLabel(0),
   offsetFields(1)
 {
-    NTField *ntfield = NTField::get();
-    String name = pvStructure->getField()->getFieldName();
-    if(name.compare("NTTable")!=0) {
-        throw std::invalid_argument(
-            "pvArgument does not have name NTTable");
-    }
-    PVScalarArray * pvScalarArray
+    NTFieldPtr ntfield = NTField::get();
+    PVScalarArrayPtr pvScalarArray
          = pvStructure->getScalarArrayField("label",pvString);
-    if(pvScalarArray==0) {
-        throw std::invalid_argument(
-            "pvArgument did not have a structureArray field value");
-    }
-    pvLabel = static_cast<PVStringArray *>(pvScalarArray);
+    pvLabel = static_pointer_cast<PVStringArray>(pvScalarArray);
     PVFieldPtr pvField = pvStructure->getSubField("function");
-    if(pvField!=0) {
-        pvFunction = pvStructure->getStringField("function");
+    if(pvField.get()!=NULL) {
         offsetFields++;
+        pvFunction = pvStructure->getStringField("function");
     }
     pvField = pvStructure->getSubField("timeStamp");
-    if(pvField!=0 && ntfield->isTimeStamp(pvField->getField())) {
-        pvTimeStamp = static_cast<PVStructure *>(pvField);
+    if(pvField.get()!=NULL && ntfield->isTimeStamp(pvField->getField())) {
         offsetFields++;
+        pvTimeStamp = static_pointer_cast<PVStructure>(pvField);
     }
     pvField = pvStructure->getSubField("alarm");
-    if(pvField!=0 && ntfield->isAlarm(pvField->getField())) {
-        pvAlarm = static_cast<PVStructure *>(pvField);
+    if(pvField.get()!=NULL && ntfield->isAlarm(pvField->getField())) {
         offsetFields++;
+        pvAlarm = static_pointer_cast<PVStructure>(pvField);
     }
 }
 
-NTTable::~NTTable()
+
+void  NTTable::attachTimeStamp(PVTimeStamp &pv)
 {
+    if(pvTimeStamp.get()==NULL) return;
+    pv.attach(pvTimeStamp);
 }
 
-PVString * NTTable::getFunction()
+void  NTTable::attachAlarm(PVAlarm &pv)
 {
-    return pvFunction;
+    if(pvAlarm.get()==NULL) return;
+    pv.attach(pvAlarm);
 }
 
-void  NTTable::attachTimeStamp(PVTimeStamp &pvTimeStamp)
-{
-    if(this->pvTimeStamp==0) return;
-    pvTimeStamp.attach(this->pvTimeStamp);
-}
-
-void  NTTable::attachAlarm(PVAlarm &pvAlarm)
-{
-    if(this->pvAlarm==0) return;
-    pvAlarm.attach(this->pvAlarm);
-}
-
-PVStringArray * NTTable::getLabel()
-{
-    return pvLabel;
-}
-
-int NTTable::getNumberValues()
+size_t NTTable::getNumberValues()
 {
     return pvLabel->getLength();
 }
 
-FieldConstPtr NTTable::getField(int index)
+FieldConstPtr & NTTable::getField(size_t index)
 {
-    return pvNTTable->getStructure()->getFields()[index+offsetFields];
+    FieldConstPtrArray fields = pvNTTable->getStructure()->getFields();
+    return fields[index + offsetFields];
 }
 
-PVFieldPtr NTTable::getPVField(int index)
+PVFieldPtr & NTTable::getPVField(size_t index)
 {
-    return pvNTTable->getPVFields()[index+offsetFields];
+    PVFieldPtrArray pvFields = pvNTTable->getPVFields();
+    return pvFields[index+offsetFields];
 }
 
 }}
