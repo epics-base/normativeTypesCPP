@@ -1,4 +1,4 @@
-/* nttable.h */
+/* nttable.cpp */
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS pvDataCPP is distributed subject to a Software License Agreement found
@@ -14,7 +14,6 @@ using std::tr1::static_pointer_cast;
 bool NTTable::isNTTable(PVStructurePtr const & pvStructure)
 {
     NTFieldPtr ntfield = NTField::get();
-    //StandardField *standardField = getStandardField();
     PVStringArrayPtr pvLabel = static_pointer_cast<PVStringArray>
         (pvStructure->getScalarArrayField("label",pvString));
     if(pvLabel.get()==NULL) return false;
@@ -31,10 +30,11 @@ bool NTTable::isNTTable(PVStructurePtr const & pvStructure)
     if(pvField.get()!=NULL && ntfield->isAlarm(pvField->getField())) {
         nextra++;
     }
-    if(nfields!=(pvStructure->getStructure()->getNumberFields()-nextra)) return false;
+    if(nfields!=(pvStructure->getStructure()->getNumberFields()-nextra)) {
+        return false;
+    }
     FieldConstPtrArray fields = pvStructure->getStructure()->getFields();
-    int n = nfields - nextra;
-    for(int i=0; i<n; i++) {
+    for(size_t i=0; i<nfields; i++) {
         FieldConstPtr field = fields[i+nextra];
         Type type = field->getType();
         if(type!=scalarArray && type!=structureArray) return false;

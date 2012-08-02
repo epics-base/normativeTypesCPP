@@ -1,4 +1,4 @@
-/* ntnameValue.h */
+/* ntnameValue.cpp */
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS pvDataCPP is distributed subject to a Software License Agreement found
@@ -47,7 +47,7 @@ NTNameValuePtr NTNameValue::create(
     fields[0] = fieldCreate->createScalarArray(pvString);
     names[1] = "values";
     fields[1] = fieldCreate->createScalarArray(pvString);
-    int ind = 2;
+    size_t ind = 2;
     if(hasFunction) {
         names[ind] = "function";
         fields[ind++] = fieldCreate->createScalar(pvString);
