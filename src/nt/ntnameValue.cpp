@@ -65,6 +65,12 @@ NTNameValuePtr NTNameValue::create(
     return NTNameValuePtr(new NTNameValue(pvStructure));
 }
 
+NTNameValuePtr NTNameValue::create(
+    PVStructurePtr const & pvStructure)
+{
+    return NTNameValuePtr(new NTNameValue(pvStructure));
+}
+
 NTNameValue::NTNameValue(PVStructure::shared_pointer const & pvStructure)
 : pvNTNameValue(pvStructure)
 {

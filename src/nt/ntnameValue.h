@@ -39,6 +39,8 @@ public:
      */
     static NTNameValuePtr create(
         bool hasFunction,bool hasTimeStamp, bool hasAlarm);
+    static NTNameValuePtr create(
+        PVStructurePtr const & pvStructure);
     /**
      * Destructor
      */
