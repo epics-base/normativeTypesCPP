@@ -43,6 +43,7 @@ public:
         bool hasFunction,bool hasTimeStamp, bool hasAlarm,
         StringArray const & valueNames,
         FieldConstPtrArray const &valueFields);
+    static NTTablePtr clone(PVStructurePtr const &);
     /**
      * Destructor
      */

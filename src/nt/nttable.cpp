@@ -87,6 +87,12 @@ NTTablePtr NTTable::create(
     return NTTablePtr(new NTTable(pvStructure));
 }
 
+NTTablePtr NTTable::clone(PVStructurePtr const & pv)
+{
+    PVStructurePtr pvStructure = getPVDataCreate()->createPVStructure(pv);
+    return NTTablePtr(new NTTable(pvStructure));
+}
+
 NTTable::NTTable(PVStructurePtr const & pvStructure)
 : pvNTTable(pvStructure),
   offsetFields(1)
