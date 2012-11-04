@@ -49,7 +49,7 @@ public:
      * Get the function field.
      * @return The pvString or null if no function field.
      */
-    PVStringPtr & getFunction() {return pvFunction;}
+    PVStringPtr getFunction() {return pvFunction;}
     /**
      * Attach a pvTimeStamp.
      * @param pvTimeStamp The pvTimeStamp that will be attached.
@@ -66,27 +66,27 @@ public:
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    PVStructurePtr & getPVStructure(){return pvNTNameValue;}
+    PVStructurePtr getPVStructure(){return pvNTNameValue;}
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr & getTimeStamp(){return pvTimeStamp;}
+    PVStructurePtr getTimeStamp(){return pvTimeStamp;}
     /**
      * Get the alarm.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr & getAlarm() {return pvAlarm;}
+    PVStructurePtr getAlarm() {return pvAlarm;}
     /**
      * Get the string array on names.
      * @return The array of names.
      */
-    PVStringArrayPtr & getNames() {return pvNames;}
+    PVStringArrayPtr getNames() {return pvNames;}
     /**
      * Get the string array on values.
      * @return The array of values.
      */
-    PVStringArrayPtr & getValues() {return pvValues;}
+    PVStringArrayPtr getValues() {return pvValues;}
 private:
     NTNameValue(PVStructurePtr const & pvStructure);
     PVStructurePtr pvNTNameValue;

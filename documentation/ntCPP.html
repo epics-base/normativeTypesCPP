@@ -19,19 +19,25 @@
 </head>
 
 <body>
-<h1 style="text-align: center">EPICS pvDataCPP<br />
-2012.01.11</h1>
+<h1 style="text-align: center">EPICS normative type C++ implementation
+</h1>
 
-<p>TODO</p>
-<ul>
-  <li>Move next section to pvDataCPP documentation.</li>
-</ul>
+<h2 class="nocount" id="L50">Draft, 4-Nov-2012</h2>
+<dl>
+<dt>This version:</dt>
+  <dd><a href="http://epics-pvdata.hg.sourceforge.net/hgweb/epics-pvdata/normaticeTypesCPP/raw-file/tip/documentation/ntCPP.html">ntCPP.html</a></dd>
+<dt>Editors:</dt>
+  <dd>Guobao Shen, BNL<br>
+    Marty Kraimer, BNL<span style="font-weight: bold;"></span></dd>
+</dl>
 <hr />
+</div>
 
 <h2 style="text-align: center">Normative Types</h2>
 <hr />
 
-<p>This section describes the C++ implemmentation of normative types.</p>
+<p>This section describes the C++ implemmentation of normative types. Two (2) helper classes are implemented,
+ntNameValue and NTTable respectively. </p>
 
 <h3>Normative Type Fields.</h3>
 
@@ -40,42 +46,23 @@ There is a single instance of this class, which is obtained via NTField::get().
 </p>
 <pre>class NTField: NoDefaultMethods {
 public:
-    static NTField * get();
+    static NTFieldPtr get();
     ~NTField() {}
-    bool isEnumerated(FieldConstPtr field);
-    bool isTimeStamp(FieldConstPtr field);
-    bool isAlarm(FieldConstPtr field);
-    bool isDisplay(FieldConstPtr field);
-    bool isAlarmLimit(FieldConstPtr field);
-    bool isControl(FieldConstPtr field);
 
-    StructureConstPtr createEnumerated(String fieldName);
-    StructureConstPtr createTimeStamp();
-    StructureConstPtr createAlarm();
-    StructureConstPtr createDisplay();
-    StructureConstPtr createAlarmLimit();
-    StructureConstPtr createControl();
+    PVStructurePtr createEnumerated(StringArray const & choices);
+    PVStructurePtr createTimeStamp();
+    PVStructurePtr createAlarm();
+    PVStructurePtr createDisplay();
+    PVStructurePtr createAlarmLimit();
+    PVStructurePtr createControl();
 
-    StructureArrayConstPtr createEnumeratedArray(String fieldName);
-    StructureArrayConstPtr createTimeStampArray(String fieldName);
-    StructureArrayConstPtr createAlarmArray(String fieldName);
+    PVStructureArrayPtr createEnumeratedArray();
+    PVStructureArrayPtr createTimeStampArray();
+    PVStructureArrayPtr createAlarmArray();
 };</pre>
 
 <p>where</p>
 <dl>
-  <dt>isEnumerated</dt>
-    <dd>Is this field an enumerated structure, i. e. a structure that has a int
-      field named index and a string array field named choices.</dd>
-  <dt>isTimeStamp</dt>
-    <dd>Is this field a timeStamp structure.</dd>
-  <dt>isAlarm</dt>
-    <dd>Is this field an alarm structure..</dd>
-  <dt>isDisplay</dt>
-    <dd>Is the field a display structure.</dd>
-  <dt>isAlarmLimit</dt>
-    <dd>Is the field an alarm limit structure.</dd>
-  <dt>isControl</dt>
-    <dd>Is the field a control structure.</dd>
   <dt>createEnumerated</dt>
     <dd>Create an introspection interface for an enumerated structure.</dd>
   <dt>createTimeStamp</dt>
@@ -105,19 +92,20 @@ public:
 <pre>class NTNameValue : private NoDefaultMethods
 {
 public:
-    static bool isNTNameValue(PVStructurePtr pvStructure);
-    static PVStructure::shared_pointer create(
+    static bool isNTNameValue(PVStructurePtr const & pvStructure);
+    static NTNameValuePtr create(
         bool hasFunction,bool hasTimeStamp, bool hasAlarm);
-    NTNameValue(PVStructure::shared_pointer const &amp; pvStructure);
+    static NTNameValuePtr create(
+        PVStructurePtr const & pvStructure);
     ~NTNameValue();
-    PVString* getFunction();
+    PVStringPtr getFunction();
     void attachTimeStamp(PVTimeStamp &amp;pvTimeStamp);
     void attachAlarm(PVAlarm &amp;pvAlarm);
     PVStructurePtr getPVStructure();
     PVStructurePtr getTimeStamp();
     PVStructurePtr getAlarm();
-    PVStringArray *getNames();
-    PVStringArray *getValues();
+    PVStringArrayPtr getNames();
+    PVStringArrayPtr getValues();
 };</pre>
 
 <p>where</p>
@@ -126,9 +114,6 @@ public:
     <dd>Is the structure a NTNameValue structure?</dd>
   <dt>create</dt>
     <dd>Create an NTNameValue that has the associated fields.</dd>
-  <dt>NTNameValue</dt>
-    <dd>The constructor. The pvStructure <b>must</b> be a NTNameValue
-    structure.</dd>
   <dt>~NTNameValue</dt>
     <dd>The destructor.</dd>
   <dt>getFunction</dt>
@@ -156,21 +141,25 @@ public:
 <pre>class NTTable: private NoDefaultMethods
 {
 public:
-    static bool isNTTable(PVStructurePtr pvStructure);
+    static bool isNTTable(PVStructurePtr const & pvStructure);
     static PVStructure::shared_pointer create(
         bool hasFunction,bool hasTimeStamp, bool hasAlarm,
         int numberValues,
         FieldConstPtrArray valueFields);
-    NTTable(PVStructure::shared_pointer const &amp; pvStructure);
+        static NTTablePtr create(
+            bool hasFunction,bool hasTimeStamp, bool hasAlarm,
+            StringArray const & valueNames,
+            FieldConstPtrArray const &valueFields);
+        static NTTablePtr clone(PVStructurePtr const &);
     ~NTTable();
-    PVString *getFunction();
+    PVStringPtr getFunction();
     void attachTimeStamp(PVTimeStamp &amp;pvTimeStamp);
     void attachAlarm(PVAlarm &amp;pvAlarm);
     PVStructurePtr getPVStructure();
     PVStructurePtr getTimeStamp();
     PVStructurePtr getAlarm();
-    PVStringArray *getLabel();
-    int getNumberValues();
+    PVStringArrayPtr getLabel();
+    size_t getNumberValues();
     FieldConstPtr getField(int index);
     PVFieldPtr getPVField(int index);
 };</pre>
@@ -181,9 +170,6 @@ public:
     <dd>y</dd>
   <dt>create</dt>
     <dd>Create an NTTable that has the associated fields.</dd>
-  <dt>NTTable</dt>
-    <dd>The constructor. The pvStructure <b>must</b> be a NTTable
-    structure.</dd>
   <dt>~NTTable</dt>
     <dd>The destructor.</dd>
   <dt>getFunction</dt>

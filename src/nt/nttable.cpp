@@ -136,13 +136,13 @@ size_t NTTable::getNumberValues()
     return pvLabel->getLength();
 }
 
-FieldConstPtr & NTTable::getField(size_t index)
+FieldConstPtr NTTable::getField(size_t index)
 {
     FieldConstPtrArray fields = pvNTTable->getStructure()->getFields();
     return fields[index + offsetFields];
 }
 
-PVFieldPtr & NTTable::getPVField(size_t index)
+PVFieldPtr NTTable::getPVField(size_t index)
 {
     PVFieldPtrArray pvFields = pvNTTable->getPVFields();
     return pvFields[index+offsetFields];

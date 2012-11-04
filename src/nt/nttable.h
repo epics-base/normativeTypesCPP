@@ -52,7 +52,7 @@ public:
      * Get the function field.
      * @return The pvString or null if no function field.
      */
-    PVStringPtr & getFunction() {return pvFunction;}
+    PVStringPtr getFunction() {return pvFunction;}
      /**
       * Attach a pvTimeStamp.
       * @param pvTimeStamp The pvTimeStamp that will be attached.
@@ -69,22 +69,22 @@ public:
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    PVStructurePtr & getPVStructure(){return pvNTTable;}
+    PVStructurePtr getPVStructure(){return pvNTTable;}
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr & getTimeStamp(){return pvTimeStamp;}
+    PVStructurePtr getTimeStamp(){return pvTimeStamp;}
     /**
      * Get the alarm.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr & getAlarm() {return pvAlarm;}
+    PVStructurePtr getAlarm() {return pvAlarm;}
     /**
      * Get the label field.
      * @return The pvStringArray for the label.
      */
-    PVStringArrayPtr & getLabel() {return pvLabel;}
+    PVStringArrayPtr getLabel() {return pvLabel;}
     /**
      * Get the the number of fields that follow the label field.
      * @return The number of fields.
@@ -95,13 +95,13 @@ public:
      * @param index The index of the field desired.
      * @return The FieldConstPtr for the field.
      */
-    FieldConstPtr & getField(size_t index);
+    FieldConstPtr getField(size_t index);
     /**
      * Get the PVField for a field that follows the label field.
      * @param index The index of the field desired.
      * @return The PVFieldPtr for the field.
      */
-    PVFieldPtr & getPVField(size_t index);
+    PVFieldPtr getPVField(size_t index);
 private:
     NTTable(PVStructurePtr const & pvStructure);
     PVStructurePtr pvNTTable;
