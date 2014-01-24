@@ -29,3 +29,4 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #SCH2EDIF_PATH=
 
 -include $(TOP)/configure/RELEASE.local
+-include $(TOP)/../RELEASE.local
