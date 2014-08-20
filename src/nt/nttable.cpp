@@ -44,7 +44,7 @@ bool NTTable::isNTTable(PVStructurePtr const & pvStructure)
 
 NTTablePtr NTTable::create(
     bool hasFunction,bool hasTimeStamp, bool hasAlarm,
-    StringArray const & valueNames,
+    shared_vector<std::string> const & valueNames,
     FieldConstPtrArray const &valueFields)
 {
     StandardFieldPtr standardField = getStandardField();
@@ -55,10 +55,8 @@ NTTablePtr NTTable::create(
     nfields += valueFields.size();
     FieldCreatePtr fieldCreate = getFieldCreate();
     PVDataCreatePtr pvDataCreate = getPVDataCreate();
-    FieldConstPtrArray fields;
-    StringArray names;
-    fields.resize(nfields);
-    names.resize(nfields);
+    FieldConstPtrArray fields(nfields);
+    StringArray names(nfields);
     size_t ind = 0;
     if(hasFunction) {
         names[ind] = "function";
@@ -83,7 +81,10 @@ NTTablePtr NTTable::create(
     PVStructurePtr pvStructure = pvDataCreate->createPVStructure(st);
     PVStringArrayPtr pvLabel = static_pointer_cast<PVStringArray>
         (pvStructure->getScalarArrayField("label",pvString));
-    pvLabel->put(0,numberValues,valueNames,0);
+    shared_vector<std::string> xxx(numberValues);
+    for(size_t i=0; i<numberValues; ++i) xxx[i] = valueNames[i];
+    shared_vector<const std::string> data(freeze(xxx));
+    pvLabel->replace(data);
     return NTTablePtr(new NTTable(pvStructure));
 }
 

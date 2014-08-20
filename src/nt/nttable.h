@@ -41,7 +41,7 @@ public:
      */
     static NTTablePtr create(
         bool hasFunction,bool hasTimeStamp, bool hasAlarm,
-        StringArray const & valueNames,
+        shared_vector<std::string> const & valueNames,
         FieldConstPtrArray const &valueFields);
     static NTTablePtr clone(PVStructurePtr const &);
     /**

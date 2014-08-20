@@ -15,6 +15,7 @@
 #include <pv/pvAlarm.h>
 #include <pv/timeStamp.h>
 #include <pv/pvTimeStamp.h>
+#include <pv/sharedVector.h>
 
 namespace epics { namespace pvData { 
 /**
@@ -22,8 +23,6 @@ namespace epics { namespace pvData {
  * @author mrk
  * 
  */
-
-typedef std::tr1::shared_ptr<epics::pvData::StringArray> StringArrayPtr;
 
 class NTField;
 typedef std::tr1::shared_ptr<NTField> NTFieldPtr;

@@ -14,45 +14,41 @@
 #include <cstdlib>
 #include <cstddef>
 #include <string>
-#include <cstring>
-#include <cstdio>
 #include <ctime>
 #include <list>
+#include <iostream>
 
 #include <epicsAssert.h>
 
 #include <pv/nt.h>
+#include <pv/sharedVector.h>
 
 using namespace epics::pvData;
+using std::string;
+using std::cout;
+using std::endl;
 
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 static NTFieldPtr ntField = NTField::get();
 static PVNTFieldPtr pvntField = PVNTField::get();
-static String builder;
 
 static void test(FILE * fd)
 {
     NTNameValuePtr ntNameValue = NTNameValue::create(true,true,true);
     PVStructurePtr pvStructure = ntNameValue->getPVStructure();
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
-    builder.clear();
-    pvStructure->getStructure()->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
+    cout << *pvStructure->getStructure() << endl;
     PVStringArrayPtr names = ntNameValue->getNames();
     PVStringArrayPtr values = ntNameValue->getValues();
     size_t n = 2;
-    StringArray name;
-    StringArray value;
-    name.resize(n);
-    value.resize(n);
+    shared_vector<string> name(n);
+    shared_vector<string> value(n);
     name[0] = "name 0";
     name[1] = "name 1";
     value[0] = "value 0";
     value[1] = "value 1";
-    names->put(0,n,name,0);
-    values->put(0,n,value,0);
+    names->replace(freeze(name));
+    values->replace(freeze(value));
     PVStringPtr function = ntNameValue->getFunction();
     function->put("test");
     PVAlarm pvAlarm;
@@ -66,9 +62,7 @@ static void test(FILE * fd)
     ntNameValue->attachTimeStamp(pvTimeStamp);
     TimeStamp timeStamp(1000,1000,10);
     pvTimeStamp.set(timeStamp);
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
     assert(NTNameValue::isNTNameValue(pvStructure));
 }
 

@@ -64,7 +64,7 @@ bool NTField::isTimeStamp(FieldConstPtr const & field)
    ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvLong) return false;
    f = fields[1];
-   if(names[1].compare("nanoSeconds")!=0) return false;
+   if(names[1].compare("nanoseconds")!=0) return false;
    if(f->getType()!=scalar) return false;
    s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvInt) return false;
@@ -184,7 +184,7 @@ bool NTField::isAlarmLimit(FieldConstPtr const & field)
    s = static_pointer_cast<const Scalar>(f);
    if(s->getScalarType()!=pvInt) return false;
    f = fields[9];
-   if(names[9].compare("hystersis")!=0) return false;
+   if(names[9].compare("hysteresis")!=0) return false;
    if(f->getType()!=scalar) return false;
    return true;
 }

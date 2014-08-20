@@ -14,29 +14,29 @@
 #include <cstdlib>
 #include <cstddef>
 #include <string>
-#include <cstring>
-#include <cstdio>
 #include <ctime>
 #include <list>
-
+#include <iostream>
 #include <epicsAssert.h>
 
 #include <pv/nt.h>
 
 using namespace epics::pvData;
 using std::tr1::static_pointer_cast;
+using std::string;
+using std::cout;
+using std::endl;
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 static NTFieldPtr ntField = NTField::get();
 static PVNTFieldPtr pvntField = PVNTField::get();
-static String builder;
 
 static void test(FILE * fd)
 {
     size_t n = 2;
     FieldConstPtrArray fields(n);
-    StringArray names(n);
+    shared_vector<string> names(n);
     names[0] = "position";
     names[1] = "alarms";
     fields[0] = fieldCreate->createScalarArray(pvDouble);
@@ -44,23 +44,19 @@ static void test(FILE * fd)
     NTTablePtr ntTable = NTTable::create(
         true,true,true,names,fields);
     PVStructurePtr pvStructure = ntTable->getPVStructure();
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
-    builder.clear();
-    pvStructure->getStructure()->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
+    cout << *pvStructure->getStructure() << endl;
     PVDoubleArrayPtr pvPositions
         = static_pointer_cast<PVDoubleArray>(ntTable->getPVField(0));
-    DoubleArray positions(2);
+    shared_vector<double> positions(2);
     positions[0] = 1.0;
     positions[1] = 2.0;
-    pvPositions->put(0,2,positions,0);
+    pvPositions->replace(freeze(positions));
     PVStructureArrayPtr pvAlarms
         = static_pointer_cast<PVStructureArray>(ntTable->getPVField(1));
     PVAlarm pvAlarm;
     Alarm alarm;
-    PVStructurePtrArray palarms(n);
+    shared_vector<PVStructurePtr> palarms(n);
     for(size_t i=0; i<n; i++) {
         palarms[i] = pvntField->createAlarm();
         pvAlarm.attach(palarms[i]);
@@ -69,12 +65,12 @@ static void test(FILE * fd)
         alarm.setStatus(clientStatus);
         pvAlarm.set(alarm);
     }
-    pvAlarms->put(0,n,palarms,0);
-    StringArray labels(n);
+    pvAlarms->replace(freeze(palarms));
+    shared_vector<string> labels(n);
     labels[0] = pvPositions->getFieldName();
     labels[1] = pvAlarms->getFieldName();
     PVStringArrayPtr label = ntTable->getLabel();
-    label->put(0,n,labels,0);
+    label->replace(freeze(labels));
     PVStringPtr function = ntTable->getFunction();
     function->put("test");
     ntTable->attachAlarm(pvAlarm);
@@ -86,9 +82,7 @@ static void test(FILE * fd)
     ntTable->attachTimeStamp(pvTimeStamp);
     TimeStamp timeStamp(1000,1000,10);
     pvTimeStamp.set(timeStamp);
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
     assert(NTTable::isNTTable(pvStructure));
 }
 

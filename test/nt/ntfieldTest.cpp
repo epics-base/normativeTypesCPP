@@ -14,16 +14,18 @@
 #include <cstdlib>
 #include <cstddef>
 #include <string>
-#include <cstring>
-#include <cstdio>
 #include <ctime>
 #include <list>
+#include <iostream>
 
 #include <epicsAssert.h>
 
 #include <pv/nt.h>
 
 using namespace epics::pvData;
+using std::string;
+using std::cout;
+using std::endl;
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
@@ -31,61 +33,42 @@ static StandardFieldPtr standardField = getStandardField();
 static StandardPVFieldPtr standardPVField = getStandardPVField();
 static NTFieldPtr ntField = NTField::get();
 static PVNTFieldPtr pvntField = PVNTField::get();
-static String builder;
 
 static void testNTField(FILE * fd)
 {
     StructureConstPtr structureConstPtr = ntField->createEnumerated();
-    builder.clear();
-    structureConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
     assert(ntField->isEnumerated(structureConstPtr));
 
     structureConstPtr = ntField->createTimeStamp();
-    builder.clear();
-    structureConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
     assert(ntField->isTimeStamp(structureConstPtr));
 
     structureConstPtr = ntField->createAlarm();
-    builder.clear();
-    structureConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
     assert(ntField->isAlarm(structureConstPtr));
 
     structureConstPtr = ntField->createDisplay();
-    builder.clear();
-    structureConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
     assert(ntField->isDisplay(structureConstPtr));
 
     structureConstPtr = ntField->createAlarmLimit();
-    builder.clear();
-    structureConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
     assert(ntField->isAlarmLimit(structureConstPtr));
 
     structureConstPtr = ntField->createControl();
-    builder.clear();
-    structureConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
     assert(ntField->isControl(structureConstPtr));
 
     StructureArrayConstPtr structureArrayConstPtr
         = ntField->createEnumeratedArray();
-    builder.clear();
-    structureArrayConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
 
     structureArrayConstPtr = ntField->createTimeStampArray();
-    builder.clear();
-    structureArrayConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
 
     structureArrayConstPtr = ntField->createAlarmArray();
-    builder.clear();
-    structureArrayConstPtr->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *structureConstPtr << endl;
 }
 
 static void testPVNTField(FILE * fd)
@@ -97,61 +80,39 @@ static void testPVNTField(FILE * fd)
     choices[2] = "three";
     PVStructurePtr pvStructure = PVStructurePtr(
         pvntField->createEnumerated(choices));
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
     assert(ntField->isEnumerated(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createTimeStamp());
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
     assert(ntField->isTimeStamp(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createAlarm());
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
     assert(ntField->isAlarm(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createDisplay());
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
     assert(ntField->isDisplay(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createAlarmLimit());
-    builder.clear();
-    pvStructure->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
     assert(ntField->isAlarmLimit(pvStructure->getStructure()));
 
     PVStructureArrayPtr pvStructureArray = PVStructureArrayPtr(
         pvntField->createEnumeratedArray());
-    builder.clear();
-    pvStructureArray->toString(&builder);
-    fprintf(fd,"\n%s\n",builder.c_str());
-    builder.clear();
-    pvStructureArray->getStructureArray()->getStructure()->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
+    cout << *pvStructureArray->getStructureArray()->getStructure();
 
     pvStructureArray = PVStructureArrayPtr(
         pvntField->createTimeStampArray());
-    builder.clear();
-    pvStructureArray->toString(&builder);
-    fprintf(fd,"\n%s\n",builder.c_str());
-    builder.clear();
-    pvStructureArray->getStructureArray()->getStructure()->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
+    cout << *pvStructureArray->getStructureArray()->getStructure();
 
     pvStructureArray = PVStructureArrayPtr(
         pvntField->createAlarmArray());
-    builder.clear();
-    pvStructureArray->toString(&builder);
-    fprintf(fd,"\n%s\n",builder.c_str());
-    builder.clear();
-    pvStructureArray->getStructureArray()->getStructure()->toString(&builder);
-    fprintf(fd,"%s\n",builder.c_str());
+    cout << *pvStructure << endl;
+    cout << *pvStructureArray->getStructureArray()->getStructure();
 }
 
 int main(int argc,char *argv[])
