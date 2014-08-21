@@ -9,107 +9,197 @@
 
 #include <pv/ntfield.h>
 
-namespace epics { namespace pvData { 
+#include <vector>
+#include <string>
 
-/**
- * Convenience Class for NTTable
- * @author mrk
- *
- */
+namespace epics { namespace nt {
 
 class NTTable;
 typedef std::tr1::shared_ptr<NTTable> NTTablePtr;
 
+namespace detail {
+
+    /**
+     * Interface for in-line creating of NTTable.
+     * One instance can be used to create multiple instances.
+     * An instance of this object must not be used concurrently (an object has a state).
+     * @author mse
+     */
+    class epicsShareClass NTTableBuilder :
+        public std::tr1::enable_shared_from_this<NTTableBuilder>
+    {
+    public:
+        POINTER_DEFINITIONS(NTTableBuilder);
+
+        /**
+         * Add a column of given {@code Scalar} type.
+         * @param name name of the column.
+         * @param scalarType column type, a scalar array.
+         * @return this instance of a {@code NTTableBuilder}.
+         */
+        shared_pointer add(std::string const & name, epics::pvData::ScalarType scalarType);
+
+        /**
+         * Add descriptor field to the NTTable.
+         * @return this instance of a {@code NTTableBuilder}.
+         */
+        shared_pointer addDescriptor();
+
+        /**
+         * Add alarm structure to the NTTable.
+         * @return this instance of a {@code NTTableBuilder}.
+         */
+        shared_pointer addAlarm();
+
+        /**
+         * Add timeStamp structure to the NTTable.
+         * @return this instance of a {@code NTTableBuilder}.
+         */
+        shared_pointer addTimeStamp();
+
+        /**
+         * Create a {@code Structure} that represents NTTable.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of a {@code Structure}.
+         */
+        epics::pvData::StructureConstPtr createStructure();
+
+        /**
+         * Create a {@code PVStructure} that represents NTTable.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code PVStructure}
+         */
+        epics::pvData::PVStructurePtr createPVStructure();
+
+        /**
+         * Create a {@code NTTable} instance.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code NTTable}
+         */
+        NTTablePtr create();
+
+    private:
+        NTTableBuilder();
+
+        void reset();
+
+        std::vector<std::string> labels;
+        std::vector<epics::pvData::ScalarType> types;
+
+        bool descriptor;
+        bool alarm;
+        bool timeStamp;
+
+        friend class ::epics::nt::NTTable;
+    };
+
+}
+
+typedef std::tr1::shared_ptr<detail::NTTableBuilder> NTTableBuilderPtr;
+
+
+
+/**
+ * Convenience Class for NTTable
+ * @author mrk
+ */
 class NTTable
 {
 public:
     POINTER_DEFINITIONS(NTTable);
+
+    static const std::string URI;
+
     /**
-     * Is the pvStructure an NTTable.
-     * @param pvStructure The pvStructure to test.
-     * @return (false,true) if (is not, is) an NTNameValuePair.
+     * Is the structure an NTTable.
+     * @param structure The structure to test.
+     * @return (false,true) if (is not, is) an NTTable.
      */
-    static bool isNTTable(PVStructurePtr const &pvStructure);
+    static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Create an  NTTable pvStructure.
-     * @param hasFunction Create a PVString field named function.
-     * @param hasTimeStamp Create a timeStamp structure field.
-     * @param hasAlarm Create an alarm structure field.
-     * @param numberValues The number of fields that follow the label field.
-     * @param valueFields The fields that follow the label field.
-     * @return an NTTablePtr
+     * Create a NTTable builder instance.
+     * @return builder instance.
      */
-    static NTTablePtr create(
-        bool hasFunction,bool hasTimeStamp, bool hasAlarm,
-        shared_vector<std::string> const & valueNames,
-        FieldConstPtrArray const &valueFields);
-    static NTTablePtr clone(PVStructurePtr const &);
+    static NTTableBuilderPtr createBuilder();
+
     /**
-     * Destructor
+     * Destructor.
      */
     ~NTTable() {}
-    /**
-     * Get the function field.
-     * @return The pvString or null if no function field.
-     */
-    PVStringPtr getFunction() {return pvFunction;}
+
      /**
       * Attach a pvTimeStamp.
       * @param pvTimeStamp The pvTimeStamp that will be attached.
-      * Does nothing if no timeStamp
+      * Does nothing if no timeStamp.
+      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
       */
-    void attachTimeStamp(PVTimeStamp &pvTimeStamp);
+    bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
+
     /**
      * Attach an pvAlarm.
      * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm
+     * Does nothing if no alarm.
+      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
      */
-    void attachAlarm(PVAlarm &pvAlarm);
+    bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
+
     /**
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    PVStructurePtr getPVStructure(){return pvNTTable;}
+    epics::pvData::PVStructurePtr getPVStructure() const;
+
+    /**
+     * Get the descriptor field.
+     * @return The pvString or null if no function field.
+     */
+    epics::pvData::PVStringPtr getDescriptor() const;
+
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr getTimeStamp(){return pvTimeStamp;}
+    epics::pvData::PVStructurePtr getTimeStamp() const;
+
     /**
      * Get the alarm.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr getAlarm() {return pvAlarm;}
+    epics::pvData::PVStructurePtr getAlarm() const;
+
     /**
-     * Get the label field.
-     * @return The pvStringArray for the label.
+     * Get the labels field.
+     * @return The pvStringArray for the labels.
      */
-    PVStringArrayPtr getLabel() {return pvLabel;}
+    epics::pvData::PVStringArrayPtr getLabels() const;
+
     /**
-     * Get the the number of fields that follow the label field.
-     * @return The number of fields.
-     */
-    size_t getNumberValues();
-    /**
-     * Get the Field for a field that follows the label field.
-     * @param index The index of the field desired.
-     * @return The FieldConstPtr for the field.
-     */
-    FieldConstPtr getField(size_t index);
-    /**
-     * Get the PVField for a field that follows the label field.
-     * @param index The index of the field desired.
+     * Get the PVField (column) for a field that follows the label field.
+     * @param columnName The name of the column.
      * @return The PVFieldPtr for the field.
      */
-    PVFieldPtr getPVField(size_t index);
+    epics::pvData::PVFieldPtr getColumn(std::string const & columnName) const;
+
+    /**
+     * Get the PVField (column) for a field that follows the label field of a specified type (e.g. PVDoubleArray).
+     * @param columnName The name of the column.
+     * @return The <PVT> field.
+     */
+    template<typename PVT>
+    std::tr1::shared_ptr<PVT> getColumn(std::string const & columnName) const
+    {
+        epics::pvData::PVFieldPtr pvField = getColumn(columnName);
+        if (pvField.get())
+            return std::tr1::dynamic_pointer_cast<PVT>(pvField);
+        else
+            return std::tr1::shared_ptr<PVT>();
+    }
+
 private:
-    NTTable(PVStructurePtr const & pvStructure);
-    PVStructurePtr pvNTTable;
-    PVStringPtr pvFunction;
-    PVStructurePtr pvTimeStamp;
-    PVStructurePtr pvAlarm;
-    PVStringArrayPtr pvLabel;
-    size_t offsetFields;
+    NTTable(epics::pvData::PVStructurePtr const & pvStructure);
+    epics::pvData::PVStructurePtr pvNTTable;
+    friend class detail::NTTableBuilder;
 };
 
 }}
