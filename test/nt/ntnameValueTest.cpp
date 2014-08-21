@@ -3,79 +3,179 @@
  * EPICS pvDataCPP is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
-/*
- * ntnameValueTest.cpp
- *
- *  Created on: 2011.11
- *      Author: Marty Kraimer
- */
 
-#include <cstddef>
-#include <cstdlib>
-#include <cstddef>
-#include <string>
-#include <ctime>
-#include <list>
-#include <iostream>
-
-#include <epicsAssert.h>
+#include <epicsUnitTest.h>
+#include <testMain.h>
 
 #include <pv/nt.h>
-#include <pv/sharedVector.h>
 
+using namespace epics::nt;
 using namespace epics::pvData;
-using std::string;
-using std::cout;
-using std::endl;
+using std::tr1::dynamic_pointer_cast;
 
-static PVDataCreatePtr pvDataCreate = getPVDataCreate();
-static NTFieldPtr ntField = NTField::get();
-static PVNTFieldPtr pvntField = PVNTField::get();
-
-static void test(FILE * fd)
+void test_builder()
 {
-    NTNameValuePtr ntNameValue = NTNameValue::create(true,true,true);
-    PVStructurePtr pvStructure = ntNameValue->getPVStructure();
-    cout << *pvStructure << endl;
-    cout << *pvStructure->getStructure() << endl;
-    PVStringArrayPtr names = ntNameValue->getNames();
-    PVStringArrayPtr values = ntNameValue->getValues();
-    size_t n = 2;
-    shared_vector<string> name(n);
-    shared_vector<string> value(n);
-    name[0] = "name 0";
-    name[1] = "name 1";
-    value[0] = "value 0";
-    value[1] = "value 1";
-    names->replace(freeze(name));
-    values->replace(freeze(value));
-    PVStringPtr function = ntNameValue->getFunction();
-    function->put("test");
-    PVAlarm pvAlarm;
-    ntNameValue->attachAlarm(pvAlarm);
-    Alarm alarm;
-    alarm.setMessage("test alarm");
-    alarm.setSeverity(majorAlarm);
-    alarm.setStatus(clientStatus);
-    pvAlarm.set(alarm);
-    PVTimeStamp pvTimeStamp;
-    ntNameValue->attachTimeStamp(pvTimeStamp);
-    TimeStamp timeStamp(1000,1000,10);
-    pvTimeStamp.set(timeStamp);
-    cout << *pvStructure << endl;
-    assert(NTNameValue::isNTNameValue(pvStructure));
-}
+    testDiag("test_builder");
 
+    NTNameValueBuilderPtr builder = NTNameValue::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
 
-int main(int argc,char *argv[])
-{
-    char *fileName = 0;
-    if(argc>1) fileName = argv[1];
-    FILE * fd = stdout;
-    if(fileName!=0 && fileName[0]!=0) {
-        fd = fopen(fileName,"w+");
+    StructureConstPtr structure = builder->
+            value(pvDouble)->
+            addDescriptor()->
+            addAlarm()->
+            addTimeStamp()->
+            createStructure();
+    testOk1(structure.get() != 0);
+    if (!structure)
+        return;
+
+    testOk1(NTNameValue::is_a(structure));
+    testOk1(structure->getID() == NTNameValue::URI);
+    testOk1(structure->getNumberFields() == 5);
+    testOk1(structure->getField("names").get() != 0);
+    testOk1(structure->getField("values").get() != 0);
+    testOk1(structure->getField("descriptor").get() != 0);
+    testOk1(structure->getField("alarm").get() != 0);
+    testOk1(structure->getField("timeStamp").get() != 0);
+
+    testOk(dynamic_pointer_cast<const ScalarArray>(structure->getField("values")).get() != 0 &&
+            dynamic_pointer_cast<const ScalarArray>(structure->getField("values"))->getElementType() == pvDouble, "value array element type");
+
+    std::cout << *structure << std::endl;
+
+    // no value set
+    try
+    {
+        structure = builder->
+                addDescriptor()->
+                addAlarm()->
+                addTimeStamp()->
+                createStructure();
+        testFail("no value type set");
+    } catch (std::runtime_error &) {
+        testPass("no value type set");
     }
-    test(fd);
-    return(0);
 }
+
+void test_ntnameValue()
+{
+    testDiag("test_ntnameValue");
+
+    NTNameValueBuilderPtr builder = NTNameValue::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    NTNameValuePtr ntNameValue = builder->
+            value(pvInt)->
+            addDescriptor()->
+            addAlarm()->
+            addTimeStamp()->
+            create();
+    testOk1(ntNameValue.get() != 0);
+
+    testOk1(ntNameValue->getPVStructure().get() != 0);
+    testOk1(ntNameValue->getDescriptor().get() != 0);
+    testOk1(ntNameValue->getAlarm().get() != 0);
+    testOk1(ntNameValue->getTimeStamp().get() != 0);
+    testOk1(ntNameValue->getNames().get() != 0);
+    testOk1(ntNameValue->getValues().get() != 0);
+
+    //
+    // example how to set names
+    //
+    PVStringArray::svector newNames;
+    newNames.push_back("name1");
+    newNames.push_back("name2");
+    newNames.push_back("name3");
+
+    PVStringArrayPtr pvNamesField = ntNameValue->getNames();
+    pvNamesField->replace(freeze(newNames));
+
+    //
+    // example how to get names
+    //
+    PVStringArray::const_svector names(pvNamesField->view());
+
+    testOk1(names.size() == 3);
+    testOk1(names[0] == "name1");
+    testOk1(names[1] == "name2");
+    testOk1(names[2] == "name3");
+
+    //
+    // example how to set values
+    //
+    PVIntArray::svector newValues;
+    newValues.push_back(1);
+    newValues.push_back(2);
+    newValues.push_back(8);
+
+    PVIntArrayPtr pvValueField = ntNameValue->getValues<PVIntArray>();
+    pvValueField->replace(freeze(newValues));
+
+    //
+    // example how to get column values
+    //
+    PVIntArray::const_svector values(pvValueField->view());
+
+    testOk1(values.size() == 3);
+    testOk1(values[0] == 1);
+    testOk1(values[1] == 2);
+    testOk1(values[2] == 8);
+
+    //
+    // timeStamp ops
+    //
+    PVTimeStamp pvTimeStamp;
+    if (ntNameValue->attachTimeStamp(pvTimeStamp))
+    {
+        testPass("timeStamp attach");
+
+        // example how to set current time
+        TimeStamp ts;
+        ts.getCurrent();
+        pvTimeStamp.set(ts);
+
+        // example how to get EPICS time
+        TimeStamp ts2;
+        pvTimeStamp.get(ts2);
+        testOk1(ts2.getEpicsSecondsPastEpoch() != 0);
+    }
+    else
+        testFail("timeStamp attach fail");
+
+    //
+    // alarm ops
+    //
+    PVAlarm pvAlarm;
+    if (ntNameValue->attachAlarm(pvAlarm))
+    {
+        testPass("alarm attach");
+
+        // example how to set an alarm
+        Alarm alarm;
+        alarm.setStatus(deviceStatus);
+        alarm.setSeverity(minorAlarm);
+        alarm.setMessage("simulation alarm");
+        pvAlarm.set(alarm);
+    }
+    else
+        testFail("alarm attach fail");
+
+    //
+    // set descriptor
+    //
+    ntNameValue->getDescriptor()->put("This is a test NTNameValue");
+
+    // dump NTNameValue
+    std::cout << *ntNameValue->getPVStructure() << std::endl;
+
+}
+
+MAIN(testNTNameValue) {
+    testPlan(31);
+    test_builder();
+    test_ntnameValue();
+    return testDone();
+}
+
 

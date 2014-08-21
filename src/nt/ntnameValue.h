@@ -9,92 +9,191 @@
 
 #include <pv/ntfield.h>
 
-namespace epics { namespace pvData { 
-
-/**
- * Convenience Class for NTNameValue
- * @author mrk
- *
- */
+namespace epics { namespace nt {
 
 class NTNameValue;
 typedef std::tr1::shared_ptr<NTNameValue> NTNameValuePtr;
 
-class NTNameValue 
+namespace detail {
+
+    /**
+     * Interface for in-line creating of NTNameValue.
+     * One instance can be used to create multiple instances.
+     * An instance of this object must not be used concurrently (an object has a state).
+     * @author mse
+     */
+    class epicsShareClass NTNameValueBuilder :
+        public std::tr1::enable_shared_from_this<NTNameValueBuilder>
+    {
+    public:
+        POINTER_DEFINITIONS(NTNameValueBuilder);
+
+        /**
+         * Set a value array {@code Scalar} type.
+         * @param scalarType value array scalar array.
+         * @return this instance of a {@code NTTableBuilder}.
+         */
+        shared_pointer value(epics::pvData::ScalarType scalarType);
+
+        /**
+         * Add descriptor field to the NTNameValue.
+         * @return this instance of a {@code NTNameValueBuilder}.
+         */
+        shared_pointer addDescriptor();
+
+        /**
+         * Add alarm structure to the NTNameValue.
+         * @return this instance of a {@code NTNameValueBuilder}.
+         */
+        shared_pointer addAlarm();
+
+        /**
+         * Add timeStamp structure to the NTNameValue.
+         * @return this instance of a {@code NTNameValueBuilder}.
+         */
+        shared_pointer addTimeStamp();
+
+        /**
+         * Create a {@code Structure} that represents NTNameValue.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of a {@code Structure}.
+         */
+        epics::pvData::StructureConstPtr createStructure();
+
+        /**
+         * Create a {@code PVStructure} that represents NTNameValue.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code PVStructure}
+         */
+        epics::pvData::PVStructurePtr createPVStructure();
+
+        /**
+         * Create a {@code NTNameValue} instance.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code NTNameValue}
+         */
+        NTNameValuePtr create();
+
+    private:
+        NTNameValueBuilder();
+
+        void reset();
+
+        bool valueTypeSet;
+        epics::pvData::ScalarType valueType;
+
+        bool descriptor;
+        bool alarm;
+        bool timeStamp;
+
+        friend class ::epics::nt::NTNameValue;
+    };
+
+}
+
+typedef std::tr1::shared_ptr<detail::NTNameValueBuilder> NTNameValueBuilderPtr;
+
+
+
+/**
+ * Convenience Class for NTNameValue
+ * @author mrk
+ */
+class NTNameValue
 {
 public:
     POINTER_DEFINITIONS(NTNameValue);
+
+    static const std::string URI;
+
     /**
-     * Is the pvStructure an NTNameValue.
-     * @param pvStructure The pvStructure to test.
+     * Is the structure an NTNameValue.
+     * @param structure The structure to test.
      * @return (false,true) if (is not, is) an NTNameValue.
      */
-    static bool isNTNameValue(PVStructurePtr const & pvStructure);
+    static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Create an  NTNameValue pvStructure.
-     * @param hasFunction Create a PVString field named function.
-     * @param hasTimeStamp Create a timeStamp structure field.
-     * @param hasAlarm Create an alarm structure field.
-     * @return  NTNameValuePtr
+     * Create a NTNameValue builder instance.
+     * @return builder instance.
      */
-    static NTNameValuePtr create(
-        bool hasFunction,bool hasTimeStamp, bool hasAlarm);
-    static NTNameValuePtr create(
-        PVStructurePtr const & pvStructure);
+    static NTNameValueBuilderPtr createBuilder();
+
     /**
-     * Destructor
+     * Destructor.
      */
     ~NTNameValue() {}
-    /**
-     * Get the function field.
-     * @return The pvString or null if no function field.
-     */
-    PVStringPtr getFunction() {return pvFunction;}
-    /**
-     * Attach a pvTimeStamp.
-     * @param pvTimeStamp The pvTimeStamp that will be attached.
-     * Does nothing if no timeStamp
-     */
-    void attachTimeStamp(PVTimeStamp &pvTimeStamp);
+
+     /**
+      * Attach a pvTimeStamp.
+      * @param pvTimeStamp The pvTimeStamp that will be attached.
+      * Does nothing if no timeStamp.
+      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+      */
+    bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
+
     /**
      * Attach an pvAlarm.
      * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm
+     * Does nothing if no alarm.
+      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
      */
-    void attachAlarm(PVAlarm &pvAlarm);
+    bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
+
     /**
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    PVStructurePtr getPVStructure(){return pvNTNameValue;}
+    epics::pvData::PVStructurePtr getPVStructure() const;
+
+    /**
+     * Get the descriptor field.
+     * @return The pvString or null if no function field.
+     */
+    epics::pvData::PVStringPtr getDescriptor() const;
+
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr getTimeStamp(){return pvTimeStamp;}
+    epics::pvData::PVStructurePtr getTimeStamp() const;
+
     /**
      * Get the alarm.
      * @return PVStructurePtr which may be null.
      */
-    PVStructurePtr getAlarm() {return pvAlarm;}
+    epics::pvData::PVStructurePtr getAlarm() const;
+
     /**
-     * Get the string array on names.
-     * @return The array of names.
+     * Get the names array field.
+     * @return The PVStringArray for the names.
      */
-    PVStringArrayPtr getNames() {return pvNames;}
+    epics::pvData::PVStringArrayPtr getNames() const;
+
     /**
-     * Get the string array on values.
-     * @return The array of values.
+     * Get the value array field.
+     * @return The PVField for the values.
      */
-    PVStringArrayPtr getValues() {return pvValues;}
+    epics::pvData::PVFieldPtr getValues() const;
+
+    /**
+     * Get the value array field of a specified type (e.g. PVDoubleArray).
+     * @return The <PVT> array for the values.
+     */
+    template<typename PVT>
+    std::tr1::shared_ptr<PVT> getValues() const
+    {
+        epics::pvData::PVFieldPtr pvField = getValues();
+        if (pvField.get())
+            return std::tr1::dynamic_pointer_cast<PVT>(pvField);
+        else
+            return std::tr1::shared_ptr<PVT>();
+    }
+
 private:
-    NTNameValue(PVStructurePtr const & pvStructure);
-    PVStructurePtr pvNTNameValue;
-    PVStringPtr pvFunction;
-    PVStructurePtr pvTimeStamp;
-    PVStructurePtr pvAlarm;
-    PVStringArrayPtr pvNames;
-    PVStringArrayPtr pvValues;
+    NTNameValue(epics::pvData::PVStructurePtr const & pvStructure);
+    epics::pvData::PVStructurePtr pvNTNameValue;
+    friend class detail::NTNameValueBuilder;
 };
 
 }}

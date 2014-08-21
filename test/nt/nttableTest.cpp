@@ -3,12 +3,6 @@
  * EPICS pvDataCPP is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
-/*
- * nttableTest.cpp
- *
- *  Created on: 2011.11
- *      Author: Marty Kraimer
- */
 
 #include <epicsUnitTest.h>
 #include <testMain.h>

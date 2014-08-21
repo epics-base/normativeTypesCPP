@@ -7,104 +7,157 @@
 
 #include <pv/ntnameValue.h>
 
-namespace epics { namespace pvData { 
+using namespace std;
+using namespace epics::pvData;
 
-using std::tr1::static_pointer_cast;
+namespace epics { namespace nt {
 
-bool NTNameValue::isNTNameValue(PVStructurePtr const & pvStructure)
+namespace detail {
+
+static NTFieldPtr ntField = NTField::get();
+
+NTNameValueBuilder::shared_pointer NTNameValueBuilder::value(
+        epics::pvData::ScalarType scalarType
+        )
 {
-    PVFieldPtr pvField = pvStructure->getSubField("names");
-    if(pvField.get()==NULL) return false;
-    FieldConstPtr field = pvField->getField();
-    if(field->getType()!=scalarArray) return false;
-    ScalarArrayConstPtr pscalarArray =
-        static_pointer_cast<const ScalarArray>(field);
-    if(pscalarArray->getElementType()!=pvString) return false;
-    pvField = pvStructure->getSubField("values");
-    if(pvField==0) return false;
-    field = pvField->getField();
-    if(field->getType()!=scalarArray) return false;
-    pscalarArray = static_pointer_cast<const ScalarArray>(field);
-    if(pscalarArray->getElementType()!=pvString) return false;
-    return true;
+    valueType = scalarType;
+    valueTypeSet = true;
+
+    return shared_from_this();
 }
 
-NTNameValuePtr NTNameValue::create(
-    bool hasFunction,bool hasTimeStamp, bool hasAlarm)
+StructureConstPtr NTNameValueBuilder::createStructure()
 {
-    StandardFieldPtr standardField = getStandardField();
-    size_t nfields = 2;
-    if(hasFunction) nfields++;
-    if(hasTimeStamp) nfields++;
-    if(hasAlarm) nfields++;
-    FieldCreatePtr fieldCreate = getFieldCreate();
-    PVDataCreatePtr pvDataCreate = getPVDataCreate();
-    FieldConstPtrArray fields;
-    StringArray names;
-    fields.resize(nfields);
-    names.resize(nfields);
-    names[0] = "names";
-    fields[0] = fieldCreate->createScalarArray(pvString);
-    names[1] = "values";
-    fields[1] = fieldCreate->createScalarArray(pvString);
-    size_t ind = 2;
-    if(hasFunction) {
-        names[ind] = "function";
-        fields[ind++] = fieldCreate->createScalar(pvString);
-    }
-    if(hasTimeStamp) {
-        names[ind] = "timeStamp";
-        fields[ind++] = standardField->timeStamp();
-    }
-    if(hasAlarm) {
-        names[ind] = "alarm";
-        fields[ind++] = standardField->alarm();
-    }
-    StructureConstPtr st = fieldCreate->createStructure(names,fields);
-    PVStructurePtr pvStructure = pvDataCreate->createPVStructure(st);
-    return NTNameValuePtr(new NTNameValue(pvStructure));
+    if (!valueTypeSet)
+        throw std::runtime_error("value type not set");
+
+    FieldBuilderPtr builder =
+            getFieldCreate()->createFieldBuilder()->
+               setId(NTNameValue::URI)->
+               addArray("names", pvString)->
+               addArray("values", valueType);
+
+    if (descriptor)
+        builder->add("descriptor", pvString);
+
+    if (alarm)
+        builder->add("alarm", ntField->createAlarm());
+
+    if (timeStamp)
+        builder->add("timeStamp", ntField->createTimeStamp());
+
+    StructureConstPtr s = builder->createStructure();
+
+    reset();
+    return s;
 }
 
-NTNameValuePtr NTNameValue::create(
-    PVStructurePtr const & pvStructure)
+NTNameValueBuilder::shared_pointer NTNameValueBuilder::addDescriptor()
 {
-    return NTNameValuePtr(new NTNameValue(pvStructure));
+    descriptor = true;
+    return shared_from_this();
 }
 
-NTNameValue::NTNameValue(PVStructure::shared_pointer const & pvStructure)
-: pvNTNameValue(pvStructure)
+NTNameValueBuilder::shared_pointer NTNameValueBuilder::addAlarm()
 {
-    NTFieldPtr ntfield = NTField::get();
-    PVScalarArrayPtr pvArray =
-        pvStructure->getScalarArrayField("names",pvString);
-    pvNames = static_pointer_cast<PVStringArray>(pvArray);
-    pvArray = pvStructure->getScalarArrayField("values",pvString);
-    pvValues = static_pointer_cast<PVStringArray>(pvArray);
-    PVFieldPtr pvField = pvStructure->getSubField("function");
-    if(pvField.get()!=NULL) {
-        pvFunction = pvStructure->getStringField("function");
-    }
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField.get()!=NULL && ntfield->isTimeStamp(pvField->getField())) {
-        pvTimeStamp = static_pointer_cast<PVStructure>(pvField);
-    }
-    pvField = pvStructure->getSubField("alarm");
-    if(pvField.get()!=NULL && ntfield->isAlarm(pvField->getField())) {
-        pvAlarm = static_pointer_cast<PVStructure>(pvField);
-    }
+    alarm = true;
+    return shared_from_this();
 }
 
-
-void  NTNameValue::attachTimeStamp(PVTimeStamp &pv)
+NTNameValueBuilder::shared_pointer NTNameValueBuilder::addTimeStamp()
 {
-    if(pvTimeStamp.get()==NULL) return;
-    pv.attach(pvTimeStamp);
+    timeStamp = true;
+    return shared_from_this();
 }
 
-void  NTNameValue::attachAlarm(PVAlarm &pv)
+PVStructurePtr NTNameValueBuilder::createPVStructure()
 {
-    if(pvAlarm.get()==NULL) return;
-    pv.attach(pvAlarm);
+    return getPVDataCreate()->createPVStructure(createStructure());
 }
+
+NTNameValuePtr NTNameValueBuilder::create()
+{
+    return NTNameValuePtr(new NTNameValue(createPVStructure()));
+}
+
+NTNameValueBuilder::NTNameValueBuilder()
+{
+    reset();
+}
+
+void NTNameValueBuilder::reset()
+{
+    valueTypeSet = false;
+    descriptor = false;
+    alarm = false;
+    timeStamp = false;
+}
+
+}
+
+const std::string NTNameValue::URI("uri:ev4:nt/2012/pwd:NTNameValue");
+
+bool NTNameValue::is_a(StructureConstPtr const & structure)
+{
+    return structure->getID() == URI;
+}
+
+NTNameValueBuilderPtr NTNameValue::createBuilder()
+{
+    return NTNameValueBuilderPtr(new detail::NTNameValueBuilder());
+}
+
+bool NTNameValue::attachTimeStamp(PVTimeStamp &pvTimeStamp) const
+{
+    PVStructurePtr ts = getTimeStamp();
+    if (ts)
+        return pvTimeStamp.attach(ts);
+    else
+        return false;
+}
+
+bool NTNameValue::attachAlarm(PVAlarm &pvAlarm) const
+{
+    PVStructurePtr al = getAlarm();
+    if (al)
+        return pvAlarm.attach(al);
+    else
+        return false;
+}
+
+PVStructurePtr NTNameValue::getPVStructure() const
+{
+    return pvNTNameValue;
+}
+
+PVStringPtr NTNameValue::getDescriptor() const
+{
+    return pvNTNameValue->getSubField<PVString>("descriptor");
+}
+
+PVStructurePtr NTNameValue::getTimeStamp() const
+{
+    return pvNTNameValue->getSubField<PVStructure>("timeStamp");
+}
+
+PVStructurePtr NTNameValue::getAlarm() const
+{
+    return pvNTNameValue->getSubField<PVStructure>("alarm");
+}
+
+PVStringArrayPtr NTNameValue::getNames() const
+{
+    return pvNTNameValue->getSubField<PVStringArray>("names");
+}
+
+PVFieldPtr NTNameValue::getValues() const
+{
+    return pvNTNameValue->getSubField("values");
+}
+
+NTNameValue::NTNameValue(PVStructurePtr const & pvStructure) :
+    pvNTNameValue(pvStructure)
+{}
+
 
 }}
