@@ -8,6 +8,9 @@
 #define NTMULTICHANNEL_H
 
 #include <pv/ntfield.h>
+#include <vector>
+#include <string>
+
 
 namespace epics { namespace nt { 
 
@@ -20,27 +23,125 @@ namespace epics { namespace nt {
 class NTMultiChannel;
 typedef std::tr1::shared_ptr<NTMultiChannel> NTMultiChannelPtr;
 
+namespace detail {
+
+    /**
+     * Interface for in-line creating of NTMultiChannel.
+     * One instance can be used to create multiple instances.
+     * An instance of this object must not be used concurrently (an object has a state).
+     * @author mse
+     */
+    class epicsShareClass NTMultiChannelBuilder :
+        public std::tr1::enable_shared_from_this<NTMultiChannelBuilder>
+    {
+    public:
+        POINTER_DEFINITIONS(NTMultiChannelBuilder);
+        /**
+         * specify the union for the value field.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addValue(epics::pvData::UnionConstPtr valuePtr);
+        /**
+         * Add descriptor field to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addDescriptor();
+        /**
+         * Add alarm structure to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addAlarm();
+        /**
+         * Add timeStamp structure to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addTimeStamp();
+        /**
+         * Add severity array to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addSeverity();
+        /**
+         * Add status array to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addStatus();
+        /**
+         * Add message array to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addMessage();
+        /**
+         * Add secondsPastEpoch array to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addSecondsPastEpoch();
+        /**
+         * Add nanoseconds array to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addNanoseconds();
+        /**
+         * Create a {@code Structure} that represents NTMultiChannel.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of a {@code Structure}.
+         */
+        epics::pvData::StructureConstPtr createStructure();
+        /**
+         * Create a {@code PVStructure} that represents NTMultiChannel.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code PVStructure}
+         */
+        epics::pvData::PVStructurePtr createPVStructure();
+        /**
+         * Create a {@code NTMultiChannel} instance.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code NTMultiChannel}
+         */
+        NTMultiChannelPtr create();
+    private:
+        NTMultiChannelBuilder();
+
+        void reset();
+
+        epics::pvData::UnionConstPtr valueUnion;
+        bool value;
+        bool descriptor;
+        bool alarm;
+        bool timeStamp;
+        bool severity;
+        bool status;
+        bool message;
+        bool secondsPastEpoch;
+        bool nanoseconds;
+
+        friend class ::epics::nt::NTMultiChannel;
+    };
+
+}
+
+typedef std::tr1::shared_ptr<detail::NTMultiChannelBuilder> NTMultiChannelBuilderPtr;
+
+
 class NTMultiChannel
 {
 public:
     POINTER_DEFINITIONS(NTMultiChannel);
+
+    static const std::string URI;
     /**
      * Is the pvStructure an NTMultiChannel.
-     * @param pvStructure The pvStructure to test.
+     * @param structure The structure to test.
      * @return (false,true) if (is not, is) an NTMultiChannel.
      */
-    static bool isNTMultiChannel(
-        epics::pvData::PVStructurePtr const &pvStructure);
-    static NTMultiChannelPtr create(
-        std::vector<std::string> const & optionNames);
-    static NTMultiChannelPtr create(
-        std::vector<std::string> const & optionNames,
-        epics::pvData::UnionConstPtr const & unionPtr);
-    static NTMultiChannelPtr create(
-        std::vector<std::string> const & optionNames,
-        epics::pvData::UnionConstPtr const & unionPtr,
-        epics::pvData::shared_vector<const std::string> channelNames);
-    static NTMultiChannelPtr clone(epics::pvData::PVStructurePtr const &);
+    static bool is_a(
+        epics::pvData::StructureConstPtr const &structure);
+    /**
+     * Create a NTMultiChannelBuilder instance
+     * @return builder instance.
+     */
+    static  NTMultiChannelBuilderPtr createBuilder();
+
     /**
      * Destructor
      */
@@ -72,13 +173,45 @@ public:
      * @return PVStructurePtr which may be null.
      */
     epics::pvData::PVStructurePtr getAlarm() {return pvAlarm;}
+    /**
+     * Get the value of each channel.
+     * @return PVUnionArrayPtr
+     */
     epics::pvData::PVUnionArrayPtr getValue() {return pvValue;}
+    /**
+     * Get the channelName of each channel.
+     * @return PVStringArrayPtr
+     */
     epics::pvData::PVStringArrayPtr getChannelName() { return pvChannelName;};
+    /**
+     * Get the severity of each channel.
+     * @return PVIntArrayPtr which may be null.
+     */
     epics::pvData::PVIntArrayPtr getSeverity() {return pvSeverity;}
+    /**
+     * Get the status of each channel.
+     * @return PVIntArrayPtr which may be null.
+     */
     epics::pvData::PVIntArrayPtr getStatus() {return pvStatus;}
+    /**
+     * Get the message of each chnnel.
+     * @return PVStringArrayPtr which may be null.
+     */
     epics::pvData::PVStringArrayPtr getMessage() {return pvMessage;}
+    /**
+     * Get the SecondsPastEpoch of each channel.
+     * @return PVLongArrayPtr which may be null.
+     */
     epics::pvData::PVLongArrayPtr getSecondsPastEpoch() {return pvSecondsPastEpoch;}
+    /**
+     * Get the SecondsPastEpoch of each channel.
+     * @return PVIntArrayPtr which may be null.
+     */
     epics::pvData::PVIntArrayPtr getNanoseconds() {return pvNanoseconds;}
+    /**
+     * Get the descriptor.
+     * @return PVStringPtr which may be null.
+     */
     epics::pvData::PVStringPtr getDescriptor() {return pvDescriptor;}
 private:
     NTMultiChannel(epics::pvData::PVStructurePtr const & pvStructure);
@@ -93,6 +226,7 @@ private:
     epics::pvData::PVLongArrayPtr pvSecondsPastEpoch;
     epics::pvData::PVIntArrayPtr pvNanoseconds;
     epics::pvData::PVStringPtr pvDescriptor;
+    friend class detail::NTMultiChannelBuilder;
 };
 
 }}

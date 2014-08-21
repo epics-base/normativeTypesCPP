@@ -41,14 +41,20 @@ static PVNTFieldPtr pvntField = PVNTField::get();
 
 static void test()
 {
-    vector<string> optionNames(10);
-    optionNames[0] = "alarm";
-    optionNames[1] = "timeStamp";
-    optionNames[2] = "severity";
-    NTMultiChannelPtr multiChannel = NTMultiChannel::create(optionNames);
-    testOk1(multiChannel.get()!=NULL);
+    NTMultiChannelBuilderPtr builder = NTMultiChannel::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    NTMultiChannelPtr multiChannel = builder->
+            addDescriptor()->
+            addAlarm()->
+            addTimeStamp()->
+            addSeverity() ->
+            create();
+    testOk1(multiChannel.get() != 0);
+
     PVStructurePtr pvStructure = multiChannel->getPVStructure();
     testOk1(pvStructure.get()!=NULL);
+    testOk1(NTMultiChannel::is_a(pvStructure->getStructure()));
     size_t nchan = 3;
     shared_vector<string> names(nchan);
     names[0] = "channel 0";
@@ -63,21 +69,32 @@ static void test()
            add("doubleValue", pvDouble)->
            add("intValue", pvInt)->
            createUnion();
-    multiChannel = NTMultiChannel::create(
-         optionNames,unionPtr,channelNames);
-    testOk1(multiChannel.get()!=NULL);
+    multiChannel = builder->
+            addValue(unionPtr) ->
+            addDescriptor()->
+            addAlarm()->
+            addTimeStamp()->
+            addSeverity() ->
+            create();
+    testOk1(multiChannel.get() != 0);
     pvStructure = multiChannel->getPVStructure();
     if(debug) {cout << *pvStructure << endl;}
+    pvChannelName = multiChannel->getChannelName();
+    pvChannelName->replace(channelNames);
     PVUnionArrayPtr pvValue = multiChannel->getValue();
-    shared_vector<PVUnionPtr> unions(2);
+    shared_vector<PVUnionPtr> unions(nchan);
     unions[0] = pvDataCreate->createPVUnion(unionPtr);
     unions[1] = pvDataCreate->createPVUnion(unionPtr);
+    unions[2] = pvDataCreate->createPVUnion(unionPtr);
     unions[0]->select("doubleValue");
     unions[1]->select("intValue");
+    unions[2]->select("intValue");
     PVDoublePtr pvDouble = unions[0]->get<PVDouble>();
     pvDouble->put(1.235);
     PVIntPtr pvInt = unions[1]->get<PVInt>();
     pvInt->put(5);
+    pvInt = unions[2]->get<PVInt>();
+    pvInt->put(7);
     pvValue->replace(freeze(unions));
     shared_vector<int32> severities(nchan);
     severities[0] = 0;
@@ -86,12 +103,26 @@ static void test()
     PVIntArrayPtr pvSeverity = multiChannel->getSeverity();
     pvSeverity->replace(freeze(severities));
     if(debug) {cout << *pvStructure << endl;}
+    multiChannel = builder->
+            addValue(unionPtr) ->
+            addDescriptor()->
+            addAlarm()->
+            addTimeStamp()->
+            addSeverity() ->
+            addStatus() ->
+            addMessage() ->
+            addSecondsPastEpoch() ->
+            addNanoseconds() ->
+            create();
+    testOk1(multiChannel.get() != 0);
+    pvStructure = multiChannel->getPVStructure();
+    if(debug) {cout << *pvStructure << endl;}
 }
 
 
 MAIN(testCreateRequest)
 {
-    testPlan(10);
+    testPlan(6);
     test();
     return testDone();
 }

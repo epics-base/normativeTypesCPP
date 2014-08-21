@@ -6,120 +6,180 @@
  */
 
 #include <pv/ntmultiChannel.h>
+#include <algorithm>
+
+using namespace std;
+using namespace epics::pvData;
 
 namespace epics { namespace nt { 
 
-using namespace epics::pvData;
-using std::tr1::static_pointer_cast;
-using std::string;
-using std::cout;
-using std::endl;
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 
-bool NTMultiChannel::isNTMultiChannel(PVStructurePtr const & pvStructure)
+namespace detail {
+
+static NTFieldPtr ntField = NTField::get();
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addValue(UnionConstPtr valuePtr)
 {
-    PVUnionArrayPtr pvValue = pvStructure->getSubField<PVUnionArray>("value");
-    if(!pvValue) return false;
-    PVStringArrayPtr pvChannelName =
-        pvStructure->getSubField<PVStringArray>("channelName");
-    return true;
+    value = true;
+    valueUnion = valuePtr;
+    return shared_from_this();
 }
 
-NTMultiChannelPtr NTMultiChannel::create(
-    std::vector<std::string> const & optionNames)
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addDescriptor()
 {
-     return NTMultiChannel::create(optionNames,fieldCreate->createVariantUnion());
+    descriptor = true;
+    return shared_from_this();
 }
 
-NTMultiChannelPtr NTMultiChannel::create(
-    std::vector<std::string> const & optionNames,
-    epics::pvData::UnionConstPtr const & unionPtr)
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addAlarm()
 {
-    shared_vector<const std::string> channelNames;
-    return NTMultiChannel::create(optionNames,unionPtr,channelNames);
+    alarm = true;
+    return shared_from_this();
 }
 
-NTMultiChannelPtr NTMultiChannel::create(
-    std::vector<std::string> const & optionNames,
-    UnionConstPtr const & unionPtr,
-    shared_vector<const std::string> channelNames)
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addTimeStamp()
+{
+    timeStamp = true;
+    return shared_from_this();
+}
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addSeverity()
+{
+    severity = true;
+    return shared_from_this();
+}
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addStatus()
+{
+    status = true;
+    return shared_from_this();
+}
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addMessage()
+{
+    message = true;
+    return shared_from_this();
+}
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addSecondsPastEpoch()
+{
+    secondsPastEpoch = true;
+    return shared_from_this();
+}
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addNanoseconds()
+{
+    nanoseconds = true;
+    return shared_from_this();
+}
+
+StructureConstPtr NTMultiChannelBuilder::createStructure()
 {
     StandardFieldPtr standardField = getStandardField();
     size_t nfields = 2;
-    bool hasAlarm = false;
-    bool hasTimeStamp = false;
-    bool hasSeverity = false;
-    bool hasStatus = false;
-    bool hasMessage = false;
-    bool hasSecondsPastEpoch = false;
-    bool hasNanoseconds = false;
-    bool hasDescriptor = false;
-    for(size_t i=0; i<optionNames.size(); ++i) {
-        string name = optionNames[i];
-        if(name.compare("alarm")==0) {hasAlarm = true; ++nfields;}
-        if(name.compare("timeStamp")==0) {hasTimeStamp = true; ++nfields;}
-        if(name.compare("severity")==0) {hasSeverity = true; ++nfields;}
-        if(name.compare("status")==0) {hasStatus = true; ++nfields;}
-        if(name.compare("message")==0) {hasMessage = true; ++nfields;}
-        if(name.compare("secondsPastEpoch")==0) {hasSecondsPastEpoch = true; ++nfields;}
-        if(name.compare("nanoseconds`")==0) {hasNanoseconds = true; ++nfields;}
-        if(name.compare("descriptor")==0) {hasDescriptor = true; ++nfields;}
-    }
+    if(descriptor) ++nfields;
+    if(alarm) ++nfields;
+    if(timeStamp) ++nfields;
+    if(severity) ++nfields;
+    if(status) ++nfields;
+    if(message) ++nfields;
+    if(secondsPastEpoch) ++nfields;
+    if(nanoseconds) ++nfields;
     FieldConstPtrArray fields(nfields);
     StringArray names(nfields);
     size_t ind = 0;
     names[ind] = "value";
-    fields[ind++] =  fieldCreate->createUnionArray(unionPtr);
+    if(value) {
+        fields[ind++] =  fieldCreate->createUnionArray(valueUnion);
+    } else {
+        fields[ind++] =  fieldCreate->createVariantUnion();
+    }
     names[ind] = "channelName";
     fields[ind++] =  fieldCreate->createScalarArray(pvString);
-    if(hasTimeStamp) {
+    if(timeStamp) {
         names[ind] = "timeStamp";
         fields[ind++] = standardField->timeStamp();
     }
-    if(hasAlarm) {
+    if(alarm) {
         names[ind] = "alarm";
         fields[ind++] = standardField->alarm();
     }
-    if(hasDescriptor) {
+    if(descriptor) {
         names[ind] = "descriptor";
         fields[ind++] = fieldCreate->createScalar(pvString);
     }
-    if(hasSeverity) {
+    if(severity) {
         names[ind] = "severity";
         fields[ind++] = fieldCreate->createScalarArray(pvInt);
     }
-    if(hasStatus) {
+    if(status) {
         names[ind] = "status";
         fields[ind++] = fieldCreate->createScalarArray(pvInt);
     }
-    if(hasMessage) {
+    if(message) {
         names[ind] = "message";
         fields[ind++] = fieldCreate->createScalarArray(pvString);
     }
-    if(hasSecondsPastEpoch) {
+    if(secondsPastEpoch) {
         names[ind] = "secondsPastEpoch";
         fields[ind++] = fieldCreate->createScalarArray(pvLong);
     }
-    if(hasNanoseconds) {
+    if(nanoseconds) {
         names[ind] = "nanoseconds";
         fields[ind++] = fieldCreate->createScalarArray(pvInt);
     }
-    StructureConstPtr st = fieldCreate->createStructure(names,fields);
-    PVStructurePtr pvStructure = pvDataCreate->createPVStructure(st);
-    if(channelNames.size()>0) {
-        PVStringArrayPtr pvName = pvStructure->getSubField<PVStringArray>("channelName");
-        pvName->replace(channelNames);
-    }
-    return NTMultiChannelPtr(new NTMultiChannel(pvStructure));
+    StructureConstPtr st = fieldCreate->createStructure(NTMultiChannel::URI,names,fields);
+    reset();
+    return st;
 }
 
-NTMultiChannelPtr NTMultiChannel::clone(PVStructurePtr const & pv)
+PVStructurePtr NTMultiChannelBuilder::NTMultiChannelBuilder::createPVStructure()
 {
-    PVStructurePtr pvStructure = getPVDataCreate()->createPVStructure(pv);
-    return NTMultiChannelPtr(new NTMultiChannel(pvStructure));
+    return pvDataCreate->createPVStructure(createStructure());
 }
+
+NTMultiChannelPtr NTMultiChannelBuilder::create()
+{
+    return NTMultiChannelPtr(new NTMultiChannel(createPVStructure()));
+}
+
+NTMultiChannelBuilder::NTMultiChannelBuilder()
+{
+    reset();
+}
+
+void NTMultiChannelBuilder::reset()
+{
+    valueUnion.reset();
+    value = false;
+    descriptor = false;
+    alarm = false;
+    timeStamp = false;
+    severity = false;
+    status = false;
+    message = false;
+    secondsPastEpoch = false;
+    nanoseconds = false;
+}
+
+}
+
+const std::string NTMultiChannel::URI("uri:ev4:nt/2012/pwd:NTMultiChannel");
+
+bool NTMultiChannel::is_a(StructureConstPtr const &structure)
+{
+    return structure->getID() == URI;
+}
+
+NTMultiChannelBuilderPtr NTMultiChannel::createBuilder()
+{
+    return NTMultiChannelBuilderPtr(new detail::NTMultiChannelBuilder());
+}
+
 
 NTMultiChannel::NTMultiChannel(PVStructurePtr const & pvStructure)
 : pvNTMultiChannel(pvStructure),
