@@ -82,6 +82,11 @@ namespace detail {
          */
         shared_pointer addNanoseconds();
         /**
+         * Add userTag array to the NTMultiChannel.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer addUserTag();
+        /**
          * Create a {@code Structure} that represents NTMultiChannel.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a {@code Structure}.
@@ -114,6 +119,7 @@ namespace detail {
         bool message;
         bool secondsPastEpoch;
         bool nanoseconds;
+        bool userTag;
 
         friend class ::epics::nt::NTMultiChannel;
     };
@@ -199,15 +205,20 @@ public:
      */
     epics::pvData::PVStringArrayPtr getMessage() {return pvMessage;}
     /**
-     * Get the SecondsPastEpoch of each channel.
+     * Get the secondsPastEpoch of each channel.
      * @return PVLongArrayPtr which may be null.
      */
     epics::pvData::PVLongArrayPtr getSecondsPastEpoch() {return pvSecondsPastEpoch;}
     /**
-     * Get the SecondsPastEpoch of each channel.
+     * Get the nanoseconds of each channel.
      * @return PVIntArrayPtr which may be null.
      */
     epics::pvData::PVIntArrayPtr getNanoseconds() {return pvNanoseconds;}
+    /**
+     * Get the userTag of each channel.
+     * @return PVIntArrayPtr which may be null.
+     */
+    epics::pvData::PVIntArrayPtr getUserTag() {return pvUserTag;}
     /**
      * Get the descriptor.
      * @return PVStringPtr which may be null.
@@ -225,6 +236,7 @@ private:
     epics::pvData::PVStringArrayPtr pvMessage;
     epics::pvData::PVLongArrayPtr pvSecondsPastEpoch;
     epics::pvData::PVIntArrayPtr pvNanoseconds;
+    epics::pvData::PVIntArrayPtr pvUserTag;
     epics::pvData::PVStringPtr pvDescriptor;
     friend class detail::NTMultiChannelBuilder;
 };

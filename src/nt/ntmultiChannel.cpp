@@ -77,6 +77,12 @@ NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addNanoseconds()
     return shared_from_this();
 }
 
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addUserTag()
+{
+    userTag = true;
+    return shared_from_this();
+}
+
 StructureConstPtr NTMultiChannelBuilder::createStructure()
 {
     StandardFieldPtr standardField = getStandardField();
@@ -89,6 +95,7 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
     if(message) ++nfields;
     if(secondsPastEpoch) ++nfields;
     if(nanoseconds) ++nfields;
+    if(userTag) ++nfields;
     FieldConstPtrArray fields(nfields);
     StringArray names(nfields);
     size_t ind = 0;
@@ -130,6 +137,10 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
     }
     if(nanoseconds) {
         names[ind] = "nanoseconds";
+        fields[ind++] = fieldCreate->createScalarArray(pvInt);
+    }
+    if(userTag) {
+        names[ind] = "userTag";
         fields[ind++] = fieldCreate->createScalarArray(pvInt);
     }
     StructureConstPtr st = fieldCreate->createStructure(NTMultiChannel::URI,names,fields);

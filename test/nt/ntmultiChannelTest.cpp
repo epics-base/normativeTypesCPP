@@ -113,6 +113,7 @@ static void test()
             addMessage() ->
             addSecondsPastEpoch() ->
             addNanoseconds() ->
+            addUserTag() ->
             create();
     testOk1(multiChannel.get() != 0);
     pvStructure = multiChannel->getPVStructure();
