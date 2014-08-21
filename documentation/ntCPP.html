@@ -10,13 +10,88 @@
   <link rel="stylesheet" type="text/css"
   href="http://epics-pvdata.sourceforge.net/epicsv4.css" />
   <style type="text/css">
-/*<![CDATA[*/
+  /*<![CDATA[*/
      .about { margin-left: 3em; margin-right: 3em; font-size: .83em}
      table { margin-left: auto; margin-right: auto }
      .diagram { text-align: center; margin: 2.5em 0 }
-     body { margin-right: 10% }
-/*]]>*/</style>
+     span.opt { color: grey }
+     span.nterm { font-style:italic }
+     span.term { font-family:courier }
+     span.user { font-family:courier }
+     span.user:before { content:"<" }
+     span.user:after { content:">" }
+     .nonnorm { font-style:italic }
+     p.ed { color: #AA0000 }
+     span.ed { color: #AA0000 }
+     p.ed.priv { display: inline; }
+     span.ed.priv { display: inline; }
+  /*]]>*/</style>
+  <!-- Script that generates the Table of Contents -->
+  <script type="text/javascript"
+  src="http://epics-pvdata.sourceforge.net/script/tocgen.js">
+  </script>
 </head>
+<body>
+
+<div class="head">
+<h1>EPICS pvDataCPP</h1>
+<!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
+
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 23-July-2014</h2>
+
+  <dl>
+    <dt>Latest version:</dt>
+    <dd><a
+      href="pvDataCPP.html">pvDataCPP.html</a>
+    </dd>
+    <dt>This version:</dt>
+    <dd><a
+      href="pvDataCPP_20140708.html">pvDataCPP_20140708.html</a>
+    </dd>
+    <dt>Previous version:</dt>
+    <dd><a
+      href="pvDataCPP_20140501.html">pvDataCPP_20140501.html</a>
+    </dd>
+    <dt>Editors:</dt>
+    <dd>Marty Kraimer, BNL</dd>
+    <dd>Michael Davidsaver, BNL</dd>
+    <dd>Matej Sekoranja, CosyLab</dd>
+  </dl>
+
+  <p class="copyright">This product is made available subject to acceptance of the <a
+href="http://epics-pvdata.sourceforge.net/LICENSE.html">EPICS open source
+license.</a></p>
+<hr />
+</div>
+<h2 class="nocount">Abstract</h2>
+
+<p>EPICS Version 4 provides efficient
+storage, access, and communication, of memory resident structured data.
+pvData is the storage compoment.
+pvDataCPP is the C++ implementation of pvData.
+It is one part of the set of related products in the EPICS
+V4 control system programming environment:<br />
+<a href="http://epics-pvdata.sourceforge.net/relatedDocumentsV4.html">relatedDocumentsV4.html</a>
+</p>
+
+
+<h2 class="nocount">Status of this Document</h2>
+
+<p>For now this is a working copy so it is not the same as "This version" shown above.</p>
+
+<p>This is the 23-July-2014 version of the C++ implementation of pvData.
+</p>
+
+<p>RELEASE_NOTES.md provides changes since the last release.
+TODO.md describes things to do before the next release.
+</p>
+
+
+
+<div id="toc">
+<h2 class="nocount" style="page-break-before: always">Table of Contents</h2>
+</div>
+<div id="contents" class="contents">
 
 <body>
 <h1 style="text-align: center">EPICS normative type C++ implementation
@@ -27,14 +102,14 @@
 <dt>This version:</dt>
   <dd><a href="http://epics-pvdata.hg.sourceforge.net/hgweb/epics-pvdata/normativeTypesCPP/raw-file/tip/documentation/ntCPP.html">ntCPP.html</a></dd>
 <dt>Editors:</dt>
-  <dd>Guobao Shen, BNL<br>
-    Marty Kraimer, BNL<span style="font-weight: bold;"></span></dd>
+  <dd>Matej Sekoranja, CosyLab<br>
+    Marty Kraimer, BNL
+  </dd>
 </dl>
 <hr />
 </div>
 
-<h2 style="text-align: center">Normative Types</h2>
-<hr />
+<h2>Introduction</h2>
 
 <p>This section describes the C++ implemmentation of normative types. Two (2) helper classes are implemented,
 ntNameValue and NTTable respectively. </p>
@@ -49,7 +124,7 @@ public:
     static NTFieldPtr get();
     ~NTField() {}
 
-    PVStructurePtr createEnumerated(StringArray const & choices);
+    PVStructurePtr createEnumerated(StringArray const &amp; choices);
     PVStructurePtr createTimeStamp();
     PVStructurePtr createAlarm();
     PVStructurePtr createDisplay();
@@ -193,83 +268,24 @@ public:
   <dt>getPVField</dt>
     <dd>Get the data field for the specified field.</dd>
 </dl>
-<hr />
 
-<h2 style="text-align: center">License Agreement</h2>
-<hr />
-<pre>Copyright (c) 2008 Martin R. Kraimer
-Copyright (c) 2007 Control System Laboratory,
-    (COSYLAB) Ljubljana Slovenia
-Copyright (c) 2010 Brookhaven National Laboratory
+<h2>MTMultiChannel</h2>
+<pre>
+structure NTMultiChannel
+  union_t[] value       
+  string[]  channelName    
+  time_t    timeStamp        :opt // time when data collected
+  alarm_t   alarm            :opt // alarm associated with data collection
+  int[]     severity         :opt // alarm severity for each value
+  int[]     status           :opt // alarm status for each value
+  string[]  message          :opt // alarm message for each value
+  long[]    secondsPastEpoch :opt // seconds for each value.
+  int[]     nanoseconds      :opt // nanoseconds for each value
+  string    descriptor       :opt // descriptor data
+</pre>
 
 
-Permission is hereby granted, free of charge, to any person
-obtaining a copy of this software and associated documentation
-files (the "Software"), to deal in the Software without
-restriction, including without limitation the rights to use,
-copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following
-conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
-
-________________________________________________________________________
-
-This software is in part copyrighted by Brookhaven National Laboratory(BNL)
-
-In no event shall BNL be liable to any party for direct, indirect,
-special, incidental, or consequential damages arising out of the use of
-this software, its documentation, or any derivatives thereof, even if
-BNL has been advised of the possibility of such damage.
-
-BNL specifically disclaims any warranties, including, but not limited
-to, the implied warranties of merchantability, fitness for a particular
-purpose, and non-infringement.  This software is provided on an "as is"
-basis, and BNL has no obligation to provide maintenance, support,
-updates, enhancements, or modifications.
-
-________________________________________________________________________
-
-This software is in part copyrighted by the BERLINER SPEICHERRING
-GESELLSCHAFT FUER SYNCHROTRONSTRAHLUNG M.B.H. (BESSY), BERLIN, GERMANY.
-
-In no event shall BESSY be liable to any party for direct, indirect,
-special, incidental, or consequential damages arising out of the use of
-this software, its documentation, or any derivatives thereof, even if
-BESSY has been advised of the possibility of such damage.
-
-BESSY specifically disclaims any warranties, including, but not limited
-to, the implied warranties of merchantability, fitness for a particular
-purpose, and non-infringement.  This software is provided on an "as is"
-basis, and BESSY has no obligation to provide maintenance, support,
-updates, enhancements, or modifications.
-
-________________________________________________________________________
-
-This software is in part copyrighted by the Deutsches Elektronen-Synchroton,
-    Member of the Helmholtz Association, (DESY), HAMBURG, GERMANY.
-
-In no event shall DESY be liable to any party for direct, indirect,
-special, incidental, or consequential damages arising out of the use of
-this software, its documentation, or any derivatives thereof, even if
-DESY has been advised of the possibility of such damage.
-
-DESY specifically disclaims any warranties, including, but not limited
-to, the implied warranties of merchantability, fitness for a particular
-purpose, and non-infringement.  This software is provided on an "as is"
-basis, and DESY has no obligation to provide maintenance, support,
-updates, enhancements, or modifications.
-________________________________________________________________________</pre>
+</div>
 </body>
 </html>
