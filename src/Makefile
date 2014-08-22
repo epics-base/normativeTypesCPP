@@ -11,12 +11,14 @@ INC += ntscalar.h
 INC += ntnameValue.h
 INC += nttable.h
 INC += ntmultiChannel.h
+INC += ntndarray.h
 
 LIBSRCS += ntfield.cpp
 LIBSRCS += ntscalar.cpp
 LIBSRCS += ntnameValue.cpp
 LIBSRCS += nttable.cpp
 LIBSRCS += ntmultiChannel.cpp
+LIBSRCS += ntndarray.cpp
 
 LIBRARY=nt
 

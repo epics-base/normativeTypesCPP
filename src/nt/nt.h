@@ -11,6 +11,7 @@
 #include <pv/ntscalar.h>
 #include <pv/ntnameValue.h>
 #include <pv/nttable.h>
+#include <pv/ntndarray.h>
 
 #endif  /* NT_H */
 
