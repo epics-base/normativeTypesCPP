@@ -206,11 +206,11 @@ PVStructurePtr NTScalar::getControl() const
 
 PVFieldPtr NTScalar::getValue() const
 {
-    return pvNTScalar->getSubField("value");
+    return pvValue;
 }
 
 NTScalar::NTScalar(PVStructurePtr const & pvStructure) :
-    pvNTScalar(pvStructure)
+    pvNTScalar(pvStructure), pvValue(pvNTScalar->getSubField("value"))
 {}
 
 
