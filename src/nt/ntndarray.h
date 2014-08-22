@@ -17,6 +17,82 @@ namespace epics { namespace nt {
 class NTNDArray;
 typedef std::tr1::shared_ptr<NTNDArray> NTNDArrayPtr;
 
+namespace detail {
+
+    /**
+     * Interface for in-line creating of NTNDArray.
+     * One instance can be used to create multiple instances.
+     * An instance of this object must not be used concurrently (an object has a state).
+     * @author mse
+     */
+    class epicsShareClass NTNDArrayBuilder :
+        public std::tr1::enable_shared_from_this<NTNDArrayBuilder>
+    {
+    public:
+        POINTER_DEFINITIONS(NTNDArrayBuilder);
+
+        /**
+         * Add descriptor field to the NTNDArray.
+         * @return this instance of a {@code NTNDArrayBuilder}.
+         */
+        shared_pointer addDescriptor();
+
+        /**
+         * Add alarm structure to the NTNDArray.
+         * @return this instance of a {@code NTNDArrayBuilder}.
+         */
+        shared_pointer addAlarm();
+
+        /**
+         * Add timeStamp structure to the NTNDArray.
+         * @return this instance of a {@code NTNDArrayBuilder}.
+         */
+        shared_pointer addTimeStamp();
+
+        /**
+         * Add display structure to the NTNDArray.
+         * @return this instance of a {@code NTNDArrayBuilder}.
+         */
+        shared_pointer addDisplay();
+
+        /**
+         * Create a {@code Structure} that represents NTNDArray.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of a {@code Structure}.
+         */
+        epics::pvData::StructureConstPtr createStructure();
+
+        /**
+         * Create a {@code PVStructure} that represents NTNDArray.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code PVStructure}
+         */
+        epics::pvData::PVStructurePtr createPVStructure();
+
+        /**
+         * Create a {@code NTNDArray} instance.
+         * This resets this instance state and allows new {@code instance to be created.
+         * @return a new instance of a {@code NTNDArray}
+         */
+        NTNDArrayPtr create();
+
+    private:
+        NTNDArrayBuilder();
+
+        void reset();
+
+        bool descriptor;
+        bool timeStamp;
+        bool alarm;
+        bool display;
+
+        friend class ::epics::nt::NTNDArray;
+    };
+
+}
+
+typedef std::tr1::shared_ptr<detail::NTNDArrayBuilder> NTNDArrayBuilderPtr;
+
 /**
  * Convenience Class for NTNDArray
  * @author dgh
@@ -35,22 +111,11 @@ public:
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
-
-    static NTNDArrayPtr create(
-        epics::pvData::PVStructurePtr const &pvStructure);
-
-    static NTNDArrayPtr create(bool hasDescriptor,
-        bool hasTimeStamp, bool hasAlarm, bool hasDisplay);
-
-    static NTNDArrayPtr create();
-
-    static NTNDArrayPtr clone(epics::pvData::PVStructurePtr const &);
-
     /**
-     * Create a {@code Structure} that represents NTNDArray.
+     * Create a NTNDArrayBuilder instance
+     * @return builder instance.
      */
-    static epics::pvData::StructureConstPtr createStructure(bool hasDescriptor,
-        bool hasTimeStamp, bool hasAlarm, bool hasDisplay);
+    static NTNDArrayBuilderPtr createBuilder();
 
     /**
      * Destructor.
@@ -153,11 +218,10 @@ public:
      */
     epics::pvData::PVStructurePtr getAlarm() const;
 
-
-
 private:
     NTNDArray(epics::pvData::PVStructurePtr const & pvStructure);
     epics::pvData::PVStructurePtr pvNTNDArray;
+    friend class detail::NTNDArrayBuilder;
 };
 
 }}

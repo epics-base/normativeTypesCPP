@@ -14,41 +14,14 @@ using namespace epics::pvData;
 
 namespace epics { namespace nt {
 
-const std::string NTNDArray::URI("uri:ev4:nt/2012/pwd:NTNDArray");
+namespace detail {
+
 const std::string ntAttrStr("uri:ev4:nt/2012/pwd:NTAttribute");
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 
-bool NTNDArray::is_a(StructureConstPtr const & structure)
-{
-    return structure->getID() == URI;
-}
-
-
-NTNDArrayPtr NTNDArray::create(epics::pvData::PVStructurePtr const &pvStructure)
-{
-     return NTNDArrayPtr(new NTNDArray(pvStructure));
-}
-
-NTNDArrayPtr NTNDArray::create(bool hasDescriptor,
-        bool hasTimeStamp, bool hasAlarm, bool hasDisplay)
-{
-    PVStructurePtr pvStructure = pvDataCreate->createPVStructure(
-        createStructure(hasDescriptor, hasTimeStamp, hasAlarm, hasDisplay));
-    return NTNDArrayPtr(new NTNDArray(pvStructure));
-}
-
-
-NTNDArrayPtr NTNDArray::create()
-{
-    return create(true,true,true,true);
-}
-
-
-
-StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
-    bool hasTimeStamp, bool hasAlarm, bool hasDisplay)
+StructureConstPtr NTNDArrayBuilder::createStructure()
 {
     enum
     {
@@ -71,10 +44,10 @@ StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
     Lock xx(mutex);
 
     size_t index = 0;
-    if (hasDescriptor) index  |= 1 << DISCRIPTOR_INDEX;
-    if (hasTimeStamp)  index  |= 1 << TIMESTAMP_INDEX;
-    if (hasAlarm)      index  |= 1 << ALARM_INDEX;
-    if (hasDisplay)    index  |= 1 << DISPLAY_INDEX;
+    if (descriptor) index  |= 1 << DISCRIPTOR_INDEX;
+    if (timeStamp)  index  |= 1 << TIMESTAMP_INDEX;
+    if (alarm)      index  |= 1 << ALARM_INDEX;
+    if (display)    index  |= 1 << DISPLAY_INDEX;
 
     if (ntndarrayStruc[index] == NULL)
     {
@@ -121,7 +94,7 @@ StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
                createStructure();
         }
 
-        fb->setId(URI)->
+        fb->setId(NTNDArray::URI)->
             add("value", valueType)->
             add("compressedSize", pvLong)->
             add("uncompressedSize", pvLong)->
@@ -131,16 +104,89 @@ StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
             add("uniqueId", pvInt)->
             addArray("attribute", attributeStruc);
 
-        if (hasDescriptor) fb->add("descriptor", pvString);
-        if (hasAlarm)      fb->add("alarm", standardField->alarm());
-        if (hasTimeStamp)  fb->add("timeStamp", standardField->timeStamp());
-        if (hasDisplay)  fb->add("display", standardField->display());
+        if (descriptor)
+            fb->add("descriptor", pvString);
+
+        if (timeStamp)
+            fb->add("timeStamp", standardField->timeStamp());
+
+        if (alarm)
+            fb->add("alarm", standardField->alarm());
+
+        if (display)
+            fb->add("display", standardField->display());
 
         ntndarrayStruc[index] = fb->createStructure();
     }
 
     return ntndarrayStruc[index];
 }
+
+NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::addDescriptor()
+{
+    descriptor = true;
+    return shared_from_this();
+}
+
+NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::addAlarm()
+{
+    alarm = true;
+    return shared_from_this();
+}
+
+NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::addTimeStamp()
+{
+    timeStamp = true;
+    return shared_from_this();
+}
+
+NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::addDisplay()
+{
+    display = true;
+    return shared_from_this();
+}
+
+PVStructurePtr NTNDArrayBuilder::createPVStructure()
+{
+    return getPVDataCreate()->createPVStructure(createStructure());
+}
+
+NTNDArrayPtr NTNDArrayBuilder::create()
+{
+    return NTNDArrayPtr(new NTNDArray(createPVStructure()));
+}
+
+NTNDArrayBuilder::NTNDArrayBuilder()
+{
+    reset();
+}
+
+void NTNDArrayBuilder::reset()
+{
+    descriptor = false;
+    timeStamp = false;
+    alarm = false;
+    display = false;
+}
+
+}
+
+const std::string NTNDArray::URI("uri:ev4:nt/2012/pwd:NTNDArray");
+const std::string ntAttrStr("uri:ev4:nt/2012/pwd:NTAttribute");
+
+static FieldCreatePtr fieldCreate = getFieldCreate();
+static PVDataCreatePtr pvDataCreate = getPVDataCreate();
+
+bool NTNDArray::is_a(StructureConstPtr const & structure)
+{
+    return structure->getID() == URI;
+}
+
+NTNDArrayBuilderPtr NTNDArray::createBuilder()
+{
+    return NTNDArrayBuilderPtr(new detail::NTNDArrayBuilder());
+}
+
 
 bool NTNDArray::attachTimeStamp(PVTimeStamp &pvTimeStamp) const
 {
