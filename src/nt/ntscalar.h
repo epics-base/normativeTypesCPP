@@ -229,16 +229,13 @@ public:
     template<typename PVT>
     std::tr1::shared_ptr<PVT> getValue() const
     {
-        epics::pvData::PVFieldPtr pvField = getValue();
-        if (pvField.get())
-            return std::tr1::dynamic_pointer_cast<PVT>(pvField);
-        else
-            return std::tr1::shared_ptr<PVT>();
+        return std::tr1::dynamic_pointer_cast<PVT>(pvValue);
     }
 
 private:
     NTScalar(epics::pvData::PVStructurePtr const & pvStructure);
     epics::pvData::PVStructurePtr pvNTScalar;
+    epics::pvData::PVFieldPtr pvValue;
     friend class detail::NTScalarBuilder;
 };
 
