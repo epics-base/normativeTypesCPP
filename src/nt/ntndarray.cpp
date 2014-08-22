@@ -100,8 +100,8 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
             add("uncompressedSize", pvLong)->
             add("codec", codecStruc)->
             addArray("dimension", dimensionStruc)->
-            add("dataTimeStamp", standardField->timeStamp())->
             add("uniqueId", pvInt)->
+            add("dataTimeStamp", standardField->timeStamp())->
             addArray("attribute", attributeStruc);
 
         if (descriptor)
