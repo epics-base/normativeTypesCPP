@@ -62,6 +62,7 @@ StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
     const size_t NUMBER_OF_STRUCTURES = 1 << NUMBER_OF_INDICES;
 
     static epics::pvData::StructureConstPtr ntndarrayStruc[NUMBER_OF_STRUCTURES];
+    static epics::pvData::UnionConstPtr valueType;
     static epics::pvData::StructureConstPtr codecStruc;
     static epics::pvData::StructureConstPtr dimensionStruc;
     static epics::pvData::StructureConstPtr attributeStruc;
@@ -80,13 +81,21 @@ StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
         StandardFieldPtr standardField = getStandardField();
         FieldBuilderPtr fb = fieldCreate->createFieldBuilder();
 
-        UnionConstPtr codecParameters = fb->createUnion();
+        if (valueType == NULL)
+        {
+            for (int i = pvBoolean; i < pvString; ++i)
+            {
+                ScalarType st = static_cast<ScalarType>(i);
+                fb->addArray(std::string(ScalarTypeFunc::name(st)) + "Value", st);
+            }
+            valueType = fb->createUnion();                
+        }
 
         if (codecStruc == NULL)
         {
             codecStruc = fb->setId("codec_t")->
                 add("name", pvString)->
-                add("parameters", codecParameters)->
+                add("parameters", fieldCreate->createVariantUnion())->
                 createStructure();
         }
 
@@ -113,7 +122,7 @@ StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
         }
 
         fb->setId(URI)->
-            add("value", makeValueType())->
+            add("value", valueType)->
             add("compressedSize", pvLong)->
             add("uncompressedSize", pvLong)->
             add("codec", codecStruc)->
@@ -132,26 +141,6 @@ StructureConstPtr NTNDArray::createStructure(bool hasDescriptor,
 
     return ntndarrayStruc[index];
 }
-
-UnionConstPtr NTNDArray::makeValueType()
-{
-    static epics::pvData::UnionConstPtr valueType;
-
-    if (valueType == NULL)
-    {
-        FieldBuilderPtr fb = getFieldCreate()->createFieldBuilder();
-        
-        for (int i = pvBoolean; i < pvString; ++i)
-        {
-            ScalarType st = static_cast<ScalarType>(i);
-            fb->addArray(std::string(ScalarTypeFunc::name(st)) + "Value", st);
-        }
-
-        valueType = fb->createUnion();                
-    }
-    return valueType;
-}
-
 
 bool NTNDArray::attachTimeStamp(PVTimeStamp &pvTimeStamp) const
 {

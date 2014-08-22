@@ -157,7 +157,6 @@ public:
 
 private:
     NTNDArray(epics::pvData::PVStructurePtr const & pvStructure);
-    static epics::pvData::UnionConstPtr makeValueType();
     epics::pvData::PVStructurePtr pvNTNDArray;
 };
 
