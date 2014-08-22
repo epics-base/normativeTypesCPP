@@ -4,25 +4,25 @@ include $(TOP)/configure/CONFIG
 
 PROD_LIBS += nt pvData Com
 
-PROD_HOST += ntfieldTest
+TESTPROD_HOST += ntfieldTest
 ntfieldTest_SRCS += ntfieldTest.cpp
-ntfieldTest_LIBS += nt pvData Com
+TESTS += ntfieldTest
 
-PROD_HOST += ntnameValueTest
+TESTPROD_HOST += ntscalarTest
+ntscalarTest_SRCS += ntscalarTest.cpp
+TESTS += ntscalarTest
+
+TESTPROD_HOST += ntnameValueTest
 ntnameValueTest_SRCS += ntnameValueTest.cpp
-ntnameValueTest_LIBS += nt pvData Com
+TESTS += ntnameValueTest
 
-PROD_HOST += ntmultiChannelTest
+TESTPROD_HOST += ntmultiChannelTest
 ntmultiChannelTest_SRCS += ntmultiChannelTest.cpp
-ntmultiChannelTest_LIBS += nt pvData Com
+TESTS += ntmultiChannelTest
 
 TESTPROD_HOST += nttableTest
 nttableTest_SRCS = nttableTest.cpp
 TESTS += nttableTest
-
-TESTPROD_HOST += ntmultiChannelTest
-ntmultiChannelTest_SRCS = ntmultiChannelTest.cpp
-TESTS += ntmultiChannelTest
 
 TESTSCRIPTS_HOST += $(TESTS:%=%.t)
 

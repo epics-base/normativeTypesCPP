@@ -8,6 +8,7 @@
 #define NT_H
 
 #include <pv/ntfield.h>
+#include <pv/ntscalar.h>
 #include <pv/ntnameValue.h>
 #include <pv/nttable.h>
 

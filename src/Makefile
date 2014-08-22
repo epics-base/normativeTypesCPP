@@ -7,11 +7,13 @@ SRC_DIRS += $(SRC)/nt
 
 INC += nt.h
 INC += ntfield.h
+INC += ntscalar.h
 INC += ntnameValue.h
 INC += nttable.h
 INC += ntmultiChannel.h
 
 LIBSRCS += ntfield.cpp
+LIBSRCS += ntscalar.cpp
 LIBSRCS += ntnameValue.cpp
 LIBSRCS += nttable.cpp
 LIBSRCS += ntmultiChannel.cpp
