@@ -24,6 +24,10 @@ TESTPROD_HOST += nttableTest
 nttableTest_SRCS = nttableTest.cpp
 TESTS += nttableTest
 
+TESTPROD_HOST += ntndarrayTest
+ntndarrayTest_SRCS = ntndarrayTest.cpp
+TESTS += ntndarrayTest
+
 TESTSCRIPTS_HOST += $(TESTS:%=%.t)
 
 include $(TOP)/configure/RULES
