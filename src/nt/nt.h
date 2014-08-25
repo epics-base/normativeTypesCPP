@@ -9,9 +9,11 @@
 
 #include <pv/ntfield.h>
 #include <pv/ntscalar.h>
+#include <pv/ntscalarArray.h>
 #include <pv/ntnameValue.h>
 #include <pv/nttable.h>
 #include <pv/ntndarray.h>
+#include <pv/ntmultiChannel.h>
 
 #endif  /* NT_H */
 

@@ -20,18 +20,6 @@ NTScalarBuilder::shared_pointer NTScalarBuilder::value(
         epics::pvData::ScalarType scalarType
         )
 {
-    isArray = false;
-    valueType = scalarType;
-    valueTypeSet = true;
-
-    return shared_from_this();
-}
-
-NTScalarBuilder::shared_pointer NTScalarBuilder::arrayValue(
-        epics::pvData::ScalarType scalarType
-        )
-{
-    isArray = true;
     valueType = scalarType;
     valueTypeSet = true;
 

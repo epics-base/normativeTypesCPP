@@ -12,6 +12,10 @@ TESTPROD_HOST += ntscalarTest
 ntscalarTest_SRCS += ntscalarTest.cpp
 TESTS += ntscalarTest
 
+TESTPROD_HOST += ntscalarArrayTest
+ntscalarArrayTest_SRCS += ntscalarArrayTest.cpp
+TESTS += ntscalarArrayTest
+
 TESTPROD_HOST += ntnameValueTest
 ntnameValueTest_SRCS += ntnameValueTest.cpp
 TESTS += ntnameValueTest

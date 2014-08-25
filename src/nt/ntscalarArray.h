@@ -1,11 +1,11 @@
-/* ntscalar.h */
+/* ntscalarArray.h */
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS pvDataCPP is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
-#ifndef NTSCALAR_H
-#define NTSCALAR_H
+#ifndef NTSCALARARRAY_H
+#define NTSCALARARRAY_H
 
 #include <pv/ntfield.h>
 #include <pv/pvDisplay.h>
@@ -13,83 +13,83 @@
 
 namespace epics { namespace nt {
 
-class NTScalar;
-typedef std::tr1::shared_ptr<NTScalar> NTScalarPtr;
+class NTScalarArray;
+typedef std::tr1::shared_ptr<NTScalarArray> NTScalarArrayPtr;
 
 namespace detail {
 
     /**
-     * Interface for in-line creating of NTScalar.
+     * Interface for in-line creating of NTScalarArray.
      * One instance can be used to create multiple instances.
      * An instance of this object must not be used concurrently (an object has a state).
      * @author mse
      */
-    class epicsShareClass NTScalarBuilder :
-        public std::tr1::enable_shared_from_this<NTScalarBuilder>
+    class epicsShareClass NTScalarArrayBuilder :
+        public std::tr1::enable_shared_from_this<NTScalarArrayBuilder>
     {
     public:
-        POINTER_DEFINITIONS(NTScalarBuilder);
+        POINTER_DEFINITIONS(NTScalarArrayBuilder);
 
         /**
-         * Set a value type of a NTScalar.
-         * @param scalarType the value type.
+         * Set a value type of a NTScalarArray.
+         * @param elementType the value array element type.
          * @return this instance of a {@code NTTableBuilder}.
          */
-        shared_pointer value(epics::pvData::ScalarType scalarType);
+        shared_pointer arrayValue(epics::pvData::ScalarType elementType);
 
         /**
-         * Add descriptor field to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * Add descriptor field to the NTScalarArray.
+         * @return this instance of a {@code NTScalarArrayBuilder}.
          */
         shared_pointer addDescriptor();
 
         /**
-         * Add alarm structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * Add alarm structure to the NTScalarArray.
+         * @return this instance of a {@code NTScalarArrayBuilder}.
          */
         shared_pointer addAlarm();
 
         /**
-         * Add timeStamp structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * Add timeStamp structure to the NTScalarArray.
+         * @return this instance of a {@code NTScalarArrayBuilder}.
          */
         shared_pointer addTimeStamp();
 
         /**
-         * Add display structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * Add display structure to the NTScalarArray.
+         * @return this instance of a {@code NTScalarArrayBuilder}.
          */
         shared_pointer addDisplay();
 
         /**
-         * Add control structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * Add control structure to the NTScalarArray.
+         * @return this instance of a {@code NTScalarArrayBuilder}.
          */
         shared_pointer addControl();
 
         /**
-         * Create a {@code Structure} that represents NTScalar.
+         * Create a {@code Structure} that represents NTScalarArray.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a {@code Structure}.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a {@code PVStructure} that represents NTScalar.
+         * Create a {@code PVStructure} that represents NTScalarArray.
          * This resets this instance state and allows new {@code instance to be created.
          * @return a new instance of a {@code PVStructure}
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a {@code NTScalar} instance.
+         * Create a {@code NTScalarArray} instance.
          * This resets this instance state and allows new {@code instance to be created.
-         * @return a new instance of a {@code NTScalar}
+         * @return a new instance of a {@code NTScalarArray}
          */
-        NTScalarPtr create();
+        NTScalarArrayPtr create();
 
     private:
-        NTScalarBuilder();
+        NTScalarArrayBuilder();
 
         void reset();
 
@@ -102,43 +102,43 @@ namespace detail {
         bool display;
         bool control;
 
-        friend class ::epics::nt::NTScalar;
+        friend class ::epics::nt::NTScalarArray;
     };
 
 }
 
-typedef std::tr1::shared_ptr<detail::NTScalarBuilder> NTScalarBuilderPtr;
+typedef std::tr1::shared_ptr<detail::NTScalarArrayBuilder> NTScalarArrayBuilderPtr;
 
 
 
 /**
- * Convenience Class for NTScalar
+ * Convenience Class for NTScalarArray
  * @author mrk
  */
-class NTScalar
+class NTScalarArray
 {
 public:
-    POINTER_DEFINITIONS(NTScalar);
+    POINTER_DEFINITIONS(NTScalarArray);
 
     static const std::string URI;
 
     /**
-     * Is the structure an NTScalar.
+     * Is the structure an NTScalarArray.
      * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTScalar.
+     * @return (false,true) if (is not, is) an NTScalarArray.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Create a NTScalar builder instance.
+     * Create a NTScalarArray builder instance.
      * @return builder instance.
      */
-    static NTScalarBuilderPtr createBuilder();
+    static NTScalarArrayBuilderPtr createBuilder();
 
     /**
      * Destructor.
      */
-    ~NTScalar() {}
+    ~NTScalarArray() {}
 
      /**
       * Attach a pvTimeStamp.
@@ -215,7 +215,7 @@ public:
     epics::pvData::PVFieldPtr getValue() const;
 
     /**
-     * Get the value field of a specified type (e.g. PVDouble).
+     * Get the value field of a specified type (e.g. PVDoubleArray).
      * @return The <PVT> field for the values.
      */
     template<typename PVT>
@@ -225,11 +225,11 @@ public:
     }
 
 private:
-    NTScalar(epics::pvData::PVStructurePtr const & pvStructure);
-    epics::pvData::PVStructurePtr pvNTScalar;
+    NTScalarArray(epics::pvData::PVStructurePtr const & pvStructure);
+    epics::pvData::PVStructurePtr pvNTScalarArray;
     epics::pvData::PVFieldPtr pvValue;
-    friend class detail::NTScalarBuilder;
+    friend class detail::NTScalarArrayBuilder;
 };
 
 }}
-#endif  /* NTScalar_H */
+#endif  /* NTScalarArray_H */
