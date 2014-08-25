@@ -86,7 +86,7 @@ NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addUserTag()
 StructureConstPtr NTMultiChannelBuilder::createStructure()
 {
     StandardFieldPtr standardField = getStandardField();
-    size_t nfields = 2;
+    size_t nfields = 3;
     if(descriptor) ++nfields;
     if(alarm) ++nfields;
     if(timeStamp) ++nfields;
@@ -107,6 +107,8 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
     }
     names[ind] = "channelName";
     fields[ind++] =  fieldCreate->createScalarArray(pvString);
+    names[ind] = "isConnected";
+    fields[ind++] =  fieldCreate->createScalarArray(pvBoolean);
     if(timeStamp) {
         names[ind] = "timeStamp";
         fields[ind++] = standardField->timeStamp();
@@ -198,6 +200,7 @@ NTMultiChannel::NTMultiChannel(PVStructurePtr const & pvStructure)
   pvAlarm(pvStructure->getSubField<PVStructure>("alarm")),
   pvValue(pvStructure->getSubField<PVUnionArray>("value")),
   pvChannelName(pvStructure->getSubField<PVStringArray>("channelName")),
+  pvIsConnected(pvStructure->getSubField<PVBooleanArray>("isConnected")),
   pvSeverity(pvStructure->getSubField<PVIntArray>("severity")),
   pvStatus(pvStructure->getSubField<PVIntArray>("status")),
   pvMessage(pvStructure->getSubField<PVStringArray>("message")),

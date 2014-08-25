@@ -4,7 +4,7 @@
  * in file LICENSE that is included with this distribution.
  */
 /*
- * ntnameValueTest.cpp
+ * ntmutiChannelTest.cpp
  *
  *  Created on: 2014.08
  *      Author: Marty Kraimer
@@ -103,6 +103,8 @@ static void test()
     PVIntArrayPtr pvSeverity = multiChannel->getSeverity();
     pvSeverity->replace(freeze(severities));
     if(debug) {cout << *pvStructure << endl;}
+    PVBooleanArrayPtr pvIsConnected = multiChannel->getIsConnected();
+    shared_vector<const boolean> isConnected = pvIsConnected->view();
     multiChannel = builder->
             addValue(unionPtr) ->
             addDescriptor()->

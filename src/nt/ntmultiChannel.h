@@ -94,13 +94,13 @@ namespace detail {
         epics::pvData::StructureConstPtr createStructure();
         /**
          * Create a {@code PVStructure} that represents NTMultiChannel.
-         * This resets this instance state and allows new {@code instance to be created.
+         * This resets this instance state and allows new {@code instance to be created.}
          * @return a new instance of a {@code PVStructure}
          */
         epics::pvData::PVStructurePtr createPVStructure();
         /**
          * Create a {@code NTMultiChannel} instance.
-         * This resets this instance state and allows new {@code instance to be created.
+         * This resets this instance state and allows new {@code instance to be created.}
          * @return a new instance of a {@code NTMultiChannel}
          */
         NTMultiChannelPtr create();
@@ -190,6 +190,11 @@ public:
      */
     epics::pvData::PVStringArrayPtr getChannelName() { return pvChannelName;};
     /**
+     * Get the connection state of each channel.
+     * @return PVBooleanArrayPtr
+     */
+    epics::pvData::PVBooleanArrayPtr getIsConnected() { return pvIsConnected;};
+    /**
      * Get the severity of each channel.
      * @return PVIntArrayPtr which may be null.
      */
@@ -231,6 +236,7 @@ private:
     epics::pvData::PVStructurePtr pvAlarm;
     epics::pvData::PVUnionArrayPtr pvValue;
     epics::pvData::PVStringArrayPtr pvChannelName;
+    epics::pvData::PVBooleanArrayPtr pvIsConnected;
     epics::pvData::PVIntArrayPtr pvSeverity;
     epics::pvData::PVIntArrayPtr pvStatus;
     epics::pvData::PVStringArrayPtr pvMessage;
