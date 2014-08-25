@@ -10,15 +10,8 @@
  *      Author: Marty Kraimer
  */
 
-#include <cstddef>
-#include <cstdlib>
-#include <cstddef>
-#include <string>
-#include <ctime>
-#include <list>
-#include <iostream>
-
-#include <epicsAssert.h>
+#include <epicsUnitTest.h>
+#include <testMain.h>
 
 #include <pv/nt.h>
 
@@ -34,31 +27,33 @@ static StandardPVFieldPtr standardPVField = getStandardPVField();
 static NTFieldPtr ntField = NTField::get();
 static PVNTFieldPtr pvntField = PVNTField::get();
 
-static void testNTField(FILE * fd)
+void testNTField()
 {
+    testDiag("testNTField");
+
     StructureConstPtr structureConstPtr = ntField->createEnumerated();
     cout << *structureConstPtr << endl;
-    assert(ntField->isEnumerated(structureConstPtr));
+    testOk1(ntField->isEnumerated(structureConstPtr));
 
     structureConstPtr = ntField->createTimeStamp();
     cout << *structureConstPtr << endl;
-    assert(ntField->isTimeStamp(structureConstPtr));
+    testOk1(ntField->isTimeStamp(structureConstPtr));
 
     structureConstPtr = ntField->createAlarm();
     cout << *structureConstPtr << endl;
-    assert(ntField->isAlarm(structureConstPtr));
+    testOk1(ntField->isAlarm(structureConstPtr));
 
     structureConstPtr = ntField->createDisplay();
     cout << *structureConstPtr << endl;
-    assert(ntField->isDisplay(structureConstPtr));
+    testOk1(ntField->isDisplay(structureConstPtr));
 
     structureConstPtr = ntField->createAlarmLimit();
     cout << *structureConstPtr << endl;
-    assert(ntField->isAlarmLimit(structureConstPtr));
+    testOk1(ntField->isAlarmLimit(structureConstPtr));
 
     structureConstPtr = ntField->createControl();
     cout << *structureConstPtr << endl;
-    assert(ntField->isControl(structureConstPtr));
+    testOk1(ntField->isControl(structureConstPtr));
 
     StructureArrayConstPtr structureArrayConstPtr
         = ntField->createEnumeratedArray();
@@ -71,8 +66,10 @@ static void testNTField(FILE * fd)
     cout << *structureConstPtr << endl;
 }
 
-static void testPVNTField(FILE * fd)
+void testPVNTField()
 {
+    testDiag("testPVNTField");
+
     StringArray choices;
     choices.resize(3);
     choices[0] = "one";
@@ -81,23 +78,23 @@ static void testPVNTField(FILE * fd)
     PVStructurePtr pvStructure = PVStructurePtr(
         pvntField->createEnumerated(choices));
     cout << *pvStructure << endl;
-    assert(ntField->isEnumerated(pvStructure->getStructure()));
+    testOk1(ntField->isEnumerated(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createTimeStamp());
     cout << *pvStructure << endl;
-    assert(ntField->isTimeStamp(pvStructure->getStructure()));
+    testOk1(ntField->isTimeStamp(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createAlarm());
     cout << *pvStructure << endl;
-    assert(ntField->isAlarm(pvStructure->getStructure()));
+    testOk1(ntField->isAlarm(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createDisplay());
     cout << *pvStructure << endl;
-    assert(ntField->isDisplay(pvStructure->getStructure()));
+    testOk1(ntField->isDisplay(pvStructure->getStructure()));
 
     pvStructure = PVStructurePtr(pvntField->createAlarmLimit());
     cout << *pvStructure << endl;
-    assert(ntField->isAlarmLimit(pvStructure->getStructure()));
+    testOk1(ntField->isAlarmLimit(pvStructure->getStructure()));
 
     PVStructureArrayPtr pvStructureArray = PVStructureArrayPtr(
         pvntField->createEnumeratedArray());
@@ -115,16 +112,9 @@ static void testPVNTField(FILE * fd)
     cout << *pvStructureArray->getStructureArray()->getStructure();
 }
 
-int main(int argc,char *argv[])
-{
-    char *fileName = 0;
-    if(argc>1) fileName = argv[1];
-    FILE * fd = stdout;
-    if(fileName!=0 && fileName[0]!=0) {
-        fd = fopen(fileName,"w+");
-    }
-    testNTField(fd);
-    testPVNTField(fd);
-    return(0);
+MAIN(testNTField) {
+    testPlan(11);
+    testNTField();
+    testPVNTField();
+    return testDone();
 }
-
