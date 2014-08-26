@@ -177,6 +177,7 @@ void NTMultiChannelBuilder::reset()
     message = false;
     secondsPastEpoch = false;
     nanoseconds = false;
+    userTag = false;
 }
 
 }
@@ -206,6 +207,7 @@ NTMultiChannel::NTMultiChannel(PVStructurePtr const & pvStructure)
   pvMessage(pvStructure->getSubField<PVStringArray>("message")),
   pvSecondsPastEpoch(pvStructure->getSubField<PVLongArray>("secondsPastEpoch")),
   pvNanoseconds(pvStructure->getSubField<PVIntArray>("nanoseconds")),
+  pvUserTag(pvStructure->getSubField<PVIntArray>("userTag")),
   pvDescriptor(pvStructure->getSubField<PVString>("descriptor"))
 {
 }

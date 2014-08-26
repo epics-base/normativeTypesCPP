@@ -120,12 +120,36 @@ static void test()
     testOk1(multiChannel.get() != 0);
     pvStructure = multiChannel->getPVStructure();
     if(debug) {cout << *pvStructure << endl;}
+    PVStructurePtr pvTimeStamp = multiChannel->getTimeStamp();
+    testOk1(pvTimeStamp.get() !=0);
+    PVStructurePtr pvAlarm = multiChannel->getAlarm();
+    testOk1(pvAlarm.get() !=0);
+    pvValue = multiChannel->getValue();
+    testOk1(pvValue.get() !=0);
+    pvChannelName = multiChannel->getChannelName();
+    testOk1(pvChannelName.get() !=0);
+    pvIsConnected = multiChannel->getIsConnected();
+    testOk1(pvIsConnected.get() !=0);
+    pvSeverity = multiChannel->getSeverity();
+    testOk1(pvSeverity.get() !=0);
+    PVIntArrayPtr pvStatus = multiChannel->getStatus();
+    testOk1(pvStatus.get() !=0);
+    PVStringArrayPtr pvMessage = multiChannel->getMessage();
+    testOk1(pvMessage.get() !=0);
+    PVLongArrayPtr pvSecondsPastEpoch = multiChannel->getSecondsPastEpoch();
+    testOk1(pvSecondsPastEpoch.get() !=0);
+    PVIntArrayPtr pvNanoseconds = multiChannel->getNanoseconds();
+    testOk1(pvNanoseconds.get() !=0);
+    PVIntArrayPtr pvUserTag = multiChannel->getUserTag();
+    testOk1(pvUserTag.get() !=0);
+    PVStringPtr pvDescriptor = multiChannel->getDescriptor();
+    testOk1(pvDescriptor.get() !=0);
 }
 
 
 MAIN(testCreateRequest)
 {
-    testPlan(6);
+    testPlan(18);
     test();
     return testDone();
 }
