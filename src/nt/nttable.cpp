@@ -115,6 +115,19 @@ void NTTableBuilder::reset()
 
 const std::string NTTable::URI("uri:ev4:nt/2012/pwd:NTTable");
 
+NTTable::shared_pointer NTTable::narrow(PVStructurePtr const & structure)
+{
+    if (!structure || !is_a(structure->getStructure()))
+        return shared_pointer();
+
+    return narrow_unsafe(structure);
+}
+
+NTTable::shared_pointer NTTable::narrow_unsafe(PVStructurePtr const & structure)
+{
+    return shared_pointer(new NTTable(structure));
+}
+
 bool NTTable::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;

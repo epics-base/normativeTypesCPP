@@ -184,6 +184,19 @@ void NTMultiChannelBuilder::reset()
 
 const std::string NTMultiChannel::URI("uri:ev4:nt/2012/pwd:NTMultiChannel");
 
+NTMultiChannel::shared_pointer NTMultiChannel::narrow(PVStructurePtr const & structure)
+{
+    if (!structure || !is_a(structure->getStructure()))
+        return shared_pointer();
+
+    return narrow_unsafe(structure);
+}
+
+NTMultiChannel::shared_pointer NTMultiChannel::narrow_unsafe(PVStructurePtr const & structure)
+{
+    return shared_pointer(new NTMultiChannel(structure));
+}
+
 bool NTMultiChannel::is_a(StructureConstPtr const &structure)
 {
     return structure->getID() == URI;

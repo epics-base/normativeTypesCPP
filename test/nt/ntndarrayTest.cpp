@@ -48,9 +48,42 @@ void test_builder()
 
 }
 
+
+void test_narrow()
+{
+    testDiag("test_narrow");
+
+    NTNDArrayPtr nullPtr = NTNDArray::narrow(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr narrow");
+
+    nullPtr = NTNDArray::narrow(
+                getPVDataCreate()->createPVStructure(
+                    NTField::get()->createTimeStamp()
+                    )
+                );
+    testOk(nullPtr.get() == 0, "wrong type narrow");
+
+
+    NTNDArrayBuilderPtr builder = NTNDArray::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    PVStructurePtr pvStructure = builder->
+            createPVStructure();
+    testOk1(pvStructure.get() != 0);
+    if (!pvStructure)
+        return;
+
+    NTNDArrayPtr ptr = NTNDArray::narrow(pvStructure);
+    testOk(ptr.get() != 0, "narrow OK");
+
+    ptr = NTNDArray::narrow_unsafe(pvStructure);
+    testOk(ptr.get() != 0, "narrow_unsafe OK");
+}
+
 MAIN(testNTNDArray) {
-    testPlan(16);
+    testPlan(22);
     test_builder();
+    test_narrow();
     return testDone();
 }
 

@@ -186,10 +186,43 @@ void test_ntscalar()
 
 }
 
+void test_narrow()
+{
+    testDiag("test_narrow");
+
+    NTScalarPtr nullPtr = NTScalar::narrow(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr narrow");
+
+    nullPtr = NTScalar::narrow(
+                getPVDataCreate()->createPVStructure(
+                    NTField::get()->createTimeStamp()
+                    )
+                );
+    testOk(nullPtr.get() == 0, "wrong type narrow");
+
+
+    NTScalarBuilderPtr builder = NTScalar::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    PVStructurePtr pvStructure = builder->
+            value(pvDouble)->
+            createPVStructure();
+    testOk1(pvStructure.get() != 0);
+    if (!pvStructure)
+        return;
+
+    NTScalarPtr ptr = NTScalar::narrow(pvStructure);
+    testOk(ptr.get() != 0, "narrow OK");
+
+    ptr = NTScalar::narrow_unsafe(pvStructure);
+    testOk(ptr.get() != 0, "narrow_unsafe OK");
+}
+
 MAIN(testNTScalar) {
-    testPlan(28);
+    testPlan(34);
     test_builder();
     test_ntscalar();
+    test_narrow();
     return testDone();
 }
 

@@ -195,11 +195,46 @@ void test_nttable()
 
 }
 
+void test_narrow()
+{
+    testDiag("test_narrow");
+
+    NTTablePtr nullPtr = NTTable::narrow(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr narrow");
+
+    nullPtr = NTTable::narrow(
+                getPVDataCreate()->createPVStructure(
+                    NTField::get()->createTimeStamp()
+                    )
+                );
+    testOk(nullPtr.get() == 0, "wrong type narrow");
+
+
+    NTTableBuilderPtr builder = NTTable::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    PVStructurePtr pvStructure = builder->
+            add("column0", pvDouble)->
+            add("column1", pvString)->
+            add("column2", pvInt)->
+            createPVStructure();
+    testOk1(pvStructure.get() != 0);
+    if (!pvStructure)
+        return;
+
+    NTTablePtr ptr = NTTable::narrow(pvStructure);
+    testOk(ptr.get() != 0, "narrow OK");
+
+    ptr = NTTable::narrow_unsafe(pvStructure);
+    testOk(ptr.get() != 0, "narrow_unsafe OK");
+}
+
 MAIN(testNTTable) {
-    testPlan(39);
+    testPlan(45);
     test_builder();
     test_labels();
     test_nttable();
+    test_narrow();
     return testDone();
 }
 

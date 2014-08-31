@@ -111,6 +111,22 @@ public:
     static const std::string URI;
 
     /**
+     * Narrow (aka dynamic cast, or wrap) the structure to NTTable.
+     * First the structure ID is checked against NTTable::URI.
+     * This method will nullptr if the structure is nullptr.
+     * @param structure The structure to narrow-ed (dynamic cast, wrapped) to NTTable.
+     * @return NTTable instance on success, nullptr otherwise.
+     */
+    static shared_pointer narrow(epics::pvData::PVStructurePtr const & structure);
+
+    /**
+     * Narrow (aka dynamic cast, or wrap) the structure to NTTable without checking for null-ness or its ID.
+     * @param structure The structure to narrow-ed (dynamic cast, wrapped) to NTTable.
+     * @return NTTable instance.
+     */
+    static shared_pointer narrow_unsafe(epics::pvData::PVStructurePtr const & structure);
+
+    /**
      * Is the structure an NTTable.
      * @param structure The structure to test.
      * @return (false,true) if (is not, is) an NTTable.

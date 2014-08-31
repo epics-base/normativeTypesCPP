@@ -147,10 +147,42 @@ static void test()
 }
 
 
+void test_narrow()
+{
+    testDiag("test_narrow");
+
+    NTMultiChannelPtr nullPtr = NTMultiChannel::narrow(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr narrow");
+
+    nullPtr = NTMultiChannel::narrow(
+                getPVDataCreate()->createPVStructure(
+                    NTField::get()->createTimeStamp()
+                    )
+                );
+    testOk(nullPtr.get() == 0, "wrong type narrow");
+
+
+    NTMultiChannelBuilderPtr builder = NTMultiChannel::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    PVStructurePtr pvStructure = builder->
+            createPVStructure();
+    testOk1(pvStructure.get() != 0);
+    if (!pvStructure)
+        return;
+
+    NTMultiChannelPtr ptr = NTMultiChannel::narrow(pvStructure);
+    testOk(ptr.get() != 0, "narrow OK");
+
+    ptr = NTMultiChannel::narrow_unsafe(pvStructure);
+    testOk(ptr.get() != 0, "narrow_unsafe OK");
+}
+
 MAIN(testCreateRequest)
 {
-    testPlan(18);
+    testPlan(24);
     test();
+    test_narrow();
     return testDone();
 }
 

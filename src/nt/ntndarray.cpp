@@ -177,6 +177,19 @@ const std::string ntAttrStr("uri:ev4:nt/2012/pwd:NTAttribute");
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 
+NTNDArray::shared_pointer NTNDArray::narrow(PVStructurePtr const & structure)
+{
+    if (!structure || !is_a(structure->getStructure()))
+        return shared_pointer();
+
+    return narrow_unsafe(structure);
+}
+
+NTNDArray::shared_pointer NTNDArray::narrow_unsafe(PVStructurePtr const & structure)
+{
+    return shared_pointer(new NTNDArray(structure));
+}
+
 bool NTNDArray::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;

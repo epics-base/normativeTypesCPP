@@ -97,6 +97,19 @@ void NTNameValueBuilder::reset()
 
 const std::string NTNameValue::URI("uri:ev4:nt/2012/pwd:NTNameValue");
 
+NTNameValue::shared_pointer NTNameValue::narrow(PVStructurePtr const & structure)
+{
+    if (!structure || !is_a(structure->getStructure()))
+        return shared_pointer();
+
+    return narrow_unsafe(structure);
+}
+
+NTNameValue::shared_pointer NTNameValue::narrow_unsafe(PVStructurePtr const & structure)
+{
+    return shared_pointer(new NTNameValue(structure));
+}
+
 bool NTNameValue::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;

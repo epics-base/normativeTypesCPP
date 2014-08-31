@@ -116,6 +116,19 @@ void NTScalarBuilder::reset()
 
 const std::string NTScalar::URI("uri:ev4:nt/2012/pwd:NTScalar");
 
+NTScalar::shared_pointer NTScalar::narrow(PVStructurePtr const & structure)
+{
+    if (!structure || !is_a(structure->getStructure()))
+        return shared_pointer();
+
+    return narrow_unsafe(structure);
+}
+
+NTScalar::shared_pointer NTScalar::narrow_unsafe(PVStructurePtr const & structure)
+{
+    return shared_pointer(new NTScalar(structure));
+}
+
 bool NTScalar::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;

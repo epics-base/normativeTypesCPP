@@ -116,6 +116,19 @@ void NTScalarArrayBuilder::reset()
 
 const std::string NTScalarArray::URI("uri:ev4:nt/2012/pwd:NTScalarArray");
 
+NTScalarArray::shared_pointer NTScalarArray::narrow(PVStructurePtr const & structure)
+{
+    if (!structure || !is_a(structure->getStructure()))
+        return shared_pointer();
+
+    return narrow_unsafe(structure);
+}
+
+NTScalarArray::shared_pointer NTScalarArray::narrow_unsafe(PVStructurePtr const & structure)
+{
+    return shared_pointer(new NTScalarArray(structure));
+}
+
 bool NTScalarArray::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;
