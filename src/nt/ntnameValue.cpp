@@ -46,6 +46,10 @@ StructureConstPtr NTNameValueBuilder::createStructure()
     if (timeStamp)
         builder->add("timeStamp", ntField->createTimeStamp());
 
+    size_t extraCount = extraFieldNames.size();
+    for (size_t i = 0; i< extraCount; i++)
+        builder->add(extraFieldNames[i], extraFields[i]);
+
     StructureConstPtr s = builder->createStructure();
 
     reset();
@@ -91,7 +95,16 @@ void NTNameValueBuilder::reset()
     descriptor = false;
     alarm = false;
     timeStamp = false;
+    extraFieldNames.clear();
+    extraFields.clear();
 }
+
+NTNameValueBuilder::shared_pointer NTNameValueBuilder::add(string const & name, FieldConstPtr const & field)
+{
+    extraFields.push_back(field); extraFieldNames.push_back(name);
+    return shared_from_this();
+}
+
 
 }
 

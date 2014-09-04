@@ -74,6 +74,14 @@ namespace detail {
          */
         NTNameValuePtr create();
 
+        /**
+         * Add extra {@code Field} to the type.
+         * @param name name of the field.
+         * @param field a field to add.
+         * @return this instance of a {@code NTNameValueBuilder}.
+         */
+        shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
+
     private:
         NTNameValueBuilder();
 
@@ -85,6 +93,10 @@ namespace detail {
         bool descriptor;
         bool alarm;
         bool timeStamp;
+
+        // NOTE: this preserves order, however it does not handle duplicates
+        epics::pvData::StringArray extraFieldNames;
+        epics::pvData::FieldConstPtrArray extraFields;
 
         friend class ::epics::nt::NTNameValue;
     };

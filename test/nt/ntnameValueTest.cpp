@@ -204,11 +204,43 @@ void test_narrow()
     testOk(ptr.get() != 0, "narrow_unsafe OK");
 }
 
+void test_extra()
+{
+    testDiag("test_extra");
+
+    NTNameValueBuilderPtr builder = NTNameValue::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    StructureConstPtr structure = builder->
+            value(pvDouble)->
+            addTimeStamp()->
+            add("function", getFieldCreate()->createScalar(pvString))->
+            createStructure();
+    testOk1(structure.get() != 0);
+    if (!structure)
+        return;
+
+    testOk1(NTNameValue::is_a(structure));
+    testOk1(structure->getID() == NTNameValue::URI);
+    testOk1(structure->getNumberFields() == 4);
+    testOk1(structure->getField("names").get() != 0);
+    testOk1(structure->getField("values").get() != 0);
+    testOk1(structure->getField("timeStamp").get() != 0);
+    testOk1(structure->getField("function").get() != 0);
+
+    testOk(dynamic_pointer_cast<const Scalar>(structure->getField("function")).get() != 0 &&
+            dynamic_pointer_cast<const Scalar>(structure->getField("function"))->getScalarType() == pvString, "function type");
+
+    std::cout << *structure << std::endl;
+}
+
+
 MAIN(testNTNameValue) {
-    testPlan(37);
+    testPlan(47);
     test_builder();
     test_ntnameValue();
     test_narrow();
+    test_extra();
     return testDone();
 }
 
