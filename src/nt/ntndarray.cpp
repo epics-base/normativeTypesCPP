@@ -49,12 +49,12 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
     if (alarm)      index  |= 1 << ALARM_INDEX;
     if (display)    index  |= 1 << DISPLAY_INDEX;
 
-    if (ntndarrayStruc[index] == NULL)
+    if (!ntndarrayStruc[index])
     {
         StandardFieldPtr standardField = getStandardField();
         FieldBuilderPtr fb = fieldCreate->createFieldBuilder();
 
-        if (valueType == NULL)
+        if (!valueType)
         {
             for (int i = pvBoolean; i < pvString; ++i)
             {
@@ -64,7 +64,7 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
             valueType = fb->createUnion();                
         }
 
-        if (codecStruc == NULL)
+        if (!codecStruc)
         {
             codecStruc = fb->setId("codec_t")->
                 add("name", pvString)->
@@ -72,7 +72,7 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
                 createStructure();
         }
 
-        if (dimensionStruc == NULL)
+        if (!dimensionStruc)
         {
             dimensionStruc = fb->setId("dimension_t")->
                 add("size", pvInt)->
@@ -83,7 +83,7 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
                 createStructure();
         }
 
-        if (attributeStruc == NULL)
+        if (!attributeStruc)
         {
             attributeStruc = fb->setId(ntAttrStr)->
 		        add("name", pvString)->
