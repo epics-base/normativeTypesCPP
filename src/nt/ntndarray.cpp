@@ -14,6 +14,8 @@ using namespace epics::pvData;
 
 namespace epics { namespace nt {
 
+static NTFieldPtr ntField = NTField::get();
+
 namespace detail {
 
 const std::string ntAttrStr("uri:ev4:nt/2014/pwd:NTAttribute");
@@ -212,6 +214,29 @@ bool NTNDArray::is_a(StructureConstPtr const & structure)
 
 bool NTNDArray::is_compatible(PVStructurePtr const & pvStructure)
 {
+    PVUnionPtr pvValue = pvStructure->getSubField<PVUnion>("value");
+    if(!pvValue) return false;
+    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
+    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
+    pvField = pvStructure->getSubField("alarm");
+    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("timeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("display");
+    if(pvField && !ntField->isDisplay(pvField->getField())) return false;
+    if(!pvStructure->getSubField<PVLong>("compressedSize")) return false;
+    if(!pvStructure->getSubField<PVLong>("uncompressedSize")) return false;
+    PVStructurePtr pvCodec = pvStructure->getSubField<PVStructure>("codec");
+    if(!pvCodec) return false;
+    if(!pvCodec->getSubField<PVString>("name")) return false;
+    if(!pvCodec->getSubField<PVUnion>("parameters")) return false;
+    PVStructureArrayPtr pvDimension = pvStructure->getSubField<PVStructureArray>("dimension");
+    if(pvDimension->getStructureArray()->getStructure()->getID().compare("dimension_t")!=0) return false;
+    if(!pvStructure->getSubField<PVInt>("uniqueId")) return false;
+    pvField = pvStructure->getSubField("dataTimeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
+    PVStructureArrayPtr pvAttribute = pvStructure->getSubField<PVStructureArray>("attribute");
+    if(!pvAttribute->getStructureArray()->getStructure()->getID().compare("ntAttrStr")!=0) return false;
     return true;
 }
 

@@ -16,10 +16,9 @@ namespace epics { namespace nt {
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
+static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
-
-static NTFieldPtr ntField = NTField::get();
 
 NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addValue(UnionConstPtr valuePtr)
 {
@@ -222,6 +221,24 @@ bool NTMultiChannel::is_compatible(PVStructurePtr const &pvStructure)
 {
     PVUnionArrayPtr pvValue = pvStructure->getSubField<PVUnionArray>("value");
     if(!pvValue) return false;
+    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
+    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
+    pvField = pvStructure->getSubField("alarm");
+    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("timeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("severity");
+    if(pvField && !pvStructure->getSubField<PVIntArray>("severity")) return false;
+    pvField = pvStructure->getSubField("status");
+    if(pvField && !pvStructure->getSubField<PVIntArray>("status")) return false;
+    pvField = pvStructure->getSubField("message");
+    if(pvField && !pvStructure->getSubField<PVStringArray>("message")) return false;
+    pvField = pvStructure->getSubField("secondsPastEpoch");
+    if(pvField && !pvStructure->getSubField<PVLongArray>("secondsPastEpoch")) return false;
+    pvField = pvStructure->getSubField("nanoseconds");
+    if(pvField && !pvStructure->getSubField<PVIntArray>("nanoseconds")) return false;
+    pvField = pvStructure->getSubField("userTag");
+    if(pvField && !pvStructure->getSubField<PVIntArray>("userTag")) return false;
     return true;
 }
 

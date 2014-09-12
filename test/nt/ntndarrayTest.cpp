@@ -51,6 +51,25 @@ void test_builder()
 
 }
 
+void test_all()
+{
+    testDiag("test_builder");
+
+    NTNDArrayBuilderPtr builder = NTNDArray::createBuilder();
+    testOk(builder.get() != 0, "Got builder");
+
+    PVStructurePtr pvStructure = builder->
+            addDescriptor()->
+            addTimeStamp()->          
+            addAlarm()->  
+            addDisplay()->  
+            add("extra1",fieldCreate->createScalar(pvString)) ->
+            add("extra2",fieldCreate->createScalarArray(pvString)) ->
+            createPVStructure();
+    std::cout << *pvStructure << std::endl;
+    testOk1(NTNDArray::is_compatible(pvStructure)==true);
+}
+
 
 void test_narrow()
 {
@@ -75,8 +94,8 @@ void test_narrow()
     testOk1(pvStructure.get() != 0);
     if (!pvStructure)
         return;
-
     testOk1(NTNDArray::is_compatible(pvStructure)==true);
+
     NTNDArrayPtr ptr = NTNDArray::narrow(pvStructure);
     testOk(ptr.get() != 0, "narrow OK");
 
@@ -85,8 +104,9 @@ void test_narrow()
 }
 
 MAIN(testNTNDArray) {
-    testPlan(23);
+    testPlan(25);
     test_builder();
+    test_all();
     test_narrow();
     return testDone();
 }

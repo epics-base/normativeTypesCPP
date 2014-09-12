@@ -12,6 +12,8 @@ using namespace epics::pvData;
 
 namespace epics { namespace nt {
 
+static NTFieldPtr ntField = NTField::get();
+
 namespace detail {
 
 static NTFieldPtr ntField = NTField::get();
@@ -150,6 +152,16 @@ bool NTScalar::is_compatible(PVStructurePtr const & pvStructure)
 {
     PVScalarPtr pvValue = pvStructure->getSubField<PVScalar>("value");
     if(!pvValue) return false;
+    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
+    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
+    pvField = pvStructure->getSubField("alarm");
+    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("timeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("display");
+    if(pvField && !ntField->isDisplay(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("control");
+    if(pvField && !ntField->isControl(pvField->getField())) return false;
     return true;
 }
 

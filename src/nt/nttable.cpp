@@ -14,9 +14,9 @@ using namespace epics::pvData;
 
 namespace epics { namespace nt {
 
-namespace detail {
-
 static NTFieldPtr ntField = NTField::get();
+
+namespace detail {
 
 NTTableBuilder::shared_pointer NTTableBuilder::add(
         std::string const & name, epics::pvData::ScalarType scalarType
@@ -87,13 +87,13 @@ NTTableBuilder::shared_pointer NTTableBuilder::addTimeStamp()
 
 PVStructurePtr NTTableBuilder::createPVStructure()
 {
-    PVStringArray::svector l;
-    l.resize(labels.size());
-    std::copy(labels.begin(), labels.end(), l.begin());
-
     PVStructurePtr s = getPVDataCreate()->createPVStructure(createStructure());
-    s->getSubField<PVStringArray>("labels")->replace(freeze(l));
-
+    StringArray const & fieldNames =
+        s->getSubField<PVStructure>("value")->getStructure()->getFieldNames();
+    size_t len = fieldNames.size();
+    shared_vector<string> names(len);
+    for(size_t i=0; i<len; ++i) names[i] = fieldNames[i];
+    s->getSubField<PVStringArray>("labels")->replace(freeze(names));
     return s;
 }
 
@@ -147,6 +147,17 @@ bool NTTable::is_a(StructureConstPtr const & structure)
 
 bool NTTable::is_compatible(PVStructurePtr const & pvStructure)
 {
+    PVFieldPtr pvField = pvStructure->getSubField("alarm");
+    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("timeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
+    PVStringArrayPtr pvLabel = pvStructure->getSubField<PVStringArray>("labels");
+    const shared_vector<const string> column(pvLabel->view());
+    size_t len = column.size();
+    for(size_t i=0; i<len; ++i) {
+        string value = "value." + column[i];
+        if(!pvStructure->getSubField<PVScalarArray>(value)) return false;
+    }
     return true;
 }
 

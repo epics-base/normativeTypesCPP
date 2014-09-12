@@ -12,9 +12,9 @@ using namespace epics::pvData;
 
 namespace epics { namespace nt {
 
-namespace detail {
-
 static NTFieldPtr ntField = NTField::get();
+
+namespace detail {
 
 NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::arrayValue(
         epics::pvData::ScalarType elementType
@@ -123,7 +123,6 @@ NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::add(string const & na
     return shared_from_this();
 }
 
-
 }
 
 const std::string NTScalarArray::URI("uri:ev4:nt/2014/pwd:NTScalarArray");
@@ -150,6 +149,16 @@ bool NTScalarArray::is_compatible(PVStructurePtr const & pvStructure)
 {
     PVScalarArrayPtr pvValue = pvStructure->getSubField<PVScalarArray>("value");
     if(!pvValue) return false;
+    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
+    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
+    pvField = pvStructure->getSubField("alarm");
+    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("timeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("display");
+    if(pvField && !ntField->isDisplay(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("control");
+    if(pvField && !ntField->isControl(pvField->getField())) return false;
     return true;
 }
 

@@ -11,10 +11,10 @@ using namespace std;
 using namespace epics::pvData;
 
 namespace epics { namespace nt {
+static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-static NTFieldPtr ntField = NTField::get();
 
 NTNameValueBuilder::shared_pointer NTNameValueBuilder::value(
         epics::pvData::ScalarType scalarType
@@ -134,6 +134,12 @@ bool NTNameValue::is_compatible(PVStructurePtr const & pvStructure)
     if(!pvNames) return false;
     PVFieldPtr pvValues = pvStructure->getSubField("values");
     if(!pvValues) return false;
+    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
+    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
+    pvField = pvStructure->getSubField("alarm");
+    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
+    pvField = pvStructure->getSubField("timeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
     return true;
 }
 
