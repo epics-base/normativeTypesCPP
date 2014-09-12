@@ -51,6 +51,11 @@ StructureConstPtr NTScalarArrayBuilder::createStructure()
     if (control)
         builder->add("control", ntField->createControl());
 
+    size_t extraCount = extraFieldNames.size();
+    for (size_t i = 0; i< extraCount; i++)
+        builder->add(extraFieldNames[i], extraFields[i]);
+
+
     StructureConstPtr s = builder->createStructure();
 
     reset();
@@ -112,9 +117,16 @@ void NTScalarArrayBuilder::reset()
     control = false;
 }
 
+NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::add(string const & name, FieldConstPtr const & field)
+{
+    extraFields.push_back(field); extraFieldNames.push_back(name);
+    return shared_from_this();
 }
 
-const std::string NTScalarArray::URI("uri:ev4:nt/2012/pwd:NTScalarArray");
+
+}
+
+const std::string NTScalarArray::URI("uri:ev4:nt/2014/pwd:NTScalarArray");
 
 NTScalarArray::shared_pointer NTScalarArray::narrow(PVStructurePtr const & structure)
 {
@@ -133,6 +145,14 @@ bool NTScalarArray::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;
 }
+
+bool NTScalarArray::is_compatible(PVStructurePtr const & pvStructure)
+{
+    PVScalarArrayPtr pvValue = pvStructure->getSubField<PVScalarArray>("value");
+    if(!pvValue) return false;
+    return true;
+}
+
 
 NTScalarArrayBuilderPtr NTScalarArray::createBuilder()
 {

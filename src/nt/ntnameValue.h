@@ -140,7 +140,14 @@ public:
      * @return (false,true) if (is not, is) an NTNameValue.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
-
+    /**
+     * Is the pvStructure compatible with  NTNameValue..
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The pvStructure to test.
+     * @return (false,true) if (is not, is) an NTMultiChannel.
+     */
+    static bool is_compatible(
+        epics::pvData::PVStructurePtr const &pvStructure);
     /**
      * Create a NTNameValue builder instance.
      * @return builder instance.

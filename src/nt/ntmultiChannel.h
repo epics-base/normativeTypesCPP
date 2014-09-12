@@ -38,6 +38,7 @@ namespace detail {
         POINTER_DEFINITIONS(NTMultiChannelBuilder);
         /**
          * specify the union for the value field.
+         * If this is not called then a variantUnion is the default.
          * @return this instance of a {@code NTMultiChannelBuilder}.
          */
         shared_pointer addValue(epics::pvData::UnionConstPtr valuePtr);
@@ -104,6 +105,13 @@ namespace detail {
          * @return a new instance of a {@code NTMultiChannel}
          */
         NTMultiChannelPtr create();
+        /**
+         * Add extra {@code Field} to the type.
+         * @param name name of the field.
+         * @param field a field to add.
+         * @return this instance of a {@code NTMultiChannelBuilder}.
+         */
+        shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
     private:
         NTMultiChannelBuilder();
 
@@ -120,6 +128,10 @@ namespace detail {
         bool secondsPastEpoch;
         bool nanoseconds;
         bool userTag;
+
+        // NOTE: this preserves order, however it does not handle duplicates
+        epics::pvData::StringArray extraFieldNames;
+        epics::pvData::FieldConstPtrArray extraFields;
 
         friend class ::epics::nt::NTMultiChannel;
     };
@@ -151,14 +163,22 @@ public:
      * @return NTMultiChannel instance.
      */
     static shared_pointer narrow_unsafe(epics::pvData::PVStructurePtr const & structure);
-
     /**
-     * Is the pvStructure an NTMultiChannel.
+     * Is the Structure an NTMultiChannel.
+     * This method structure->getID() and checks if it is the same as the URI.
      * @param structure The structure to test.
      * @return (false,true) if (is not, is) an NTMultiChannel.
      */
     static bool is_a(
         epics::pvData::StructureConstPtr const &structure);
+    /**
+     * Is the pvStructure compatible with  NTMultiChannel.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The pvStructure to test.
+     * @return (false,true) if (is not, is) an NTMultiChannel.
+     */
+    static bool is_compatible(
+        epics::pvData::PVStructurePtr const &pvStructure);
     /**
      * Create a NTMultiChannelBuilder instance
      * @return builder instance.

@@ -12,6 +12,7 @@
 using namespace epics::nt;
 using namespace epics::pvData;
 using std::tr1::dynamic_pointer_cast;
+static FieldCreatePtr fieldCreate = getFieldCreate();
 
 void test_builder()
 {
@@ -25,6 +26,8 @@ void test_builder()
             addTimeStamp()->          
             addAlarm()->  
             addDisplay()->  
+            add("extra1",fieldCreate->createScalar(pvString)) ->
+            add("extra2",fieldCreate->createScalarArray(pvString)) ->
             createStructure();
     testOk1(structure.get() != 0);
     if (!structure)
@@ -73,6 +76,7 @@ void test_narrow()
     if (!pvStructure)
         return;
 
+    testOk1(NTNDArray::is_compatible(pvStructure)==true);
     NTNDArrayPtr ptr = NTNDArray::narrow(pvStructure);
     testOk(ptr.get() != 0, "narrow OK");
 
@@ -81,7 +85,7 @@ void test_narrow()
 }
 
 MAIN(testNTNDArray) {
-    testPlan(22);
+    testPlan(23);
     test_builder();
     test_narrow();
     return testDone();

@@ -87,6 +87,13 @@ namespace detail {
          * @return a new instance of a {@code NTScalarArray}
          */
         NTScalarArrayPtr create();
+        /**
+         * Add extra {@code Field} to the type.
+         * @param name name of the field.
+         * @param field a field to add.
+         * @return this instance of a {@code NTScalarArrayBuilder}.
+         */
+        shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
 
     private:
         NTScalarArrayBuilder();
@@ -101,6 +108,10 @@ namespace detail {
         bool timeStamp;
         bool display;
         bool control;
+
+        // NOTE: this preserves order, however it does not handle duplicates
+        epics::pvData::StringArray extraFieldNames;
+        epics::pvData::FieldConstPtrArray extraFields;
 
         friend class ::epics::nt::NTScalarArray;
     };
@@ -145,6 +156,14 @@ public:
      * @return (false,true) if (is not, is) an NTScalarArray.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
+    /**
+     * Is the pvStructure compatible with  NTScalarArray..
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The pvStructure to test.
+     * @return (false,true) if (is not, is) an NTMultiChannel.
+     */
+    static bool is_compatible(
+        epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
      * Create a NTScalarArray builder instance.
@@ -245,6 +264,7 @@ private:
     NTScalarArray(epics::pvData::PVStructurePtr const & pvStructure);
     epics::pvData::PVStructurePtr pvNTScalarArray;
     epics::pvData::PVFieldPtr pvValue;
+
     friend class detail::NTScalarArrayBuilder;
 };
 

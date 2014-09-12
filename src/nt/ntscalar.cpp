@@ -51,6 +51,11 @@ StructureConstPtr NTScalarBuilder::createStructure()
     if (control)
         builder->add("control", ntField->createControl());
 
+    size_t extraCount = extraFieldNames.size();
+    for (size_t i = 0; i< extraCount; i++)
+        builder->add(extraFieldNames[i], extraFields[i]);
+
+
     StructureConstPtr s = builder->createStructure();
 
     reset();
@@ -112,9 +117,16 @@ void NTScalarBuilder::reset()
     control = false;
 }
 
+NTScalarBuilder::shared_pointer NTScalarBuilder::add(string const & name, FieldConstPtr const & field)
+{
+    extraFields.push_back(field); extraFieldNames.push_back(name);
+    return shared_from_this();
 }
 
-const std::string NTScalar::URI("uri:ev4:nt/2012/pwd:NTScalar");
+
+}
+
+const std::string NTScalar::URI("uri:ev4:nt/2014/pwd:NTScalar");
 
 NTScalar::shared_pointer NTScalar::narrow(PVStructurePtr const & structure)
 {
@@ -132,6 +144,13 @@ NTScalar::shared_pointer NTScalar::narrow_unsafe(PVStructurePtr const & structur
 bool NTScalar::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;
+}
+
+bool NTScalar::is_compatible(PVStructurePtr const & pvStructure)
+{
+    PVScalarPtr pvValue = pvStructure->getSubField<PVScalar>("value");
+    if(!pvValue) return false;
+    return true;
 }
 
 NTScalarBuilderPtr NTScalar::createBuilder()

@@ -13,6 +13,8 @@ using namespace epics::nt;
 using namespace epics::pvData;
 using std::tr1::dynamic_pointer_cast;
 
+static FieldCreatePtr fieldCreate = getFieldCreate();
+
 void test_builder()
 {
     testDiag("test_builder");
@@ -25,6 +27,8 @@ void test_builder()
             addDescriptor()->
             addAlarm()->
             addTimeStamp()->
+            add("extra1",fieldCreate->createScalar(pvString)) ->
+            add("extra2",fieldCreate->createScalarArray(pvString)) ->
             createStructure();
     testOk1(structure.get() != 0);
     if (!structure)
@@ -32,7 +36,7 @@ void test_builder()
 
     testOk1(NTNameValue::is_a(structure));
     testOk1(structure->getID() == NTNameValue::URI);
-    testOk1(structure->getNumberFields() == 5);
+    testOk1(structure->getNumberFields() == 7);
     testOk1(structure->getField("names").get() != 0);
     testOk1(structure->getField("values").get() != 0);
     testOk1(structure->getField("descriptor").get() != 0);
@@ -51,6 +55,8 @@ void test_builder()
                 addDescriptor()->
                 addAlarm()->
                 addTimeStamp()->
+            add("extra1",fieldCreate->createScalar(pvString)) ->
+            add("extra2",fieldCreate->createScalarArray(pvString)) ->
                 createStructure();
         testFail("no value type set");
     } catch (std::runtime_error &) {
@@ -70,6 +76,8 @@ void test_ntnameValue()
             addDescriptor()->
             addAlarm()->
             addTimeStamp()->
+            add("extra1",fieldCreate->createScalar(pvString)) ->
+            add("extra2",fieldCreate->createScalarArray(pvString)) ->
             create();
     testOk1(ntNameValue.get() != 0);
 
@@ -197,6 +205,7 @@ void test_narrow()
     if (!pvStructure)
         return;
 
+    testOk1(NTNameValue::is_compatible(pvStructure)==true);
     NTNameValuePtr ptr = NTNameValue::narrow(pvStructure);
     testOk(ptr.get() != 0, "narrow OK");
 
@@ -236,7 +245,7 @@ void test_extra()
 
 
 MAIN(testNTNameValue) {
-    testPlan(47);
+    testPlan(48);
     test_builder();
     test_ntnameValue();
     test_narrow();

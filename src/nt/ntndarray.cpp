@@ -16,7 +16,7 @@ namespace epics { namespace nt {
 
 namespace detail {
 
-const std::string ntAttrStr("uri:ev4:nt/2012/pwd:NTAttribute");
+const std::string ntAttrStr("uri:ev4:nt/2014/pwd:NTAttribute");
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
@@ -41,6 +41,7 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
     static epics::pvData::StructureConstPtr attributeStruc;
 
     static Mutex mutex;
+
     Lock xx(mutex);
 
     size_t index = 0;
@@ -116,6 +117,11 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
         if (display)
             fb->add("display", standardField->display());
 
+        size_t extraCount = extraFieldNames.size();
+        for (size_t i = 0; i< extraCount; i++)
+            fb->add(extraFieldNames[i], extraFields[i]);
+
+
         ntndarrayStruc[index] = fb->createStructure();
     }
 
@@ -167,12 +173,21 @@ void NTNDArrayBuilder::reset()
     timeStamp = false;
     alarm = false;
     display = false;
+    extraFieldNames.clear();
+    extraFields.clear();
 }
+
+NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::add(string const & name, FieldConstPtr const & field)
+{
+    extraFields.push_back(field); extraFieldNames.push_back(name);
+    return shared_from_this();
+}
+
 
 }
 
-const std::string NTNDArray::URI("uri:ev4:nt/2012/pwd:NTNDArray");
-const std::string ntAttrStr("uri:ev4:nt/2012/pwd:NTAttribute");
+const std::string NTNDArray::URI("uri:ev4:nt/2014/pwd:NTNDArray");
+const std::string ntAttrStr("uri:ev4:nt/2014/pwd:NTAttribute");
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
@@ -194,6 +209,12 @@ bool NTNDArray::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;
 }
+
+bool NTNDArray::is_compatible(PVStructurePtr const & pvStructure)
+{
+    return true;
+}
+
 
 NTNDArrayBuilderPtr NTNDArray::createBuilder()
 {

@@ -12,6 +12,7 @@
 using namespace epics::nt;
 using namespace epics::pvData;
 using std::tr1::dynamic_pointer_cast;
+static FieldCreatePtr fieldCreate = getFieldCreate();
 
 void test_builder()
 {
@@ -27,6 +28,8 @@ void test_builder()
             addDescriptor()->
             addAlarm()->
             addTimeStamp()->
+            add("extra1",fieldCreate->createScalar(pvString)) ->
+            add("extra2",fieldCreate->createScalarArray(pvString)) ->
             createStructure();
     testOk1(structure.get() != 0);
     if (!structure)
@@ -84,6 +87,7 @@ void test_labels()
     if (!pvStructure)
         return;
 
+    testOk1(NTTable::is_compatible(pvStructure)==true);
     std::cout << *pvStructure << std::endl;
 
     PVStringArrayPtr labels = pvStructure->getSubField<PVStringArray>("labels");
@@ -230,7 +234,7 @@ void test_narrow()
 }
 
 MAIN(testNTTable) {
-    testPlan(45);
+    testPlan(46);
     test_builder();
     test_labels();
     test_nttable();

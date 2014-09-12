@@ -87,6 +87,8 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
 {
     StandardFieldPtr standardField = getStandardField();
     size_t nfields = 3;
+    size_t extraCount = extraFieldNames.size();
+    nfields += extraCount;
     if(descriptor) ++nfields;
     if(alarm) ++nfields;
     if(timeStamp) ++nfields;
@@ -145,6 +147,11 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
         names[ind] = "userTag";
         fields[ind++] = fieldCreate->createScalarArray(pvInt);
     }
+    for (size_t i = 0; i< extraCount; i++) {
+        names[ind] = extraFieldNames[i];
+        fields[ind++] = extraFields[i];
+    }
+
     StructureConstPtr st = fieldCreate->createStructure(NTMultiChannel::URI,names,fields);
     reset();
     return st;
@@ -168,6 +175,8 @@ NTMultiChannelBuilder::NTMultiChannelBuilder()
 void NTMultiChannelBuilder::reset()
 {
     valueUnion.reset();
+    extraFieldNames.clear();
+    extraFields.clear();
     value = false;
     descriptor = false;
     alarm = false;
@@ -180,9 +189,16 @@ void NTMultiChannelBuilder::reset()
     userTag = false;
 }
 
+
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::add(string const & name, FieldConstPtr const & field)
+{
+    extraFields.push_back(field); extraFieldNames.push_back(name);
+    return shared_from_this();
 }
 
-const std::string NTMultiChannel::URI("uri:ev4:nt/2012/pwd:NTMultiChannel");
+}
+
+const std::string NTMultiChannel::URI("uri:ev4:nt/2014/pwd:NTMultiChannel");
 
 NTMultiChannel::shared_pointer NTMultiChannel::narrow(PVStructurePtr const & structure)
 {
@@ -200,6 +216,13 @@ NTMultiChannel::shared_pointer NTMultiChannel::narrow_unsafe(PVStructurePtr cons
 bool NTMultiChannel::is_a(StructureConstPtr const &structure)
 {
     return structure->getID() == URI;
+}
+
+bool NTMultiChannel::is_compatible(PVStructurePtr const &pvStructure)
+{
+    PVUnionArrayPtr pvValue = pvStructure->getSubField<PVUnionArray>("value");
+    if(!pvValue) return false;
+    return true;
 }
 
 NTMultiChannelBuilderPtr NTMultiChannel::createBuilder()

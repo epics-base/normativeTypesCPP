@@ -77,6 +77,13 @@ namespace detail {
          * @return a new instance of a {@code NTTable}
          */
         NTTablePtr create();
+        /**
+         * Add extra {@code Field} to the type.
+         * @param name name of the field.
+         * @param field a field to add.
+         * @return this instance of a {@code NTTableBuilder}.
+         */
+        shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
 
     private:
         NTTableBuilder();
@@ -89,6 +96,10 @@ namespace detail {
         bool descriptor;
         bool alarm;
         bool timeStamp;
+
+        // NOTE: this preserves order, however it does not handle duplicates
+        epics::pvData::StringArray extraFieldNames;
+        epics::pvData::FieldConstPtrArray extraFields;
 
         friend class ::epics::nt::NTTable;
     };
@@ -132,7 +143,14 @@ public:
      * @return (false,true) if (is not, is) an NTTable.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
-
+    /**
+     * Is the pvStructure compatible with  NTTable.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The pvStructure to test.
+     * @return (false,true) if (is not, is) an NTMultiChannel.
+     */
+    static bool is_compatible(
+        epics::pvData::PVStructurePtr const &pvStructure);
     /**
      * Create a NTTable builder instance.
      * @return builder instance.

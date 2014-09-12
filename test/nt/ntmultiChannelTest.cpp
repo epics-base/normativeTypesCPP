@@ -49,6 +49,8 @@ static void test()
             addAlarm()->
             addTimeStamp()->
             addSeverity() ->
+            add("extra1",fieldCreate->createScalar(pvString)) ->
+            add("extra2",fieldCreate->createScalarArray(pvString)) ->
             create();
     testOk1(multiChannel.get() != 0);
 
@@ -120,6 +122,7 @@ static void test()
     testOk1(multiChannel.get() != 0);
     pvStructure = multiChannel->getPVStructure();
     if(debug) {cout << *pvStructure << endl;}
+    testOk1(NTMultiChannel::is_compatible(pvStructure)==true);
     PVStructurePtr pvTimeStamp = multiChannel->getTimeStamp();
     testOk1(pvTimeStamp.get() !=0);
     PVStructurePtr pvAlarm = multiChannel->getAlarm();
@@ -180,7 +183,7 @@ void test_narrow()
 
 MAIN(testCreateRequest)
 {
-    testPlan(24);
+    testPlan(25);
     test();
     test_narrow();
     return testDone();

@@ -58,6 +58,11 @@ StructureConstPtr NTTableBuilder::createStructure()
 
     StructureConstPtr s = builder->createStructure();
 
+    size_t extraCount = extraFieldNames.size();
+    for (size_t i = 0; i< extraCount; i++)
+        builder->add(extraFieldNames[i], extraFields[i]);
+
+
     reset();
     return s;
 }
@@ -111,9 +116,16 @@ void NTTableBuilder::reset()
     timeStamp = false;
 }
 
+NTTableBuilder::shared_pointer NTTableBuilder::add(string const & name, FieldConstPtr const & field)
+{
+    extraFields.push_back(field); extraFieldNames.push_back(name);
+    return shared_from_this();
 }
 
-const std::string NTTable::URI("uri:ev4:nt/2012/pwd:NTTable");
+
+}
+
+const std::string NTTable::URI("uri:ev4:nt/2014/pwd:NTTable");
 
 NTTable::shared_pointer NTTable::narrow(PVStructurePtr const & structure)
 {
@@ -131,6 +143,11 @@ NTTable::shared_pointer NTTable::narrow_unsafe(PVStructurePtr const & structure)
 bool NTTable::is_a(StructureConstPtr const & structure)
 {
     return structure->getID() == URI;
+}
+
+bool NTTable::is_compatible(PVStructurePtr const & pvStructure)
+{
+    return true;
 }
 
 NTTableBuilderPtr NTTable::createBuilder()
