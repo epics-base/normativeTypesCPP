@@ -72,7 +72,7 @@ static void test()
            add("intValue", pvInt)->
            createUnion();
     multiChannel = builder->
-            addValue(unionPtr) ->
+            value(unionPtr) ->
             addDescriptor()->
             addAlarm()->
             addTimeStamp()->
@@ -108,7 +108,7 @@ static void test()
     PVBooleanArrayPtr pvIsConnected = multiChannel->getIsConnected();
     shared_vector<const boolean> isConnected = pvIsConnected->view();
     multiChannel = builder->
-            addValue(unionPtr) ->
+            value(unionPtr) ->
             addDescriptor()->
             addAlarm()->
             addTimeStamp()->

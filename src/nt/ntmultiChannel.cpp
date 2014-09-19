@@ -20,10 +20,9 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::addValue(UnionConstPtr valuePtr)
+NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::value(UnionConstPtr valuePtr)
 {
-    value = true;
-    valueUnion = valuePtr;
+    valueType = valuePtr;
     return shared_from_this();
 }
 
@@ -101,8 +100,8 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
     StringArray names(nfields);
     size_t ind = 0;
     names[ind] = "value";
-    if(value) {
-        fields[ind++] =  fieldCreate->createUnionArray(valueUnion);
+    if(valueType) {
+        fields[ind++] =  fieldCreate->createUnionArray(valueType);
     } else {
         fields[ind++] =  fieldCreate->createVariantUnion();
     }
@@ -173,10 +172,9 @@ NTMultiChannelBuilder::NTMultiChannelBuilder()
 
 void NTMultiChannelBuilder::reset()
 {
-    valueUnion.reset();
+    valueType.reset();
     extraFieldNames.clear();
     extraFields.clear();
-    value = false;
     descriptor = false;
     alarm = false;
     timeStamp = false;
@@ -266,13 +264,13 @@ NTMultiChannel::NTMultiChannel(PVStructurePtr const & pvStructure)
 }
 
 
-void  NTMultiChannel::attachTimeStamp(PVTimeStamp &pv)
+void  NTMultiChannel::attachTimeStamp(PVTimeStamp &pv) const
 {
     if(!pvTimeStamp) return;
     pv.attach(pvTimeStamp);
 }
 
-void  NTMultiChannel::attachAlarm(PVAlarm &pv)
+void  NTMultiChannel::attachAlarm(PVAlarm &pv) const
 {
     if(!pvAlarm) return;
     pv.attach(pvAlarm);

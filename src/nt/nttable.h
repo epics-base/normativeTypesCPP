@@ -34,10 +34,10 @@ namespace detail {
         /**
          * Add a column of given {@code Scalar} type.
          * @param name name of the column.
-         * @param scalarType column type, a scalar array.
+         * @param elementType column type, a scalar array.
          * @return this instance of a {@code NTTableBuilder}.
          */
-        shared_pointer add(std::string const & name, epics::pvData::ScalarType scalarType);
+        shared_pointer add(std::string const & name, epics::pvData::ScalarType elememtType);
 
         /**
          * Add descriptor field to the NTTable.

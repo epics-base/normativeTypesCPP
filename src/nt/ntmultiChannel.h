@@ -41,7 +41,7 @@ namespace detail {
          * If this is not called then a variantUnion is the default.
          * @return this instance of a {@code NTMultiChannelBuilder}.
          */
-        shared_pointer addValue(epics::pvData::UnionConstPtr valuePtr);
+        shared_pointer value(epics::pvData::UnionConstPtr valuePtr);
         /**
          * Add descriptor field to the NTMultiChannel.
          * @return this instance of a {@code NTMultiChannelBuilder}.
@@ -117,8 +117,7 @@ namespace detail {
 
         void reset();
 
-        epics::pvData::UnionConstPtr valueUnion;
-        bool value;
+        epics::pvData::UnionConstPtr valueType;
         bool descriptor;
         bool alarm;
         bool timeStamp;
@@ -194,78 +193,91 @@ public:
       * @param pvTimeStamp The pvTimeStamp that will be attached.
       * Does nothing if no timeStamp
       */
-    void attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp);
+    void attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
     /**
      * Attach a pvAlarm.
      * @param pvAlarm The pvAlarm that will be attached.
      * Does nothing if no alarm
      */
-    void attachAlarm(epics::pvData::PVAlarm &pvAlarm);
+    void attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
     /**
      * Get the pvStructure.
      * @return PVStructurePtr.
      */
-    epics::pvData::PVStructurePtr getPVStructure(){return pvNTMultiChannel;}
+    epics::pvData::PVStructurePtr getPVStructure() const
+    {return pvNTMultiChannel;}
     /**
      * Get the timeStamp.
      * @return PVStructurePtr which may be null.
      */
-    epics::pvData::PVStructurePtr getTimeStamp(){return pvTimeStamp;}
+    epics::pvData::PVStructurePtr getTimeStamp() const
+    {return pvTimeStamp;}
     /**
      * Get the alarm.
      * @return PVStructurePtr which may be null.
      */
-    epics::pvData::PVStructurePtr getAlarm() {return pvAlarm;}
+    epics::pvData::PVStructurePtr getAlarm() const
+     {return pvAlarm;}
     /**
      * Get the value of each channel.
      * @return PVUnionArrayPtr
      */
-    epics::pvData::PVUnionArrayPtr getValue() {return pvValue;}
+    epics::pvData::PVUnionArrayPtr getValue() const 
+    {return pvValue;}
     /**
      * Get the channelName of each channel.
      * @return PVStringArrayPtr
      */
-    epics::pvData::PVStringArrayPtr getChannelName() { return pvChannelName;};
+    epics::pvData::PVStringArrayPtr getChannelName() const 
+    { return pvChannelName;};
     /**
      * Get the connection state of each channel.
      * @return PVBooleanArrayPtr
      */
-    epics::pvData::PVBooleanArrayPtr getIsConnected() { return pvIsConnected;};
+    epics::pvData::PVBooleanArrayPtr getIsConnected() const 
+    { return pvIsConnected;};
     /**
      * Get the severity of each channel.
      * @return PVIntArrayPtr which may be null.
      */
-    epics::pvData::PVIntArrayPtr getSeverity() {return pvSeverity;}
+    epics::pvData::PVIntArrayPtr getSeverity() const 
+    {return pvSeverity;}
     /**
      * Get the status of each channel.
      * @return PVIntArrayPtr which may be null.
      */
-    epics::pvData::PVIntArrayPtr getStatus() {return pvStatus;}
+    epics::pvData::PVIntArrayPtr getStatus() const 
+    {return pvStatus;}
     /**
      * Get the message of each chnnel.
      * @return PVStringArrayPtr which may be null.
      */
-    epics::pvData::PVStringArrayPtr getMessage() {return pvMessage;}
+    epics::pvData::PVStringArrayPtr getMessage() const 
+    {return pvMessage;}
     /**
      * Get the secondsPastEpoch of each channel.
      * @return PVLongArrayPtr which may be null.
      */
-    epics::pvData::PVLongArrayPtr getSecondsPastEpoch() {return pvSecondsPastEpoch;}
+    epics::pvData::PVLongArrayPtr getSecondsPastEpoch() const 
+    {return pvSecondsPastEpoch;}
     /**
      * Get the nanoseconds of each channel.
      * @return PVIntArrayPtr which may be null.
      */
-    epics::pvData::PVIntArrayPtr getNanoseconds() {return pvNanoseconds;}
+    epics::pvData::PVIntArrayPtr getNanoseconds() const 
+    {return pvNanoseconds;}
     /**
      * Get the userTag of each channel.
      * @return PVIntArrayPtr which may be null.
      */
-    epics::pvData::PVIntArrayPtr getUserTag() {return pvUserTag;}
+    epics::pvData::PVIntArrayPtr getUserTag() const 
+    {return pvUserTag;}
     /**
      * Get the descriptor.
      * @return PVStringPtr which may be null.
      */
-    epics::pvData::PVStringPtr getDescriptor() {return pvDescriptor;}
+    epics::pvData::PVStringPtr getDescriptor() const 
+    {return pvDescriptor;}
 private:
     NTMultiChannel(epics::pvData::PVStructurePtr const & pvStructure);
     epics::pvData::PVStructurePtr pvNTMultiChannel;

@@ -329,6 +329,11 @@ PVStructurePtr NTNDArray::getAlarm() const
     return pvNTNDArray->getSubField<PVStructure>("alarm");
 }
 
+PVStructurePtr NTNDArray::getDisplay() const
+{
+    return pvNTNDArray->getSubField<PVStructure>("display");
+}
+
 
 NTNDArray::NTNDArray(PVStructurePtr const & pvStructure) :
     pvNTNDArray(pvStructure)

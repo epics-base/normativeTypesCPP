@@ -252,6 +252,12 @@ public:
      */
     epics::pvData::PVStructurePtr getAlarm() const;
 
+    /**
+     * Get the display field.
+     * @return PVStructurePtr which may be null.
+     */
+    epics::pvData::PVStructurePtr getDisplay() const;
+
 private:
     NTNDArray(epics::pvData::PVStructurePtr const & pvStructure);
     epics::pvData::PVStructurePtr pvNTNDArray;
