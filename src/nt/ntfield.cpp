@@ -154,15 +154,23 @@ bool NTField::isAlarmLimit(FieldConstPtr const & field)
    f = fields[1];
    if(names[1].compare("lowAlarmLimit")!=0) return false;
    if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
    f = fields[2];
    if(names[2].compare("lowWarningLimit")!=0) return false;
    if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
    f = fields[3];
    if(names[3].compare("highWarningLimit")!=0) return false;
    if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
    f = fields[4];
    if(names[4].compare("highAlarmLimit")!=0) return false;
    if(f->getType()!=scalar) return false;
+   s = static_pointer_cast<const Scalar>(f);
+   if(s->getScalarType()!=pvDouble) return false;
    f = fields[5];
    if(names[5].compare("lowAlarmSeverity")!=0) return false;
    if(f->getType()!=scalar) return false;
@@ -235,11 +243,6 @@ StructureConstPtr NTField::createDisplay()
     return standardField->display();
 }
 
-StructureConstPtr NTField::createAlarmLimit()
-{
-    return standardField->doubleAlarm();
-}
-
 StructureConstPtr NTField::createControl()
 {
     return standardField->control();
@@ -304,12 +307,6 @@ PVStructurePtr PVNTField::createDisplay()
 {
     StructureConstPtr display = standardField->display();
     return pvDataCreate->createPVStructure(display);
-}
-
-PVStructurePtr PVNTField::createAlarmLimit()
-{
-    StructureConstPtr structure = NTField::get()->createAlarmLimit();
-    return pvDataCreate->createPVStructure(structure);
 }
 
 

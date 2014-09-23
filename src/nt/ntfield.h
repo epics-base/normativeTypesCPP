@@ -100,11 +100,6 @@ public:
      */
     StructureConstPtr createDisplay();
     /**
-     * Create an alarmLimit structure.
-     * @return an alarmLimit structure.
-     */
-    StructureConstPtr createAlarmLimit();
-    /**
      * Create a control structure.
      * @return a control structure.
      */

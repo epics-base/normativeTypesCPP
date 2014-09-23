@@ -37,14 +37,14 @@ void test_builder()
     testOk1(NTNameValue::is_a(structure));
     testOk1(structure->getID() == NTNameValue::URI);
     testOk1(structure->getNumberFields() == 7);
-    testOk1(structure->getField("names").get() != 0);
-    testOk1(structure->getField("values").get() != 0);
+    testOk1(structure->getField("name").get() != 0);
+    testOk1(structure->getField("value").get() != 0);
     testOk1(structure->getField("descriptor").get() != 0);
     testOk1(structure->getField("alarm").get() != 0);
     testOk1(structure->getField("timeStamp").get() != 0);
 
-    testOk(dynamic_pointer_cast<const ScalarArray>(structure->getField("values")).get() != 0 &&
-            dynamic_pointer_cast<const ScalarArray>(structure->getField("values"))->getElementType() == pvDouble, "value array element type");
+    testOk(dynamic_pointer_cast<const ScalarArray>(structure->getField("value")).get() != 0 &&
+            dynamic_pointer_cast<const ScalarArray>(structure->getField("value"))->getElementType() == pvDouble, "value array element type");
 
     std::cout << *structure << std::endl;
 
@@ -85,50 +85,50 @@ void test_ntnameValue()
     testOk1(ntNameValue->getDescriptor().get() != 0);
     testOk1(ntNameValue->getAlarm().get() != 0);
     testOk1(ntNameValue->getTimeStamp().get() != 0);
-    testOk1(ntNameValue->getNames().get() != 0);
-    testOk1(ntNameValue->getValues().get() != 0);
+    testOk1(ntNameValue->getName().get() != 0);
+    testOk1(ntNameValue->getValue().get() != 0);
 
     //
-    // example how to set names
+    // example how to set name
     //
-    PVStringArray::svector newNames;
-    newNames.push_back("name1");
-    newNames.push_back("name2");
-    newNames.push_back("name3");
+    PVStringArray::svector newName;
+    newName.push_back("name1");
+    newName.push_back("name2");
+    newName.push_back("name3");
 
-    PVStringArrayPtr pvNamesField = ntNameValue->getNames();
-    pvNamesField->replace(freeze(newNames));
-
-    //
-    // example how to get names
-    //
-    PVStringArray::const_svector names(pvNamesField->view());
-
-    testOk1(names.size() == 3);
-    testOk1(names[0] == "name1");
-    testOk1(names[1] == "name2");
-    testOk1(names[2] == "name3");
+    PVStringArrayPtr pvNameField = ntNameValue->getName();
+    pvNameField->replace(freeze(newName));
 
     //
-    // example how to set values
+    // example how to get name
     //
-    PVIntArray::svector newValues;
-    newValues.push_back(1);
-    newValues.push_back(2);
-    newValues.push_back(8);
+    PVStringArray::const_svector name(pvNameField->view());
 
-    PVIntArrayPtr pvValueField = ntNameValue->getValues<PVIntArray>();
-    pvValueField->replace(freeze(newValues));
+    testOk1(name.size() == 3);
+    testOk1(name[0] == "name1");
+    testOk1(name[1] == "name2");
+    testOk1(name[2] == "name3");
 
     //
-    // example how to get column values
+    // example how to set value
     //
-    PVIntArray::const_svector values(pvValueField->view());
+    PVIntArray::svector newValue;
+    newValue.push_back(1);
+    newValue.push_back(2);
+    newValue.push_back(8);
 
-    testOk1(values.size() == 3);
-    testOk1(values[0] == 1);
-    testOk1(values[1] == 2);
-    testOk1(values[2] == 8);
+    PVIntArrayPtr pvValueField = ntNameValue->getValue<PVIntArray>();
+    pvValueField->replace(freeze(newValue));
+
+    //
+    // example how to get column value
+    //
+    PVIntArray::const_svector value(pvValueField->view());
+
+    testOk1(value.size() == 3);
+    testOk1(value[0] == 1);
+    testOk1(value[1] == 2);
+    testOk1(value[2] == 8);
 
     //
     // timeStamp ops
@@ -232,8 +232,8 @@ void test_extra()
     testOk1(NTNameValue::is_a(structure));
     testOk1(structure->getID() == NTNameValue::URI);
     testOk1(structure->getNumberFields() == 4);
-    testOk1(structure->getField("names").get() != 0);
-    testOk1(structure->getField("values").get() != 0);
+    testOk1(structure->getField("name").get() != 0);
+    testOk1(structure->getField("value").get() != 0);
     testOk1(structure->getField("timeStamp").get() != 0);
     testOk1(structure->getField("function").get() != 0);
 

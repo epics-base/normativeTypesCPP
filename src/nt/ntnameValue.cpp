@@ -34,8 +34,8 @@ StructureConstPtr NTNameValueBuilder::createStructure()
     FieldBuilderPtr builder =
             getFieldCreate()->createFieldBuilder()->
                setId(NTNameValue::URI)->
-               addArray("names", pvString)->
-               addArray("values", valueType);
+               addArray("name", pvString)->
+               addArray("value", valueType);
 
     if (descriptor)
         builder->add("descriptor", pvString);
@@ -130,10 +130,10 @@ bool NTNameValue::is_a(StructureConstPtr const & structure)
 
 bool NTNameValue::is_compatible(PVStructurePtr const & pvStructure)
 {
-    PVStringArrayPtr pvNames = pvStructure->getSubField<PVStringArray>("names");
-    if(!pvNames) return false;
-    PVFieldPtr pvValues = pvStructure->getSubField("values");
-    if(!pvValues) return false;
+    PVStringArrayPtr pvName = pvStructure->getSubField<PVStringArray>("name");
+    if(!pvName) return false;
+    PVFieldPtr pvValue = pvStructure->getSubField("value");
+    if(!pvValue) return false;
     PVFieldPtr pvField = pvStructure->getSubField("descriptor");
     if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
     pvField = pvStructure->getSubField("alarm");
@@ -186,14 +186,14 @@ PVStructurePtr NTNameValue::getAlarm() const
     return pvNTNameValue->getSubField<PVStructure>("alarm");
 }
 
-PVStringArrayPtr NTNameValue::getNames() const
+PVStringArrayPtr NTNameValue::getName() const
 {
-    return pvNTNameValue->getSubField<PVStringArray>("names");
+    return pvNTNameValue->getSubField<PVStringArray>("name");
 }
 
-PVFieldPtr NTNameValue::getValues() const
+PVFieldPtr NTNameValue::getValue() const
 {
-    return pvNTNameValue->getSubField("values");
+    return pvNTNameValue->getSubField("value");
 }
 
 NTNameValue::NTNameValue(PVStructurePtr const & pvStructure) :

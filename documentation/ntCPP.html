@@ -37,7 +37,7 @@
 <h1>EPICS ntCPP</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 19-Sept-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 22-Sept-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -80,7 +80,7 @@ V4 control system programming environment:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 19-Sept-2014 version of the C++ implementation of pvData.
+<p>This is the 22-Sept-2014 version of the C++ implementation of pvData.
 </p>
 
 
@@ -138,7 +138,7 @@ The extra fields are for specialized tools.
 A helper class NTField is provided to enforce the proper implementation  of property fields
 as defined by pvData.
 A property field is normally associated with a field that has the name "value".
-The property fields currently used are alarm, timeStamp, display, control, and valueAlarm.
+The property fields currently used are alarm, timeStamp, display, control, and alarmLimit.
 In addition pvData defines a standard structure for a value field that represents
 enumerated values.
 NTField has methods associated with each of these.
@@ -172,7 +172,6 @@ public:
     StructureConstPtr createTimeStamp();
     StructureConstPtr createAlarm();
     StructureConstPtr createDisplay();
-    StructureConstPtr createAlarmLimit();
     StructureConstPtr createControl();
 
     StructureArrayConstPtr createEnumeratedArray();
@@ -202,8 +201,6 @@ public:
     <dd>Create an interspection interface for an alarm structure.</dd>
   <dt>createDisplay</dt>
     <dd>Create an introsepecion interface for a display structure.</dd>
-  <dt>createAlarmLimit</dt>
-    <dd>Create an introspection interface for an alarm limit structure.</dd>
   <dt>createControl</dt>
     <dd>Create an introspection interface for a control structure.</dd>
   <dt>createEnumeratedArray</dt>
@@ -344,9 +341,18 @@ structure display
 </pre>
 <p>Note that the format should be a simplifed version of the standard
 C formattimg conventions.</p>
+<h3>enumerated</h3>
+<p>This is used to specify a set of choices and an index that selects one
+of the choices.
+For readers familiar with EPICS core this is like the ENUM types.</p>
+<pre>
+structure
+    int index
+    string[] choices
+</pre>
 <h3>alarmLimit</h3>
-<p>This is used to specify alarm limits for a numeric scalar value field.
-It can be used by plotting tools to show alarm limits and asociated severities.
+<p>This is used to specify alarm limits for a double scalar value field.
+It can be used by plotting tools to show alarm limits and associated severities.
 </p>
 <pre>
 structure 
@@ -361,15 +367,23 @@ structure
     int highAlarmSeverity
     double hysteresis
 </pre>
-<h3>enumerated</h3>
-<p>This is used to specify a set of choices and an index that selects one
-of the choices.
-For readers familiar with EPICS core this is like the ENUM types.</p>
-<pre>
-structure
-    int index
-    string[] choices
-</pre>
+<p><b>NOTE:</b> NTField, described above, has support for checking to see if
+a structure is an alarmLimit structure but no other support for alarmLimit.</p>
+
+PVData has support named <b>valueAlarm</b> instead of <b>alarmLimit</b>
+(alarmLimit is identical to valueAlarm for type double).
+For numeric types the field names are the same but the type
+for lowAlarmLimit, lowWarningLimit, highWarningLimit, and highAlarmLimit
+is based on the scalarType.
+PVData also defines valueAlarm for a scalar boolean value field
+and for an enumerated structure.
+For these completely different field names are defined.
+valueAlarm is more for use by servers than for clients.
+Thus normative types only defines alarmLimit since this is what
+clients like plot tools use.
+If the valueAlarm fields, including alarmLimit, are desired than the standardField support from
+PVData can be used to generate a valueAlarm field as an extra field.
+</p>
 
 <h2>Normative Type Common Features</h2>
 <p>Each normative type has two classes: a builder and a class for the normative type itself.</p>
@@ -391,13 +405,13 @@ and a method to add extra fields.</p>
 This has methods to do the following:</p>
 <dl>
    <dt>Create instance</dt>
-     <dd>A instance of a object can be created via a builder of from an existing PVStructure</dd>
+     <dd>A instance of a object can be created via a builder or from an existing PVStructure</dd>
    <dt>Attach a Property</dt>
       <dd>For the following optional fields an object to manipulate the fields can be attached:
          alarm, timeStamp, display, and control.</dd>
    <dt>Get Data Interfaces</dt>
       <dd>Each type has a method getPVStructure to get the entire data structure.
-       In addition there is a method to get the data interface for each manditory
+       In addition there is a method to get the data interface for each mandatory
        and optional field.</dd>
 </dl>
 <h2>Normative Type NTScalar</h2>
@@ -477,7 +491,7 @@ where
       <dd>create an PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
-      a unique name that is not the name of any manditory or possible optional field.</dd>
+      a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
 <p>An NTScalaBuilder can be used to create multiple PVStructure and/or NTScalar instances.
 Each time createPVScalar is called it clears all interval data after the PVStructure
@@ -719,7 +733,7 @@ where
       <dd>create an PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
-      a unique name that is not the name of any manditory or possible optional field.</dd>
+      a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
 <h3>NTScalarArray</h3>
 <p><b>ntscalarArray.h</b> defines the following:</p>
@@ -878,7 +892,7 @@ where
       <dd>create an PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
-      a unique name that is not the name of any manditory or possible optional field.</dd>
+      a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
 
 <h3>NTNameValue</h3>
@@ -1019,7 +1033,7 @@ where
       <dd>create an PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
-      a unique name that is not the name of any manditory or possible optional field.</dd>
+      a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
 <h3>NTTable</h3>
 <pre>
@@ -1174,7 +1188,7 @@ where
       <dd>create an PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
-      a unique name that is not the name of any manditory or possible optional field.</dd>
+      a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
 <h3>NTMultiChannel</h3>
 <pre>
@@ -1363,7 +1377,7 @@ where
       <dd>create an PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
-      a unique name that is not the name of any manditory or possible optional field.</dd>
+      a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
 <h3>NTNDArray</h3>
 <pre>

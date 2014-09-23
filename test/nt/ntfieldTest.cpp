@@ -47,7 +47,7 @@ void testNTField()
     cout << *structureConstPtr << endl;
     testOk1(ntField->isDisplay(structureConstPtr));
 
-    structureConstPtr = ntField->createAlarmLimit();
+    structureConstPtr = standardField->doubleAlarm();
     cout << *structureConstPtr << endl;
     testOk1(ntField->isAlarmLimit(structureConstPtr));
 
@@ -92,7 +92,7 @@ void testPVNTField()
     cout << *pvStructure << endl;
     testOk1(ntField->isDisplay(pvStructure->getStructure()));
 
-    pvStructure = PVStructurePtr(pvntField->createAlarmLimit());
+    pvStructure = PVStructurePtr(pvDataCreate->createPVStructure(standardField->doubleAlarm()));
     cout << *pvStructure << endl;
     testOk1(ntField->isAlarmLimit(pvStructure->getStructure()));
 

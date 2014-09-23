@@ -9,11 +9,13 @@
 
 #include <pv/nt.h>
 
+
 using namespace epics::nt;
 using namespace epics::pvData;
 using std::tr1::dynamic_pointer_cast;
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
+static StandardFieldPtr standardField = getStandardField();
 void test_builder()
 {
     testDiag("test_builder");
@@ -28,8 +30,8 @@ void test_builder()
             addTimeStamp()->
             addDisplay()->
             addControl()->
-            add("extra1",fieldCreate->createScalar(pvString)) ->
-            add("extra2",fieldCreate->createScalarArray(pvString)) ->
+            add("valueAlarm",standardField->doubleAlarm()) ->
+            add("extra",fieldCreate->createScalarArray(pvString)) ->
             createStructure();
     testOk1(structure.get() != 0);
     if (!structure)
@@ -80,6 +82,7 @@ void test_ntscalar()
             addTimeStamp()->
             addDisplay()->
             addControl()->
+            add("valueAlarm",standardField->intAlarm()) ->
             create();
     testOk1(ntScalar.get() != 0);
 

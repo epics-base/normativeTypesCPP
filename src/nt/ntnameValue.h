@@ -200,25 +200,25 @@ public:
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
-     * Get the names array field.
-     * @return The PVStringArray for the names.
+     * Get the name array field.
+     * @return The PVStringArray for the name.
      */
-    epics::pvData::PVStringArrayPtr getNames() const;
+    epics::pvData::PVStringArrayPtr getName() const;
 
     /**
      * Get the value array field.
-     * @return The PVField for the values.
+     * @return The PVField for the value.
      */
-    epics::pvData::PVFieldPtr getValues() const;
+    epics::pvData::PVFieldPtr getValue() const;
 
     /**
      * Get the value array field of a specified type (e.g. PVDoubleArray).
-     * @return The <PVT> array for the values.
+     * @return The <PVT> array for the value.
      */
     template<typename PVT>
-    std::tr1::shared_ptr<PVT> getValues() const
+    std::tr1::shared_ptr<PVT> getValue() const
     {
-        epics::pvData::PVFieldPtr pvField = getValues();
+        epics::pvData::PVFieldPtr pvField = getValue();
         if (pvField.get())
             return std::tr1::dynamic_pointer_cast<PVT>(pvField);
         else
