@@ -91,7 +91,7 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
             attributeStruc = fb->setId(ntAttrStr)->
 		        add("name", pvString)->
 			    add("value", fieldCreate->createVariantUnion())->
-			    add("description", pvString)->
+			    add("descriptor", pvString)->
                 add("sourceType", pvInt)->
                 add("source", pvString)->
                createStructure();
