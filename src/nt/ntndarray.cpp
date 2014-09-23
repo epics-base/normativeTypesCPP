@@ -99,9 +99,9 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
 
         fb->setId(NTNDArray::URI)->
             add("value", valueType)->
+            add("codec", codecStruc)->
             add("compressedSize", pvLong)->
             add("uncompressedSize", pvLong)->
-            add("codec", codecStruc)->
             addArray("dimension", dimensionStruc)->
             add("uniqueId", pvInt)->
             add("dataTimeStamp", standardField->timeStamp())->
@@ -284,6 +284,11 @@ PVUnionPtr NTNDArray::getValue() const
     return pvNTNDArray->getSubField<PVUnion>("value");
 }
 
+PVStructurePtr NTNDArray::getCodec() const
+{
+    return pvNTNDArray->getSubField<PVStructure>("codec");
+}
+
 PVLongPtr NTNDArray::getCompressedDataSize() const
 {
     return pvNTNDArray->getSubField<PVLong>("compressedSize");
@@ -292,11 +297,6 @@ PVLongPtr NTNDArray::getCompressedDataSize() const
 PVLongPtr NTNDArray::getUncompressedDataSize() const
 {
     return pvNTNDArray->getSubField<PVLong>("uncompressedSize");
-}
-
-PVStructurePtr NTNDArray::getCodec() const
-{
-    return pvNTNDArray->getSubField<PVStructure>("codec");
 }
 
 PVStructureArrayPtr NTNDArray::getAttribute() const

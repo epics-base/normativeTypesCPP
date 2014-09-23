@@ -137,6 +137,7 @@ public:
      * @return (false,true) if (is not, is) an NTNDArray.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
      * Is the pvStructure compatible with  NTNDArray..
      * This method introspects the fields to see if they are compatible.
@@ -193,6 +194,12 @@ public:
     epics::pvData::PVUnionPtr getValue() const;
 
     /**
+     * Get the codec field.
+     * @return the PVStructurePtr.
+     */
+    epics::pvData::PVStructurePtr getCodec() const;
+
+    /**
      * Get the compressedDataSize field.
      * @return PVStructurePtr.
      */
@@ -203,12 +210,6 @@ public:
      * @return PVStructurePtr.
      */
     epics::pvData::PVLongPtr getUncompressedDataSize() const;
-
-    /**
-     * Get the codec field.
-     * @return the PVStructurePtr.
-     */
-    epics::pvData::PVStructurePtr getCodec() const;
 
     /**
      * Get the attribute field.
