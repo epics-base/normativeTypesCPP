@@ -25,64 +25,119 @@ static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 
 StructureConstPtr NTNDArrayBuilder::createStructure()
 {
-    StandardFieldPtr standardField = getStandardField();
-    FieldBuilderPtr fb = fieldCreate->createFieldBuilder();
-
-    for (int i = pvBoolean; i < pvString; ++i)
+    enum
     {
-        ScalarType st = static_cast<ScalarType>(i);
-        fb->addArray(std::string(ScalarTypeFunc::name(st)) + "Value", st);
+        DISCRIPTOR_INDEX,
+        TIMESTAMP_INDEX,
+        ALARM_INDEX,
+        DISPLAY_INDEX
+    };
+
+    const size_t NUMBER_OF_INDICES = DISPLAY_INDEX+1;
+    const size_t NUMBER_OF_STRUCTURES = 1 << NUMBER_OF_INDICES;
+
+    static StructureConstPtr ntndarrayStruc[NUMBER_OF_STRUCTURES];
+    static UnionConstPtr valueType;
+    static StructureConstPtr codecStruc;
+    static StructureConstPtr dimensionStruc;
+    static StructureConstPtr attributeStruc;
+
+    static Mutex mutex;
+
+    Lock xx(mutex);
+
+    StructureConstPtr returnedStruc;
+
+    size_t index = 0;
+    if (descriptor) index  |= 1 << DISCRIPTOR_INDEX;
+    if (timeStamp)  index  |= 1 << TIMESTAMP_INDEX;
+    if (alarm)      index  |= 1 << ALARM_INDEX;
+    if (display)    index  |= 1 << DISPLAY_INDEX;
+
+    bool isExtended = !extraFieldNames.empty();
+
+    if (isExtended || !ntndarrayStruc[index])
+    {
+        StandardFieldPtr standardField = getStandardField();
+        FieldBuilderPtr fb = fieldCreate->createFieldBuilder();
+
+        if (!valueType)
+        {
+            for (int i = pvBoolean; i < pvString; ++i)
+            {
+                ScalarType st = static_cast<ScalarType>(i);
+                fb->addArray(std::string(ScalarTypeFunc::name(st)) + "Value", st);
+            }
+            valueType = fb->createUnion();                
+        }
+
+        if (!codecStruc)
+        {
+            codecStruc = fb->setId("codec_t")->
+                add("name", pvString)->
+                add("parameters", fieldCreate->createVariantUnion())->
+                createStructure();
+        }
+
+        if (!dimensionStruc)
+        {
+            dimensionStruc = fb->setId("dimension_t")->
+                add("size", pvInt)->
+                add("offset",  pvInt)->
+                add("fullSize",  pvInt)->
+                add("binning",  pvInt)->
+                add("reverse",  pvBoolean)->
+                createStructure();
+        }
+
+        if (!attributeStruc)
+        {
+            attributeStruc = fb->setId(ntAttrStr)->
+		        add("name", pvString)->
+			    add("value", fieldCreate->createVariantUnion())->
+			    add("descriptor", pvString)->
+                add("sourceType", pvInt)->
+                add("source", pvString)->
+               createStructure();
+        }
+
+        fb->setId(NTNDArray::URI)->
+            add("value", valueType)->
+            add("codec", codecStruc)->
+            add("compressedSize", pvLong)->
+            add("uncompressedSize", pvLong)->
+            addArray("dimension", dimensionStruc)->
+            add("uniqueId", pvInt)->
+            add("dataTimeStamp", standardField->timeStamp())->
+            addArray("attribute", attributeStruc);
+
+        if (descriptor)
+            fb->add("descriptor", pvString);
+
+        if (timeStamp)
+            fb->add("timeStamp", standardField->timeStamp());
+
+        if (alarm)
+            fb->add("alarm", standardField->alarm());
+
+        if (display)
+            fb->add("display", standardField->display());
+
+        size_t extraCount = extraFieldNames.size();
+        for (size_t i = 0; i< extraCount; i++)
+            fb->add(extraFieldNames[i], extraFields[i]);
+
+        returnedStruc = fb->createStructure();
+
+        if (!isExtended)
+            ntndarrayStruc[index] = returnedStruc; 
     }
-    UnionConstPtr valueType = fb->createUnion();                
+    else
+    {
+        return ntndarrayStruc[index];
+    }
 
-    StructureConstPtr codecStruc = fb->setId("codec_t")->
-        add("name", pvString)->
-        add("parameters", fieldCreate->createVariantUnion())->
-        createStructure();
-
-    StructureConstPtr dimensionStruc = fb->setId("dimension_t")->
-        add("size", pvInt)->
-        add("offset", pvInt)->
-        add("fullSize", pvInt)->
-        add("binning", pvInt)->
-        add("reverse", pvBoolean)->
-        createStructure();
-
-    StructureConstPtr attributeStruc = fb->setId(ntAttrStr)->
-        add("name", pvString)->
-        add("value", fieldCreate->createVariantUnion())->
-        add("descriptor", pvString)->
-        add("sourceType", pvInt)->
-        add("source", pvString)->
-       createStructure();
-
-    fb->setId(NTNDArray::URI)->
-        add("value", valueType)->
-        add("codec", codecStruc)->
-        add("compressedSize", pvLong)->
-        add("uncompressedSize", pvLong)->
-        addArray("dimension", dimensionStruc)->
-        add("uniqueId", pvInt)->
-        add("dataTimeStamp", standardField->timeStamp())->
-        addArray("attribute", attributeStruc);
-
-    if (descriptor)
-        fb->add("descriptor", pvString);
-
-    if (timeStamp)
-        fb->add("timeStamp", standardField->timeStamp());
-
-    if (alarm)
-        fb->add("alarm", standardField->alarm());
-
-    if (display)
-        fb->add("display", standardField->display());
-
-    size_t extraCount = extraFieldNames.size();
-    for (size_t i = 0; i< extraCount; i++)
-        fb->add(extraFieldNames[i], extraFields[i]);
-
-    return fb->createStructure();
+    return returnedStruc;
 }
 
 NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::addDescriptor()
