@@ -14,21 +14,25 @@ using namespace epics::pvData;
 using std::tr1::dynamic_pointer_cast;
 static FieldCreatePtr fieldCreate = getFieldCreate();
 
-void test_builder()
+void test_builder(bool extraFields)
 {
     testDiag("test_builder");
 
     NTNDArrayBuilderPtr builder = NTNDArray::createBuilder();
     testOk(builder.get() != 0, "Got builder");
 
-    StructureConstPtr structure = builder->
-            addDescriptor()->
-            addTimeStamp()->          
-            addAlarm()->  
-            addDisplay()->  
-            add("extra1",fieldCreate->createScalar(pvString)) ->
-            add("extra2",fieldCreate->createScalarArray(pvString)) ->
-            createStructure();
+    builder->addDescriptor()->
+             addTimeStamp()->          
+             addAlarm()->  
+             addDisplay();
+
+    if (extraFields)
+    {
+        builder->add("extra1",fieldCreate->createScalar(pvString))->
+                 add("extra2",fieldCreate->createScalarArray(pvString));
+    }
+
+    StructureConstPtr structure = builder->createStructure();
     testOk1(structure.get() != 0);
     if (!structure)
         return;
@@ -47,6 +51,11 @@ void test_builder()
     testOk1(structure->getField("alarm").get() != 0);
     testOk1(structure->getField("timeStamp").get() != 0);
     testOk1(structure->getField("display").get() != 0);
+    if (extraFields)
+    {
+        testOk1(structure->getField("extra1").get() != 0);
+        testOk1(structure->getField("extra2").get() != 0);
+    }
     std::cout << *structure << std::endl;
 
 }
@@ -104,8 +113,10 @@ void test_narrow()
 }
 
 MAIN(testNTNDArray) {
-    testPlan(25);
-    test_builder();
+    testPlan(59);
+    test_builder(true);
+    test_builder(false);
+    test_builder(false); // called twice to test caching
     test_all();
     test_narrow();
     return testDone();
