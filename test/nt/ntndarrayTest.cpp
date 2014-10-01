@@ -76,23 +76,23 @@ void test_all()
             add("extra2",fieldCreate->createScalarArray(pvString)) ->
             createPVStructure();
     std::cout << *pvStructure << std::endl;
-    testOk1(NTNDArray::is_compatible(pvStructure)==true);
+    testOk1(NTNDArray::isCompatible(pvStructure)==true);
 }
 
 
-void test_narrow()
+void test_wrap()
 {
-    testDiag("test_narrow");
+    testDiag("test_wrap");
 
-    NTNDArrayPtr nullPtr = NTNDArray::narrow(PVStructurePtr());
-    testOk(nullPtr.get() == 0, "nullptr narrow");
+    NTNDArrayPtr nullPtr = NTNDArray::wrap(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr wrap");
 
-    nullPtr = NTNDArray::narrow(
+    nullPtr = NTNDArray::wrap(
                 getPVDataCreate()->createPVStructure(
                     NTField::get()->createTimeStamp()
                     )
                 );
-    testOk(nullPtr.get() == 0, "wrong type narrow");
+    testOk(nullPtr.get() == 0, "wrong type wrap");
 
 
     NTNDArrayBuilderPtr builder = NTNDArray::createBuilder();
@@ -103,13 +103,13 @@ void test_narrow()
     testOk1(pvStructure.get() != 0);
     if (!pvStructure)
         return;
-    testOk1(NTNDArray::is_compatible(pvStructure)==true);
+    testOk1(NTNDArray::isCompatible(pvStructure)==true);
 
-    NTNDArrayPtr ptr = NTNDArray::narrow(pvStructure);
-    testOk(ptr.get() != 0, "narrow OK");
+    NTNDArrayPtr ptr = NTNDArray::wrap(pvStructure);
+    testOk(ptr.get() != 0, "wrap OK");
 
-    ptr = NTNDArray::narrow_unsafe(pvStructure);
-    testOk(ptr.get() != 0, "narrow_unsafe OK");
+    ptr = NTNDArray::wrapUnsafe(pvStructure);
+    testOk(ptr.get() != 0, "wrapUnsafe OK");
 }
 
 MAIN(testNTNDArray) {
@@ -118,7 +118,7 @@ MAIN(testNTNDArray) {
     test_builder(false);
     test_builder(false); // called twice to test caching
     test_all();
-    test_narrow();
+    test_wrap();
     return testDone();
 }
 

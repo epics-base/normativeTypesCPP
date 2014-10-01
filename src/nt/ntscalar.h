@@ -134,20 +134,21 @@ public:
     static const std::string URI;
 
     /**
-     * Narrow (aka dynamic cast, or wrap) the structure to NTScalar.
-     * First the structure ID is checked against NTScalar::URI.
+     * Wrap (aka dynamic cast, or wrap) the structure to NTScalar.
+     * First isCompatible is called.
+     * This method will nullptr if the structure is is not compatible.
      * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to narrow-ed (dynamic cast, wrapped) to NTScalar.
+     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTScalar.
      * @return NTScalar instance on success, nullptr otherwise.
      */
-    static shared_pointer narrow(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
 
     /**
-     * Narrow (aka dynamic cast, or wrap) the structure to NTScalar without checking for null-ness or its ID.
-     * @param structure The structure to narrow-ed (dynamic cast, wrapped) to NTScalar.
+     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
+     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTScalar.
      * @return NTScalar instance.
      */
-    static shared_pointer narrow_unsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
 
     /**
      * Is the structure an NTScalar.
@@ -161,7 +162,7 @@ public:
      * @param pvStructure The pvStructure to test.
      * @return (false,true) if (is not, is) an NTMultiChannel.
      */
-    static bool is_compatible(
+    static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
     /**
      * Create a NTScalar builder instance.

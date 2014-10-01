@@ -103,7 +103,7 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
     if(valueType) {
         fields[ind++] =  fieldCreate->createUnionArray(valueType);
     } else {
-        fields[ind++] =  fieldCreate->createVariantUnion();
+        fields[ind++] =  fieldCreate->createVariantUnionArray();
     }
     names[ind] = "channelName";
     fields[ind++] =  fieldCreate->createScalarArray(pvString);
@@ -195,17 +195,15 @@ NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::add(string const & 
 
 }
 
-const std::string NTMultiChannel::URI("uri:ev4:nt/2014/pwd:NTMultiChannel");
+const std::string NTMultiChannel::URI("ev4:nt/NTMultiChannel:1.0");
 
-NTMultiChannel::shared_pointer NTMultiChannel::narrow(PVStructurePtr const & structure)
+NTMultiChannel::shared_pointer NTMultiChannel::wrap(PVStructurePtr const & structure)
 {
-    if (!structure || !is_a(structure->getStructure()))
-        return shared_pointer();
-
-    return narrow_unsafe(structure);
+    if(!isCompatible(structure)) return shared_pointer();
+    return wrapUnsafe(structure);
 }
 
-NTMultiChannel::shared_pointer NTMultiChannel::narrow_unsafe(PVStructurePtr const & structure)
+NTMultiChannel::shared_pointer NTMultiChannel::wrapUnsafe(PVStructurePtr const & structure)
 {
     return shared_pointer(new NTMultiChannel(structure));
 }
@@ -215,8 +213,9 @@ bool NTMultiChannel::is_a(StructureConstPtr const &structure)
     return structure->getID() == URI;
 }
 
-bool NTMultiChannel::is_compatible(PVStructurePtr const &pvStructure)
+bool NTMultiChannel::isCompatible(PVStructurePtr const &pvStructure)
 {
+    if(!pvStructure) return false;
     PVUnionArrayPtr pvValue = pvStructure->getSubField<PVUnionArray>("value");
     if(!pvValue) return false;
     PVFieldPtr pvField = pvStructure->getSubField("descriptor");

@@ -87,7 +87,7 @@ void test_labels()
     if (!pvStructure)
         return;
 
-    testOk1(NTTable::is_compatible(pvStructure)==true);
+    testOk1(NTTable::isCompatible(pvStructure)==true);
     std::cout << *pvStructure << std::endl;
 
     PVStringArrayPtr labels = pvStructure->getSubField<PVStringArray>("labels");
@@ -199,19 +199,19 @@ void test_nttable()
 
 }
 
-void test_narrow()
+void test_wrap()
 {
-    testDiag("test_narrow");
+    testDiag("test_wrap");
 
-    NTTablePtr nullPtr = NTTable::narrow(PVStructurePtr());
-    testOk(nullPtr.get() == 0, "nullptr narrow");
+    NTTablePtr nullPtr = NTTable::wrap(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr wrap");
 
-    nullPtr = NTTable::narrow(
+    nullPtr = NTTable::wrap(
                 getPVDataCreate()->createPVStructure(
                     NTField::get()->createTimeStamp()
                     )
                 );
-    testOk(nullPtr.get() == 0, "wrong type narrow");
+    testOk(nullPtr.get() == 0, "wrong type wrap");
 
 
     NTTableBuilderPtr builder = NTTable::createBuilder();
@@ -226,11 +226,11 @@ void test_narrow()
     if (!pvStructure)
         return;
 
-    NTTablePtr ptr = NTTable::narrow(pvStructure);
-    testOk(ptr.get() != 0, "narrow OK");
+    NTTablePtr ptr = NTTable::wrap(pvStructure);
+    testOk(ptr.get() != 0, "wrap OK");
 
-    ptr = NTTable::narrow_unsafe(pvStructure);
-    testOk(ptr.get() != 0, "narrow_unsafe OK");
+    ptr = NTTable::wrapUnsafe(pvStructure);
+    testOk(ptr.get() != 0, "wrapUnsafe OK");
 }
 
 MAIN(testNTTable) {
@@ -238,7 +238,7 @@ MAIN(testNTTable) {
     test_builder();
     test_labels();
     test_nttable();
-    test_narrow();
+    test_wrap();
     return testDone();
 }
 

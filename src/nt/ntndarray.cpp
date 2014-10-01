@@ -18,7 +18,7 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-const std::string ntAttrStr("uri:ev4:nt/2014/pwd:NTAttribute");
+const std::string ntAttrStr("ev4:nt/NTAttribute:1.0");
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
@@ -198,21 +198,19 @@ NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::add(string const & name, Fiel
 
 }
 
-const std::string NTNDArray::URI("uri:ev4:nt/2014/pwd:NTNDArray");
-const std::string ntAttrStr("uri:ev4:nt/2014/pwd:NTAttribute");
+const std::string NTNDArray::URI("ev4:nt/NTNDArray:1.0");
+const std::string ntAttrStr("ev4:nt/NTAttribute:1.0");
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 
-NTNDArray::shared_pointer NTNDArray::narrow(PVStructurePtr const & structure)
+NTNDArray::shared_pointer NTNDArray::wrap(PVStructurePtr const & structure)
 {
-    if (!structure || !is_a(structure->getStructure()))
-        return shared_pointer();
-
-    return narrow_unsafe(structure);
+    if(!isCompatible(structure)) return shared_pointer();
+    return wrapUnsafe(structure);
 }
 
-NTNDArray::shared_pointer NTNDArray::narrow_unsafe(PVStructurePtr const & structure)
+NTNDArray::shared_pointer NTNDArray::wrapUnsafe(PVStructurePtr const & structure)
 {
     return shared_pointer(new NTNDArray(structure));
 }
@@ -222,8 +220,9 @@ bool NTNDArray::is_a(StructureConstPtr const & structure)
     return structure->getID() == URI;
 }
 
-bool NTNDArray::is_compatible(PVStructurePtr const & pvStructure)
+bool NTNDArray::isCompatible(PVStructurePtr const & pvStructure)
 {
+    if(!pvStructure) return false;
     PVUnionPtr pvValue = pvStructure->getSubField<PVUnion>("value");
     if(!pvValue) return false;
     PVFieldPtr pvField = pvStructure->getSubField("descriptor");

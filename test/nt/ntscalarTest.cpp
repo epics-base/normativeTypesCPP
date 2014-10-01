@@ -192,19 +192,19 @@ void test_ntscalar()
 
 }
 
-void test_narrow()
+void test_wrap()
 {
-    testDiag("test_narrow");
+    testDiag("test_wrap");
 
-    NTScalarPtr nullPtr = NTScalar::narrow(PVStructurePtr());
-    testOk(nullPtr.get() == 0, "nullptr narrow");
+    NTScalarPtr nullPtr = NTScalar::wrap(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr wrap");
 
-    nullPtr = NTScalar::narrow(
+    nullPtr = NTScalar::wrap(
                 getPVDataCreate()->createPVStructure(
                     NTField::get()->createTimeStamp()
                     )
                 );
-    testOk(nullPtr.get() == 0, "wrong type narrow");
+    testOk(nullPtr.get() == 0, "wrong type wrap");
 
 
     NTScalarBuilderPtr builder = NTScalar::createBuilder();
@@ -217,19 +217,19 @@ void test_narrow()
     if (!pvStructure)
         return;
 
-    testOk1(NTScalar::is_compatible(pvStructure)==true);
-    NTScalarPtr ptr = NTScalar::narrow(pvStructure);
-    testOk(ptr.get() != 0, "narrow OK");
+    testOk1(NTScalar::isCompatible(pvStructure)==true);
+    NTScalarPtr ptr = NTScalar::wrap(pvStructure);
+    testOk(ptr.get() != 0, "wrap OK");
 
-    ptr = NTScalar::narrow_unsafe(pvStructure);
-    testOk(ptr.get() != 0, "narrow_unsafe OK");
+    ptr = NTScalar::wrapUnsafe(pvStructure);
+    testOk(ptr.get() != 0, "wrapUnsafe OK");
 }
 
 MAIN(testNTScalar) {
     testPlan(35);
     test_builder();
     test_ntscalar();
-    test_narrow();
+    test_wrap();
     return testDone();
 }
 

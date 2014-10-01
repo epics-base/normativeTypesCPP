@@ -125,17 +125,15 @@ NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::add(string const & na
 
 }
 
-const std::string NTScalarArray::URI("uri:ev4:nt/2014/pwd:NTScalarArray");
+const std::string NTScalarArray::URI("ev4:nt/NTScalarArray:1.0");
 
-NTScalarArray::shared_pointer NTScalarArray::narrow(PVStructurePtr const & structure)
+NTScalarArray::shared_pointer NTScalarArray::wrap(PVStructurePtr const & structure)
 {
-    if (!structure || !is_a(structure->getStructure()))
-        return shared_pointer();
-
-    return narrow_unsafe(structure);
+    if(!isCompatible(structure)) return shared_pointer();
+    return wrapUnsafe(structure);
 }
 
-NTScalarArray::shared_pointer NTScalarArray::narrow_unsafe(PVStructurePtr const & structure)
+NTScalarArray::shared_pointer NTScalarArray::wrapUnsafe(PVStructurePtr const & structure)
 {
     return shared_pointer(new NTScalarArray(structure));
 }
@@ -145,8 +143,9 @@ bool NTScalarArray::is_a(StructureConstPtr const & structure)
     return structure->getID() == URI;
 }
 
-bool NTScalarArray::is_compatible(PVStructurePtr const & pvStructure)
+bool NTScalarArray::isCompatible(PVStructurePtr const & pvStructure)
 {
+    if(!pvStructure) return false;
     PVScalarArrayPtr pvValue = pvStructure->getSubField<PVScalarArray>("value");
     if(!pvValue) return false;
     PVFieldPtr pvField = pvStructure->getSubField("descriptor");

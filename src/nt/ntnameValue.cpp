@@ -108,17 +108,15 @@ NTNameValueBuilder::shared_pointer NTNameValueBuilder::add(string const & name, 
 
 }
 
-const std::string NTNameValue::URI("uri:ev4:nt/2014/pwd:NTNameValue");
+const std::string NTNameValue::URI("ev4:nt/NTNameValue:1.0");
 
-NTNameValue::shared_pointer NTNameValue::narrow(PVStructurePtr const & structure)
+NTNameValue::shared_pointer NTNameValue::wrap(PVStructurePtr const & structure)
 {
-    if (!structure || !is_a(structure->getStructure()))
-        return shared_pointer();
-
-    return narrow_unsafe(structure);
+    if(!isCompatible(structure)) return shared_pointer();
+    return wrapUnsafe(structure);
 }
 
-NTNameValue::shared_pointer NTNameValue::narrow_unsafe(PVStructurePtr const & structure)
+NTNameValue::shared_pointer NTNameValue::wrapUnsafe(PVStructurePtr const & structure)
 {
     return shared_pointer(new NTNameValue(structure));
 }
@@ -128,8 +126,9 @@ bool NTNameValue::is_a(StructureConstPtr const & structure)
     return structure->getID() == URI;
 }
 
-bool NTNameValue::is_compatible(PVStructurePtr const & pvStructure)
+bool NTNameValue::isCompatible(PVStructurePtr const & pvStructure)
 {
+    if(!pvStructure) return false;
     PVStringArrayPtr pvName = pvStructure->getSubField<PVStringArray>("name");
     if(!pvName) return false;
     PVFieldPtr pvValue = pvStructure->getSubField("value");

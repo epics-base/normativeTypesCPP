@@ -123,17 +123,15 @@ NTTableBuilder::shared_pointer NTTableBuilder::add(string const & name, FieldCon
 
 }
 
-const std::string NTTable::URI("uri:ev4:nt/2014/pwd:NTTable");
+const std::string NTTable::URI("ev4:nt/NTTable:1.0");
 
-NTTable::shared_pointer NTTable::narrow(PVStructurePtr const & structure)
+NTTable::shared_pointer NTTable::wrap(PVStructurePtr const & structure)
 {
-    if (!structure || !is_a(structure->getStructure()))
-        return shared_pointer();
-
-    return narrow_unsafe(structure);
+    if(!isCompatible(structure)) return shared_pointer();
+    return wrapUnsafe(structure);
 }
 
-NTTable::shared_pointer NTTable::narrow_unsafe(PVStructurePtr const & structure)
+NTTable::shared_pointer NTTable::wrapUnsafe(PVStructurePtr const & structure)
 {
     return shared_pointer(new NTTable(structure));
 }
@@ -143,19 +141,15 @@ bool NTTable::is_a(StructureConstPtr const & structure)
     return structure->getID() == URI;
 }
 
-bool NTTable::is_compatible(PVStructurePtr const & pvStructure)
+bool NTTable::isCompatible(PVStructurePtr const & pvStructure)
 {
+    if(!pvStructure) return false;
     PVFieldPtr pvField = pvStructure->getSubField("alarm");
     if(pvField && !ntField->isAlarm(pvField->getField())) return false;
     pvField = pvStructure->getSubField("timeStamp");
     if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
     PVStringArrayPtr pvLabel = pvStructure->getSubField<PVStringArray>("labels");
-    const shared_vector<const string> column(pvLabel->view());
-    size_t len = column.size();
-    for(size_t i=0; i<len; ++i) {
-        string value = "value." + column[i];
-        if(!pvStructure->getSubField<PVScalarArray>(value)) return false;
-    }
+    if(!pvLabel) return false;
     return true;
 }
 

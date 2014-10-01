@@ -180,19 +180,19 @@ void test_ntnameValue()
 }
 
 
-void test_narrow()
+void test_wrap()
 {
-    testDiag("test_narrow");
+    testDiag("test_wrap");
 
-    NTNameValuePtr nullPtr = NTNameValue::narrow(PVStructurePtr());
-    testOk(nullPtr.get() == 0, "nullptr narrow");
+    NTNameValuePtr nullPtr = NTNameValue::wrap(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr wrap");
 
-    nullPtr = NTNameValue::narrow(
+    nullPtr = NTNameValue::wrap(
                 getPVDataCreate()->createPVStructure(
                     NTField::get()->createTimeStamp()
                     )
                 );
-    testOk(nullPtr.get() == 0, "wrong type narrow");
+    testOk(nullPtr.get() == 0, "wrong type wrap");
 
 
     NTNameValueBuilderPtr builder = NTNameValue::createBuilder();
@@ -205,12 +205,12 @@ void test_narrow()
     if (!pvStructure)
         return;
 
-    testOk1(NTNameValue::is_compatible(pvStructure)==true);
-    NTNameValuePtr ptr = NTNameValue::narrow(pvStructure);
-    testOk(ptr.get() != 0, "narrow OK");
+    testOk1(NTNameValue::isCompatible(pvStructure)==true);
+    NTNameValuePtr ptr = NTNameValue::wrap(pvStructure);
+    testOk(ptr.get() != 0, "wrap OK");
 
-    ptr = NTNameValue::narrow_unsafe(pvStructure);
-    testOk(ptr.get() != 0, "narrow_unsafe OK");
+    ptr = NTNameValue::wrapUnsafe(pvStructure);
+    testOk(ptr.get() != 0, "wrapUnsafe OK");
 }
 
 void test_extra()
@@ -248,7 +248,7 @@ MAIN(testNTNameValue) {
     testPlan(48);
     test_builder();
     test_ntnameValue();
-    test_narrow();
+    test_wrap();
     test_extra();
     return testDone();
 }

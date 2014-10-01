@@ -128,17 +128,15 @@ NTScalarBuilder::shared_pointer NTScalarBuilder::add(string const & name, FieldC
 
 }
 
-const std::string NTScalar::URI("uri:ev4:nt/2014/pwd:NTScalar");
+const std::string NTScalar::URI("ev4:nt/NTScalar:1.0");
 
-NTScalar::shared_pointer NTScalar::narrow(PVStructurePtr const & structure)
+NTScalar::shared_pointer NTScalar::wrap(PVStructurePtr const & structure)
 {
-    if (!structure || !is_a(structure->getStructure()))
-        return shared_pointer();
-
-    return narrow_unsafe(structure);
+    if(!isCompatible(structure)) return shared_pointer();
+    return wrapUnsafe(structure);
 }
 
-NTScalar::shared_pointer NTScalar::narrow_unsafe(PVStructurePtr const & structure)
+NTScalar::shared_pointer NTScalar::wrapUnsafe(PVStructurePtr const & structure)
 {
     return shared_pointer(new NTScalar(structure));
 }
@@ -148,8 +146,9 @@ bool NTScalar::is_a(StructureConstPtr const & structure)
     return structure->getID() == URI;
 }
 
-bool NTScalar::is_compatible(PVStructurePtr const & pvStructure)
+bool NTScalar::isCompatible(PVStructurePtr const & pvStructure)
 {
+    if(!pvStructure) return false;
     PVScalarPtr pvValue = pvStructure->getSubField<PVScalar>("value");
     if(!pvValue) return false;
     PVFieldPtr pvField = pvStructure->getSubField("descriptor");

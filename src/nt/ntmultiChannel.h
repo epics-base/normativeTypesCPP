@@ -148,20 +148,20 @@ public:
     static const std::string URI;
 
     /**
-     * Narrow (aka dynamic cast, or wrap) the structure to NTMultiChannel.
-     * First the structure ID is checked against NTMultiChannel::URI.
-     * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to narrow-ed (dynamic cast, wrapped) to NTMultiChannel.
+     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel.
+     * First isCompatible is called.
+     * This method will nullptr if the structure is is not compatible.
+     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTMultiChannel.
      * @return NTMultiChannel instance on success, nullptr otherwise.
      */
-    static shared_pointer narrow(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
 
     /**
-     * Narrow (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for null-ness or its ID.
-     * @param structure The structure to narrow-ed (dynamic cast, wrapped) to NTMultiChannel.
+     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
+     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTMultiChannel.
      * @return NTMultiChannel instance.
      */
-    static shared_pointer narrow_unsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
     /**
      * Is the Structure an NTMultiChannel.
      * This method structure->getID() and checks if it is the same as the URI.
@@ -176,7 +176,7 @@ public:
      * @param pvStructure The pvStructure to test.
      * @return (false,true) if (is not, is) an NTMultiChannel.
      */
-    static bool is_compatible(
+    static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
     /**
      * Create a NTMultiChannelBuilder instance

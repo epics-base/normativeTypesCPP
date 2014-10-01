@@ -37,7 +37,7 @@
 <h1>EPICS ntCPP</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 22-Sept-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 01-Oct-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -80,7 +80,7 @@ V4 control system programming environment:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 22-Sept-2014 version of the C++ implementation of pvData.
+<p>This is the 01-Oct-2014 version of the C++ implementation of pvData.
 </p>
 
 
@@ -417,7 +417,7 @@ This has methods to do the following:</p>
 <h2>Normative Type NTScalar</h2>
 <p>This has the following fields:</p>
 <pre>
-uri:ev4:nt/2014/pwd:NTScalar
+ev4:nt/NTScalar:1.0
     double value                        // mandatory and can be any numeric type
     string descriptor                   // optional
     alarm_t alarm                       // optional
@@ -532,10 +532,10 @@ class NTScalar
 public:
     POINTER_DEFINITIONS(NTScalar);
     ~NTScalar() {}
-    static shared_pointer narrow(PVStructurePtr const &amp; structure);
-    static shared_pointer narrow_unsafe(PVStructurePtr const &amp; structure);
+    static shared_pointer wrap(PVStructurePtr const &amp; structure);
+    static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool is_compatible(PVStructurePtr const &amp;pvStructure);
+    static bool isComparible(PVStructurePtr const &amp;pvStructure);
     static NTScalarBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -555,20 +555,19 @@ private:
 </pre>
 where
 <dl>
-   <dt>narrow</dt>
+   <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTScalar that warps it.
-       It calls <b>is_a</b> on the introspection interface of the
-       pvStructure and returns a null PVScalar if <b>is_a</b> returns false.
+       It calls <b>isCompatible</b> returns a null PVScalar if <b>isCompatible</b> returns false.
        <br \>
-The primary use of narrow is by pvAccess client code.
+The primary use of wrap is by pvAccess client code.
 The server creates a pvStructure that is valid for an NTScalar
 and passes it to the client.
-The client can call narrow to create an NTScalar for it;s own use.
+The client can call wrap to create an NTScalar for it;s own use.
 An example is:
 <pre>
 void myCallback(PVStructurePtr const &amp; pvStructure)
 {
-     NTScalarPtr ntscalar = NTScalar::narrow(pvStructure);
+     NTScalarPtr ntscalar = NTScalar::wrap(pvStructure);
      if(!ntscalar) {
        // not a valid NTScalar
      }
@@ -576,14 +575,14 @@ void myCallback(PVStructurePtr const &amp; pvStructure)
 }
 </pre>
      <dd>
-   <dt>narrow_unsafe</dt>
+   <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTScalar that warps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTScalar.</dd>
-   <dt>is_compatible</dt>
+   <dt>isComparible</dt>
        <dd>This method checks to see if the pvStructure has appropriate
        fields to be an NTScalar.
        </dd>
@@ -661,7 +660,7 @@ string message = alarm.getMessage();
 field is a scalar array field instead of just a scalar.</p>
 <p>This has the following fields:</p>
 <pre>
-uri:ev4:nt/2014/pwd:NTScalarArray
+ev4:nt/NTScalarArray:1.0
     double[] value                      // mandatory and can be any numeric type
     string descriptor                   // optional
     alarm_t alarm                       // optional
@@ -746,10 +745,10 @@ class NTScalarArray
 public:
     POINTER_DEFINITIONS(NTScalarArray);
     ~NTScalarArray() {}
-    static shared_pointer narrow(PVStructurePtr const &amp; structure);
-    static shared_pointer narrow_unsafe(PVStructurePtr const &amp; structure);
+    static shared_pointer wrap(PVStructurePtr const &amp; structure);
+    static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool is_compatible(PVStructurePtr const &amp;pvStructure);
+    static bool isComparible(PVStructurePtr const &amp;pvStructure);
     static NTScalarArrayBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -769,19 +768,18 @@ private:
 </pre>
 where
 <dl>
-   <dt>narrow</dt>
+   <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTScalarArray that warps it.
-       It calls <b>is_a</b> on the introspection interface of the
-       pvStructure and returns a null PVScalarArrayPtr if <b>is_a</b> returns false.
+       It calls <b>isCompatible</b> returns a null PVScalarArray if <b>isCompatible</b> returns false.
      <dd>
-   <dt>narrow_unsafe</dt>
+   <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTScalarArray that warps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTScalarArray.</dd>
-   <dt>is_compatible</dt>
+   <dt>isComparible</dt>
        <dd>This method checks to see if the pvStructure has appropriate
        fields to be an NTScalarArray.
        </dd>
@@ -834,7 +832,7 @@ where
 
 <h2>Normative Type NTNameValue</h2>
 <pre>
-uri:ev4:nt/2014/pwd:NTNameValue
+ev4:nt/NTNameValue:1.0
     string[] names                 // mandatory
     double[] values                // madatory, can be any type, must be same length as names
     string descriptor              // optional
@@ -905,10 +903,10 @@ class NTNameValue
 public:
     POINTER_DEFINITIONS(NTNameValue);
     ~NTNameValue() {}
-    static shared_pointer narrow(PVStructurePtr const &amp; structure);
-    static shared_pointer narrow_unsafe(PVStructurePtr const &amp; structure);
+    static shared_pointer wrap(PVStructurePtr const &amp; structure);
+    static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool is_compatible(PVStructurePtr const &amp;pvStructure);
+    static bool isComparible(PVStructurePtr const &amp;pvStructure);
     static NTNameValueBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -925,19 +923,18 @@ private:
 </pre>
 where
 <dl>
-   <dt>narrow</dt>
+   <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTNameValue that warps it.
-       It calls <b>is_a</b> on the introspection interface of the
-       pvStructure and returns a null NTNameValuePtr if <b>is_a</b> returns false.
+       It calls <b>isCompatible</b> returns a null NTNameValue if <b>isCompatible</b> returns false.
      <dd>
-   <dt>narrow_unsafe</dt>
+   <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTNameValue that warps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTNameValue.</dd>
-   <dt>is_compatible</dt>
+   <dt>isComparible</dt>
        <dd>This method checks to see if the pvStructure has appropriate
        fields to be an NTNameValue.
        </dd>
@@ -974,7 +971,7 @@ where
 
 <h2>Normative Type NTTable</h2>
 <pre>
-uri:ev4:nt/2014/pwd:NTTable 
+ev4:nt/NTTable:1.0 
     string[] labels [column0,column1,column2]    // mandatory
     structure value                              // mandatory; 
         double[] column0 []                      // name=labels[0]; can be any scalar type
@@ -1045,10 +1042,10 @@ class NTTable
 public:
     POINTER_DEFINITIONS(NTTable);
     ~NTTable() {}
-    static shared_pointer narrow(PVStructurePtr const &amp; structure);
-    static shared_pointer narrow_unsafe(PVStructurePtr const &amp; structure);
+    static shared_pointer wrap(PVStructurePtr const &amp; structure);
+    static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool is_compatible(PVStructurePtr const &amp;pvStructure);
+    static bool isComparible(PVStructurePtr const &amp;pvStructure);
     static NTTableBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -1066,19 +1063,18 @@ private:
 </pre>
 where
 <dl>
-   <dt>narrow</dt>
+   <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTTable that warps it.
-       It calls <b>is_a</b> on the introspection interface of the
-       pvStructure and returns a null NTTablePtr if <b>is_a</b> returns false.
+       It calls <b>isCompatible</b> returns a null NTTable if <b>isCompatible</b> returns false.
      <dd>
-   <dt>narrow_unsafe</dt>
+   <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTTable that warps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTTable.</dd>
-   <dt>is_compatible</dt>
+   <dt>isComparible</dt>
        <dd>This method checks to see if the pvStructure has appropriate
        fields to be an NTTable.
        </dd>
@@ -1200,10 +1196,10 @@ class NTMultiChannel
 public:
     POINTER_DEFINITIONS(NTMultiChannel);
     ~NTMultiChannel() {}
-    static shared_pointer narrow(PVStructurePtr const &amp; structure);
-    static shared_pointer narrow_unsafe(PVStructurePtr const &amp; structure);
+    static shared_pointer wrap(PVStructurePtr const &amp; structure);
+    static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool is_compatible(PVStructurePtr const &amp;pvStructure);
+    static bool isComparible(PVStructurePtr const &amp;pvStructure);
     static NTMultiChannelBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -1228,19 +1224,18 @@ private:
 </pre>
 where
 <dl>
-   <dt>narrow</dt>
+   <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTMultiChannel that warps it.
-       It calls <b>is_a</b> on the introspection interface of the
-       pvStructure and returns a null NTMultiChannelPtr if <b>is_a</b> returns false.
+       It calls <b>isCompatible</b> returns a null NTMultiChannel if <b>isCompatible</b> returns false.
      <dd>
-   <dt>narrow_unsafe</dt>
+   <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTMultiChannel that warps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTMultiChannel.</dd>
-   <dt>is_compatible</dt>
+   <dt>isComparible</dt>
        <dd>This method checks to see if the pvStructure has appropriate
        fields to be an NTMultiChannel.
        </dd>
@@ -1291,7 +1286,7 @@ where
 
 <h2>Normative Type NTNDArray</h2> 
 <pre>
-uri:ev4:nt/2014/pwd:NTNDArray 
+ev4:nt/NTNDArray:1.0 
     union value                                 //mandatory
     long compressedSize                         //mandatory
     long uncompressedSize                       //mandatory
@@ -1311,9 +1306,9 @@ uri:ev4:nt/2014/pwd:NTNDArray
         long secondsPastEpoch
         int nanoseconds
         int userTag
-    uri:ev4:nt/2014/pwd:NTAttribute[] attribute //mandatory
-        uri:ev4:nt/2014/pwd:NTAttribute[]
-            uri:ev4:nt/2014/pwd:NTAttribute
+    ev4:nt/NTAttribute:1.0[] attribute //mandatory
+        ev4:nt/NTAttribute:1.0[]
+            ev4:nt/NTAttribute:1.0
                 string name
                 any value
                 string description
@@ -1389,10 +1384,10 @@ class NTNDArray
 public:
     POINTER_DEFINITIONS(NTNDArray);
     ~NTNDArray() {}
-    static shared_pointer narrow(PVStructurePtr const &amp; structure);
-    static shared_pointer narrow_unsafe(PVStructurePtr const &amp; structure);
+    static shared_pointer wrap(PVStructurePtr const &amp; structure);
+    static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool is_compatible(PVStructurePtr const &amp;pvStructure);
+    static bool isComparible(PVStructurePtr const &amp;pvStructure);
     static NTNDArrayBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -1416,19 +1411,18 @@ private:
 </pre>
 where
 <dl>
-   <dt>narrow</dt>
+   <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTNDArray that warps it.
-       It calls <b>is_a</b> on the introspection interface of the
-       pvStructure and returns a null NTNDArrayPtr if <b>is_a</b> returns false.
+       It calls <b>isCompatible</b> returns a null NTNDArray if <b>isCompatible</b> returns false.
      <dd>
-   <dt>narrow_unsafe</dt>
+   <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTNDArray that warps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTNDArray.</dd>
-   <dt>is_compatible</dt>
+   <dt>isComparible</dt>
        <dd>This method checks to see if the pvStructure has appropriate
        fields to be an NTNDArray.
        </dd>

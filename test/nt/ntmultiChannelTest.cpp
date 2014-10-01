@@ -32,7 +32,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-static bool debug = true;
+static bool debug = false;
 
 static  FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
@@ -122,7 +122,7 @@ static void test()
     testOk1(multiChannel.get() != 0);
     pvStructure = multiChannel->getPVStructure();
     if(debug) {cout << *pvStructure << endl;}
-    testOk1(NTMultiChannel::is_compatible(pvStructure)==true);
+    testOk1(NTMultiChannel::isCompatible(pvStructure)==true);
     PVStructurePtr pvTimeStamp = multiChannel->getTimeStamp();
     testOk1(pvTimeStamp.get() !=0);
     PVStructurePtr pvAlarm = multiChannel->getAlarm();
@@ -150,19 +150,19 @@ static void test()
 }
 
 
-void test_narrow()
+void test_wrap()
 {
-    testDiag("test_narrow");
+    testDiag("test_wrap");
 
-    NTMultiChannelPtr nullPtr = NTMultiChannel::narrow(PVStructurePtr());
-    testOk(nullPtr.get() == 0, "nullptr narrow");
+    NTMultiChannelPtr nullPtr = NTMultiChannel::wrap(PVStructurePtr());
+    testOk(nullPtr.get() == 0, "nullptr wrap");
 
-    nullPtr = NTMultiChannel::narrow(
+    nullPtr = NTMultiChannel::wrap(
                 getPVDataCreate()->createPVStructure(
                     NTField::get()->createTimeStamp()
                     )
                 );
-    testOk(nullPtr.get() == 0, "wrong type narrow");
+    testOk(nullPtr.get() == 0, "wrong type wrap");
 
 
     NTMultiChannelBuilderPtr builder = NTMultiChannel::createBuilder();
@@ -174,18 +174,19 @@ void test_narrow()
     if (!pvStructure)
         return;
 
-    NTMultiChannelPtr ptr = NTMultiChannel::narrow(pvStructure);
-    testOk(ptr.get() != 0, "narrow OK");
+    NTMultiChannelPtr ptr = NTMultiChannel::wrap(pvStructure);
+    testOk(ptr.get() != 0, "wrap OK");
 
-    ptr = NTMultiChannel::narrow_unsafe(pvStructure);
-    testOk(ptr.get() != 0, "narrow_unsafe OK");
+    builder = NTMultiChannel::createBuilder();
+    ptr = NTMultiChannel::wrapUnsafe(pvStructure);
+    testOk(ptr.get() != 0, "wrapUnsafe OK");
 }
 
 MAIN(testCreateRequest)
 {
     testPlan(25);
     test();
-    test_narrow();
+    test_wrap();
     return testDone();
 }
 
