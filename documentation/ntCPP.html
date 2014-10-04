@@ -196,11 +196,11 @@ public:
   <dt>createEnumerated</dt>
     <dd>Create an introspection interface for an enumerated structure.</dd>
   <dt>createTimeStamp</dt>
-    <dd>Create an interspection interface for a timeStamp structure.</dd>
+    <dd>Create an introspection interface for a timeStamp structure.</dd>
   <dt>createAlarm</dt>
-    <dd>Create an interspection interface for an alarm structure.</dd>
+    <dd>Create an introspection interface for an alarm structure.</dd>
   <dt>createDisplay</dt>
-    <dd>Create an introsepecion interface for a display structure.</dd>
+    <dd>Create an introspection interface for a display structure.</dd>
   <dt>createControl</dt>
     <dd>Create an introspection interface for a control structure.</dd>
   <dt>createEnumeratedArray</dt>
@@ -216,7 +216,7 @@ public:
 <h2>Property Field Definitions</h2>
 <h3>Definition: value</h3>
 <p>Often a property field is associated with another field.
-This other field is refered to as the value field.
+This other field is referred to as the value field.
 Usually the value field will have the field name "value".
 An example is:</p>
 <pre>
@@ -269,7 +269,7 @@ structure alarm
     string message
 </pre>
 <p>Clients and Servers should use <b>alarm.h</b> and <b>pvAlarm.h</b> which are
-provided by pvDataCPP intead of directly using the alarm structure itself.
+provided by pvDataCPP instead of directly using the alarm structure itself.
 In particular severity and status are defined as:</p>
 <pre>
 enum AlarmSeverity {
@@ -304,7 +304,7 @@ structure timeStamp
     int userTag
 </pre>
 <p>Clients and Servers should use <b>timeStamp.h</b> and <b>pvTimeStamp.h</b>
-which are provided by pvDataCPP intead of directly using the timeStamp structure itself.
+which are provided by pvDataCPP instead of directly using the timeStamp structure itself.
 Note that <b>timeStamp.h</b> provides many methods for manipulating time.
 </p>
 <p>The meaning of the fields is:</p>
@@ -326,7 +326,7 @@ structure control
     double minStep
 </pre>
 <p>Servers should use <b>control.h</b> and <b>pvControl.h</b> which are
-provided by pvDataCPP intead of directly using the control structure itself.
+provided by pvDataCPP instead of directly using the control structure itself.
 Note that <b>control.h</b> provides many methods for manipulating time.
 </p>
 <h3>display</h3>
@@ -398,7 +398,7 @@ PVData can be used to generate a valueAlarm field as an extra field.
       <dd>The instance for the NT type.
       </dd>
 </dl>
-<p>Each bulder also has a number of additional methods for optional fields
+<p>Each builder also has a number of additional methods for optional fields
 and a method to add extra fields.</p>
 <h3>Normative Type Class</h3>
 <p>
@@ -834,7 +834,7 @@ where
 <pre>
 ev4:nt/NTNameValue:1.0
     string[] names                 // mandatory
-    double[] values                // madatory, can be any type, must be same length as names
+    double[] values                // mandatory, can be any type, must be same length as names
     string descriptor              // optional
     alarm_t alarm                  // optional
         int severity
