@@ -37,7 +37,7 @@
 <h1>EPICS ntCPP</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 01-Oct-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 09-Oct-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -80,7 +80,7 @@ V4 control system programming environment:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 01-Oct-2014 version of the C++ implementation of pvData.
+<p>This is the 09-Oct-2014 version of the C++ implementation of pvData.
 </p>
 
 
@@ -112,9 +112,9 @@ pvDataCPP.html
   <dt>NTScalarArray</dt>
      <dd>This has a value field that has type scalarArray</dd>
   <dt>NTNameValue</dt>
-      <dd>This has a field names that is a string array
-       and a field values that has type scalarArray.
-       Each names[i] is associated with values[i].
+      <dd>This has a field name that is a string array
+       and a field value that has type scalarArray.
+       Each name[i] is associated with value[i].
       </dd>
   <dt>NTTable</dt>
       <dd>This has a string array field named labels
@@ -233,9 +233,11 @@ to report problems to the client.
 An alarm attached to a substructure of the top level structure is normally
 associated with a value field.
 An alarm field attached to the top level structure can be used for either:
+</p>
 <ol>
    <li>If the top level structure has a value field then it is an alarm
      for that field.
+    </li>
    <li>To report other problems to the client.</li>
 </ol>
 <p>If alarms do appear at multiple levels then an alarm is always
@@ -288,9 +290,11 @@ There can be multiple timeStamp fields.
 A timeStamp associated with a substructure is usually associated with
 a value field.
 An timeStamp field attached to the top level structure can be used for either:
+</p>
 <ol>
    <li>If the top level structure has a value field then it can be the
      timeStamp for that field.
+   </li>
    <li>The time when the server executed.</li>
 </ol>
 <p>NTNDArray is an example that has two top level timeStamp field with different
@@ -369,7 +373,7 @@ structure
 </pre>
 <p><b>NOTE:</b> NTField, described above, has support for checking to see if
 a structure is an alarmLimit structure but no other support for alarmLimit.</p>
-
+<p>
 PVData has support named <b>valueAlarm</b> instead of <b>alarmLimit</b>
 (alarmLimit is identical to valueAlarm for type double).
 For numeric types the field names are the same but the type
@@ -394,11 +398,12 @@ PVData can be used to generate a valueAlarm field as an extra field.
      <dd>The introspection instance for the data structure associated with the type.</dd>
    <dt>PVStructure</dt>
      <dd>The data instance for the data structure associated with the type.</dd>
-    <dt>NTXXX</dt>
+    <dt>NTType</dt>
       <dd>The instance for the NT type.
+        For example <b>NTScalar</b>
       </dd>
 </dl>
-<p>Each builder also has a number of additional methods for optional fields
+<p>Each bulder also has a number of additional methods for optional fields
 and a method to add extra fields.</p>
 <h3>Normative Type Class</h3>
 <p>
@@ -494,13 +499,13 @@ where
       a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
 <p>An NTScalaBuilder can be used to create multiple PVStructure and/or NTScalar instances.
-Each time createPVScalar is called it clears all interval data after the PVStructure
+Each time createPVScalar is called it clears all internal data after the PVStructure
 is created.</p>
 <h4>NTScalarBuilder Examples</h4>
 <p>An example of creating an NTScalar instance is:</p>
 <pre>
 NTScalarBuilderPtr builder = NTScalar::createBuilder();
-NTScalarPtr ntScalar = builder->
+NTScalarPtr ntScalar = builder-&gt;
     value(pvInt)-&gt;
     addDescriptor()-&gt;
     addAlarm()-&gt;
@@ -525,7 +530,7 @@ NTScalarPtr ntScalar = builder-&gt;create();
 <p><b>ntscalar.h</b> defines the following:</p>
 <pre>
 class NTScalar;
-typedef std::tr1::shared_ptr<NTScalar> NTScalarPtr;
+typedef std::tr1::shared_ptr&lt;NTScalar&gt; NTScalarPtr;
 
 class NTScalar
 {
@@ -549,7 +554,7 @@ public:
     PVStructurePtr getControl() const;
     PVFieldPtr getValue() const;
     template&lt;typename PVT&gt;
-    std::tr1::shared_ptr&lt;PV&gt; getValue() const
+    std::tr1::shared_ptr&lt;PVT&gt; getValue() const
 private:
 }
 </pre>
@@ -557,12 +562,13 @@ where
 <dl>
    <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTScalar that warps it.
-       It calls <b>isCompatible</b> returns a null PVScalar if <b>isCompatible</b> returns false.
-       <br \>
+       It calls <b>isCompatible</b>.
+       It returns a null PVScalar if <b>isCompatible</b> returns false.
+       <br />
 The primary use of wrap is by pvAccess client code.
 The server creates a pvStructure that is valid for an NTScalar
 and passes it to the client.
-The client can call wrap to create an NTScalar for it;s own use.
+The client can call wrap to create an NTScalar for it's own use.
 An example is:
 <pre>
 void myCallback(PVStructurePtr const &amp; pvStructure)
@@ -574,7 +580,7 @@ void myCallback(PVStructurePtr const &amp; pvStructure)
      ...
 }
 </pre>
-     <dd>
+     </dd>
    <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTScalar that warps it.
       It does not check that the introspection interface is compatible.
@@ -596,11 +602,11 @@ An example is:
 PVTimeStamp pvTimeStamp;
 TimeStamp timeStamp;
 
-ntscalar-&amp;attachTimeStamp(pvTimeStamp);
+ntscalar-&gt;attachTimeStamp(pvTimeStamp);
 pvTimeStamp.get(timeStamp);
 TimeStamp current;
 current.getCurrent();
-double diff = TimeStamp::diff(timeStamp,current); // timeStamp = current
+double diff = TimeStamp::diff(timeStamp,current); // timeStamp - current
 </pre>
       </dd>
    <dt>attachAlarm</dt>
@@ -613,7 +619,7 @@ An example is:
 PVAlarm pvAlarm;
 Alarm alarm;
 
-ntscalar-&amp;attachAlarm(pvAlarm);
+ntscalar-&gt;attachAlarm(pvAlarm);
 pvAlarm.get(alarm);
 int severity = alarm.getSeverity();
 int status = alarm.getStatus();
@@ -656,7 +662,7 @@ string message = alarm.getMessage();
        <dd>Returns the value field.</dd>
 </dl>
 <h2>Normative Type NTScalarArray</h2>
-<p>This class is similar to <b>NTScalarArray</b> except that the value
+<p>This class is similar to <b>NTScalar</b> except that the value
 field is a scalar array field instead of just a scalar.</p>
 <p>This has the following fields:</p>
 <pre>
@@ -711,7 +717,7 @@ private:
 </pre>
 where
 <dl>
-  <dt>value</dt>
+  <dt>arrayValue</dt>
     <dd>This determines the element type for the value field.
      This must be specified or createStructure will throw an exception.</dd>
   <dt>addDescriptor</dt>
@@ -738,7 +744,7 @@ where
 <p><b>ntscalarArray.h</b> defines the following:</p>
 <pre>
 class NTScalarArray;
-typedef std::tr1::shared_ptr<NTScalarArray> NTScalarArrayPtr;
+typedef std::tr1::shared_ptr&lt;NTScalarArray&gt; NTScalarArrayPtr;
 
 class NTScalarArray
 {
@@ -771,7 +777,7 @@ where
    <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTScalarArray that warps it.
        It calls <b>isCompatible</b> returns a null PVScalarArray if <b>isCompatible</b> returns false.
-     <dd>
+     </dd>
    <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTScalarArray that warps it.
       It does not check that the introspection interface is compatible.
@@ -833,8 +839,8 @@ where
 <h2>Normative Type NTNameValue</h2>
 <pre>
 ev4:nt/NTNameValue:1.0
-    string[] names                 // mandatory
-    double[] values                // mandatory, can be any type, must be same length as names
+    string[] name                 // mandatory
+    double[] value                // madatory, can be any type, must be same length as name
     string descriptor              // optional
     alarm_t alarm                  // optional
         int severity
@@ -896,7 +902,7 @@ where
 <h3>NTNameValue</h3>
 <pre>
 class NTNameValue;
-typedef std::tr1::shared_ptr<NTNameValue> NTNameValuePtr;
+typedef std::tr1::shared_ptr&lt;NTNameValue&gt; NTNameValuePtr;
 
 class NTNameValue
 {
@@ -911,11 +917,12 @@ public:
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
     bool attachAlarm(PVAlarm &amp;pvAlarm) const;
+    PVStringPtr getDescriptor() const;
     PVStructurePtr getPVStructure() const;
     PVStructurePtr getTimeStamp() const;
     PVStructurePtr getAlarm() const;
-    PVStringArrayPtr getNames() const;
-    PVFieldPtr getValues() const;
+    PVStringArrayPtr getName() const;
+    PVFieldPtr getValue() const;
     template&lt;typename PVT&gt;
     std::tr1::shared_ptr&lt;PV&gt; getValue() const
 private:
@@ -926,7 +933,7 @@ where
    <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTNameValue that warps it.
        It calls <b>isCompatible</b> returns a null NTNameValue if <b>isCompatible</b> returns false.
-     <dd>
+     </dd>
    <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTNameValue that warps it.
       It does not check that the introspection interface is compatible.
@@ -963,10 +970,10 @@ where
        If the alarm was not selected as an optional field
        a null pvStructure is returned.
        </dd>
-   <dt>getNames</dt>
-       <dd>Returns field names.</dd>
-   <dt>getValues</dt>
-       <dd>Returns field values.</dd>
+   <dt>getName</dt>
+       <dd>Returns field name.</dd>
+   <dt>getValue</dt>
+       <dd>Returns field value.</dd>
 </dl>
 
 <h2>Normative Type NTTable</h2>
@@ -1035,7 +1042,7 @@ where
 <h3>NTTable</h3>
 <pre>
 class NTTable;
-typedef std::tr1::shared_ptr<NTTable> NTTablePtr;
+typedef std::tr1::shared_ptr&lt;NTTable&gt; NTTablePtr;
 
 class NTTable
 {
@@ -1066,7 +1073,7 @@ where
    <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTTable that warps it.
        It calls <b>isCompatible</b> returns a null NTTable if <b>isCompatible</b> returns false.
-     <dd>
+     </dd>
    <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTTable that warps it.
       It does not check that the introspection interface is compatible.
@@ -1189,7 +1196,7 @@ where
 <h3>NTMultiChannel</h3>
 <pre>
 class NTMultiChannel;
-typedef std::tr1::shared_ptr<NTMultiChannel> NTMultiChannelPtr;
+typedef std::tr1::shared_ptr&lt;NTMultiChannel&gt; NTMultiChannelPtr;
 
 class NTMultiChannel
 {
@@ -1204,6 +1211,7 @@ public:
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
     bool attachAlarm(PVAlarm &amp;pvAlarm) const;
+    PVStringPtr getDescriptor() const;
     PVStructurePtr getPVStructure() const;
     PVStructurePtr getTimeStamp() const;
     PVStructurePtr getAlarm() const;
@@ -1216,9 +1224,6 @@ public:
     PVLongArrayPtr getSecondsPastEpoch() const;
     PVIntArrayPtr getNanoseconds() const;
     PVIntArrayPtr getUserTag() const;
-    PVStringPtr getDescriptor() const;
-    template&lt;typename PVT&gt;
-    std::tr1::shared_ptr&lt;PV&gt; getValue() const
 private:
 }
 </pre>
@@ -1227,7 +1232,7 @@ where
    <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTMultiChannel that warps it.
        It calls <b>isCompatible</b> returns a null NTMultiChannel if <b>isCompatible</b> returns false.
-     <dd>
+     </dd>
    <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTMultiChannel that warps it.
       It does not check that the introspection interface is compatible.
@@ -1288,11 +1293,11 @@ where
 <pre>
 ev4:nt/NTNDArray:1.0 
     union value                                 //mandatory
-    long compressedSize                         //mandatory
-    long uncompressedSize                       //mandatory
     codec_t codec                               //mandatory
         string name 
         any parameters
+    long compressedSize                         //mandatory
+    long uncompressedSize                       //mandatory
     dimension_t[] dimension                     //mandatory
         dimension_t[]
             dimension_t
@@ -1377,7 +1382,7 @@ where
 <h3>NTNDArray</h3>
 <pre>
 class NTNDArray;
-typedef std::tr1::shared_ptr<NTNDArray> NTNDArrayPtr;
+typedef std::tr1::shared_ptr&lt;NTNDArray&gt; NTNDArrayPtr;
 
 class NTNDArray
 {
@@ -1390,20 +1395,21 @@ public:
     static bool isComparible(PVStructurePtr const &amp;pvStructure);
     static NTNDArrayBuilderPtr createBuilder();
 
+    PVStringPtr getDescriptor() const;
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
     bool attachDataTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
     bool attachAlarm(PVAlarm &amp;pvAlarm) const;
     PVStructurePtr getPVStructure() const;
     PVUnionPtr getValue() const;
+    PVStructurePtr getCodec() const;
     PVLongPtr getCompressedDataSize() const;
     PVLongPtr getUncompressedDataSize() const;
-    PVStructurePtr getCodec() const;
     PVStructureArrayPtr getAttribute() const;
     PVStructureArrayPtr getDimension() const;
     PVIntPtr getUniqueId() const;
-    PVStructurePtr getTimeStamp() const;
     PVStructurePtr getDataTimeStamp() const;
     PVStringPtr getDescriptor() const;
+    PVStructurePtr getTimeStamp() const;
     PVStructurePtr getAlarm() const;
     PVStructurePtr getDisplay() const;
 private:
@@ -1414,7 +1420,7 @@ where
    <dt>wrap</dt>
      <dd>Given a pvStructure this creates an NTNDArray that warps it.
        It calls <b>isCompatible</b> returns a null NTNDArray if <b>isCompatible</b> returns false.
-     <dd>
+     </dd>
    <dt>wrapUnsafe</dt>
      <dd>Given a pvStructure this creates an NTNDArray that warps it.
       It does not check that the introspection interface is compatible.
@@ -1442,6 +1448,23 @@ where
       </dd>
    <dt>getPVStructure</dt>
        <dd>Returns the pvStructure that NTNDArray wraps.</dd>
+   <dt>getValue</dt>
+       <dd>Returns the value field.</dd>
+   <dt>getCodec</dt>
+       <dd>Returns the severity of each channel.</dd>
+   <dt>getCompressedDataSize</dt>
+       <dd>Returns the name of each channel.</dd>
+   <dt>getUncompressedDataSize</dt>
+       <dd>Returns connection state of each channel.</dd>
+   <dt>getAttribute</dt>
+       <dd>Returns the status of each channel.</dd>
+   <dt>getDimension</dt>
+       <dd>Returns the message of each channel.</dd>
+   <dt>getUniqueId</dt>
+       <dd>Returns the secondsPastEpoch of each channel.</dd>
+   <dt>getDataTimeStamp</dt>
+       <dd>Returns the data timeStamp.
+       </dd>
     <dt>getDescriptor</dt>
        <dd>Get the descriptor.</dd>
    <dt>getTimeStamp</dt>
@@ -1459,20 +1482,6 @@ where
        If the display was not selected as an optional field
        a null pvStructure is returned.
        </dd>
-   <dt>getValue</dt>
-       <dd>Returns the value field.</dd>
-   <dt>getCompressedDataSize</dt>
-       <dd>Returns the name of each channel.</dd>
-   <dt>getUncompressedDataSize</dt>
-       <dd>Returns connection state of each channel.</dd>
-   <dt>getCodec</dt>
-       <dd>Returns the severity of each channel.</dd>
-   <dt>getAttribute</dt>
-       <dd>Returns the status of each channel.</dd>
-   <dt>getDimension</dt>
-       <dd>Returns the message of each channel.</dd>
-   <dt>getUniqueId</dt>
-       <dd>Returns the secondsPastEpoch of each channel.</dd>
 </dl>
 
 
