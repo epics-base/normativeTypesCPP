@@ -195,7 +195,7 @@ NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::add(string const & 
 
 }
 
-const std::string NTMultiChannel::URI("ev4:nt/NTMultiChannel:1.0");
+const std::string NTMultiChannel::URI("epics:nt/NTMultiChannel:1.0");
 
 NTMultiChannel::shared_pointer NTMultiChannel::wrap(PVStructurePtr const & structure)
 {

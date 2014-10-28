@@ -422,7 +422,7 @@ This has methods to do the following:</p>
 <h2>Normative Type NTScalar</h2>
 <p>This has the following fields:</p>
 <pre>
-ev4:nt/NTScalar:1.0
+epics:nt/NTScalar:1.0
     double value                        // mandatory and can be any numeric type
     string descriptor                   // optional
     alarm_t alarm                       // optional
@@ -666,7 +666,7 @@ string message = alarm.getMessage();
 field is a scalar array field instead of just a scalar.</p>
 <p>This has the following fields:</p>
 <pre>
-ev4:nt/NTScalarArray:1.0
+epics:nt/NTScalarArray:1.0
     double[] value                      // mandatory and can be any numeric type
     string descriptor                   // optional
     alarm_t alarm                       // optional
@@ -838,7 +838,7 @@ where
 
 <h2>Normative Type NTNameValue</h2>
 <pre>
-ev4:nt/NTNameValue:1.0
+epics:nt/NTNameValue:1.0
     string[] name                 // mandatory
     double[] value                // madatory, can be any type, must be same length as name
     string descriptor              // optional
@@ -978,7 +978,7 @@ where
 
 <h2>Normative Type NTTable</h2>
 <pre>
-ev4:nt/NTTable:1.0 
+epics:nt/NTTable:1.0 
     string[] labels [column0,column1,column2]    // mandatory
     structure value                              // mandatory; 
         double[] column0 []                      // name=labels[0]; can be any scalar type
@@ -1291,7 +1291,7 @@ where
 
 <h2>Normative Type NTNDArray</h2> 
 <pre>
-ev4:nt/NTNDArray:1.0 
+epics:nt/NTNDArray:1.0 
     union value                                 //mandatory
     codec_t codec                               //mandatory
         string name 
@@ -1311,9 +1311,9 @@ ev4:nt/NTNDArray:1.0
         long secondsPastEpoch
         int nanoseconds
         int userTag
-    ev4:nt/NTAttribute:1.0[] attribute //mandatory
-        ev4:nt/NTAttribute:1.0[]
-            ev4:nt/NTAttribute:1.0
+    epics:nt/NTAttribute:1.0[] attribute //mandatory
+        epics:nt/NTAttribute:1.0[]
+            epics:nt/NTAttribute:1.0
                 string name
                 any value
                 string description

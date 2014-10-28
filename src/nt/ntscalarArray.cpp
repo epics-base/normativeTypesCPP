@@ -125,7 +125,7 @@ NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::add(string const & na
 
 }
 
-const std::string NTScalarArray::URI("ev4:nt/NTScalarArray:1.0");
+const std::string NTScalarArray::URI("epics:nt/NTScalarArray:1.0");
 
 NTScalarArray::shared_pointer NTScalarArray::wrap(PVStructurePtr const & structure)
 {

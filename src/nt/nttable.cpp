@@ -123,7 +123,7 @@ NTTableBuilder::shared_pointer NTTableBuilder::add(string const & name, FieldCon
 
 }
 
-const std::string NTTable::URI("ev4:nt/NTTable:1.0");
+const std::string NTTable::URI("epics:nt/NTTable:1.0");
 
 NTTable::shared_pointer NTTable::wrap(PVStructurePtr const & structure)
 {

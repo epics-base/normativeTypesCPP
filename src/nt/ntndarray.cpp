@@ -18,7 +18,7 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-const std::string ntAttrStr("ev4:nt/NTAttribute:1.0");
+const std::string ntAttrStr("epics:nt/NTAttribute:1.0");
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
@@ -198,8 +198,8 @@ NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::add(string const & name, Fiel
 
 }
 
-const std::string NTNDArray::URI("ev4:nt/NTNDArray:1.0");
-const std::string ntAttrStr("ev4:nt/NTAttribute:1.0");
+const std::string NTNDArray::URI("epics:nt/NTNDArray:1.0");
+const std::string ntAttrStr("epics:nt/NTAttribute:1.0");
 
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();

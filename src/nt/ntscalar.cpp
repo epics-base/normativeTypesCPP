@@ -128,7 +128,7 @@ NTScalarBuilder::shared_pointer NTScalarBuilder::add(string const & name, FieldC
 
 }
 
-const std::string NTScalar::URI("ev4:nt/NTScalar:1.0");
+const std::string NTScalar::URI("epics:nt/NTScalar:1.0");
 
 NTScalar::shared_pointer NTScalar::wrap(PVStructurePtr const & structure)
 {
