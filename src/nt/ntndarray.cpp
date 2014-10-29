@@ -245,7 +245,7 @@ bool NTNDArray::isCompatible(PVStructurePtr const & pvStructure)
     pvField = pvStructure->getSubField("dataTimeStamp");
     if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
     PVStructureArrayPtr pvAttribute = pvStructure->getSubField<PVStructureArray>("attribute");
-    if(!pvAttribute->getStructureArray()->getStructure()->getID().compare("ntAttrStr")!=0) return false;
+    if(pvAttribute->getStructureArray()->getStructure()->getID().compare(ntAttrStr)!=0) return false;
     return true;
 }
 
