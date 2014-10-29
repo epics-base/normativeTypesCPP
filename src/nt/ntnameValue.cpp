@@ -108,7 +108,7 @@ NTNameValueBuilder::shared_pointer NTNameValueBuilder::add(string const & name, 
 
 }
 
-const std::string NTNameValue::URI("ev4:nt/NTNameValue:1.0");
+const std::string NTNameValue::URI("epics:nt/NTNameValue:1.0");
 
 NTNameValue::shared_pointer NTNameValue::wrap(PVStructurePtr const & structure)
 {
