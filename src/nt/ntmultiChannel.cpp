@@ -5,9 +5,11 @@
  * in file LICENSE that is included with this distribution.
  */
 
+#include <algorithm>
+
+#define epicsExportSharedSymbols
 #include <pv/ntmultiChannel.h>
 #include <pv/ntutils.h>
-#include <algorithm>
 
 using namespace std;
 using namespace epics::pvData;

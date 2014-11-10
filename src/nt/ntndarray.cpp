@@ -7,6 +7,7 @@
 
 #include <algorithm>
 
+#define epicsExportSharedSymbols
 #include <pv/ntndarray.h>
 #include <pv/ntutils.h>
 

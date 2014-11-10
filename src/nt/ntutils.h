@@ -8,6 +8,7 @@
 #define NTUTILS_H
 
 #include <string>
+#include <shareLib.h>
 
 namespace epics { namespace nt {
 
@@ -15,7 +16,7 @@ namespace epics { namespace nt {
  * Utility methods for NT types.
  * @author mse
  */
-class NTUtils {
+class epicsShareClass NTUtils {
 public:
 
     /**

@@ -5,6 +5,7 @@
  * in file LICENSE that is included with this distribution.
  */
 
+#define epicsExportSharedSymbols
 #include <pv/ntutils.h>
 
 using namespace std;

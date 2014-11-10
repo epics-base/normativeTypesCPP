@@ -6,6 +6,8 @@
  */
 
 #include <pv/lock.h>
+
+#define epicsExportSharedSymbols
 #include <pv/ntfield.h>
 
 using namespace epics::pvData;

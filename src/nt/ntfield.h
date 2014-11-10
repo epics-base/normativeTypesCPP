@@ -9,6 +9,11 @@
 
 #include <cstdarg>
 
+#ifdef epicsExportSharedSymbols
+#   define ntfieldEpicsExportSharedSymbols
+#   undef epicsExportSharedSymbols
+#endif
+
 #include <pv/standardField.h>
 #include <pv/standardPVField.h>
 #include <pv/alarm.h>
@@ -16,6 +21,13 @@
 #include <pv/timeStamp.h>
 #include <pv/pvTimeStamp.h>
 #include <pv/sharedVector.h>
+
+#ifdef ntfieldEpicsExportSharedSymbols
+#   define epicsExportSharedSymbols
+#	undef ntfieldEpicsExportSharedSymbols
+#endif
+
+#include <shareLib.h>
 
 namespace epics { namespace nt {
 /**
@@ -30,7 +42,7 @@ typedef std::tr1::shared_ptr<NTField> NTFieldPtr;
 class PVNTField;
 typedef std::tr1::shared_ptr<PVNTField> PVNTFieldPtr;
 
-class NTField {
+class epicsShareClass NTField {
 public:
     POINTER_DEFINITIONS(NTField);
     /**
@@ -131,7 +143,7 @@ private:
  * @author mrk
  * 
  */
-class PVNTField {
+class epicsShareClass PVNTField {
 public:
     POINTER_DEFINITIONS(PVNTField);
     /**

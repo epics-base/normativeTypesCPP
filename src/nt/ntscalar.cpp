@@ -5,6 +5,7 @@
  * in file LICENSE that is included with this distribution.
  */
 
+#define epicsExportSharedSymbols
 #include <pv/ntscalar.h>
 #include <pv/ntutils.h>
 
