@@ -6,6 +6,7 @@
  */
 
 #include <pv/ntscalar.h>
+#include <pv/ntutils.h>
 
 using namespace std;
 using namespace epics::pvData;
@@ -143,7 +144,7 @@ NTScalar::shared_pointer NTScalar::wrapUnsafe(PVStructurePtr const & structure)
 
 bool NTScalar::is_a(StructureConstPtr const & structure)
 {
-    return structure->getID() == URI;
+    return NTUtils::is_a(structure->getID(), URI);
 }
 
 bool NTScalar::isCompatible(PVStructurePtr const & pvStructure)

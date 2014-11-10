@@ -6,6 +6,7 @@
  */
 
 #include <pv/ntmultiChannel.h>
+#include <pv/ntutils.h>
 #include <algorithm>
 
 using namespace std;
@@ -210,7 +211,7 @@ NTMultiChannel::shared_pointer NTMultiChannel::wrapUnsafe(PVStructurePtr const &
 
 bool NTMultiChannel::is_a(StructureConstPtr const &structure)
 {
-    return structure->getID() == URI;
+    return NTUtils::is_a(structure->getID(), URI);
 }
 
 bool NTMultiChannel::isCompatible(PVStructurePtr const &pvStructure)

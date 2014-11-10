@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include <pv/nttable.h>
+#include <pv/ntutils.h>
 
 using namespace std;
 using namespace epics::pvData;
@@ -138,7 +139,7 @@ NTTable::shared_pointer NTTable::wrapUnsafe(PVStructurePtr const & structure)
 
 bool NTTable::is_a(StructureConstPtr const & structure)
 {
-    return structure->getID() == URI;
+    return NTUtils::is_a(structure->getID(), URI);
 }
 
 bool NTTable::isCompatible(PVStructurePtr const & pvStructure)

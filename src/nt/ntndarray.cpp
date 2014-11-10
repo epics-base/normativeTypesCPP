@@ -8,6 +8,7 @@
 #include <algorithm>
 
 #include <pv/ntndarray.h>
+#include <pv/ntutils.h>
 
 using namespace std;
 using namespace epics::pvData;
@@ -217,7 +218,7 @@ NTNDArray::shared_pointer NTNDArray::wrapUnsafe(PVStructurePtr const & structure
 
 bool NTNDArray::is_a(StructureConstPtr const & structure)
 {
-    return structure->getID() == URI;
+    return NTUtils::is_a(structure->getID(), URI);
 }
 
 bool NTNDArray::isCompatible(PVStructurePtr const & pvStructure)
