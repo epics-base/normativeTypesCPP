@@ -158,7 +158,7 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
     return st;
 }
 
-PVStructurePtr NTMultiChannelBuilder::NTMultiChannelBuilder::createPVStructure()
+PVStructurePtr NTMultiChannelBuilder::createPVStructure()
 {
     return pvDataCreate->createPVStructure(createStructure());
 }
