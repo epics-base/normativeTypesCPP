@@ -33,7 +33,7 @@ ntndarrayTest_SRCS = ntndarrayTest.cpp
 TESTS += ntndarrayTest
 
 TESTPROD_HOST += ntutilsTest
-ntndarrayTest_SRCS = ntutilsTest.cpp
+ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest
 
 TESTSCRIPTS_HOST += $(TESTS:%=%.t)
