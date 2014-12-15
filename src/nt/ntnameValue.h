@@ -32,7 +32,8 @@ typedef std::tr1::shared_ptr<NTNameValue> NTNameValuePtr;
 namespace detail {
 
     /**
-     * Interface for in-line creating of NTNameValue.
+     * @brief Interface for in-line creating of NTNameValue.
+     *
      * One instance can be used to create multiple instances.
      * An instance of this object must not be used concurrently (an object has a state).
      * @author mse
@@ -44,56 +45,56 @@ namespace detail {
         POINTER_DEFINITIONS(NTNameValueBuilder);
 
         /**
-         * Set a value array {@code Scalar} type.
+         * Set a value array <b>Scalar</b> type.
          * @param scalarType value array scalar array.
-         * @return this instance of a {@code NTTableBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer value(epics::pvData::ScalarType scalarType);
 
         /**
          * Add descriptor field to the NTNameValue.
-         * @return this instance of a {@code NTNameValueBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
          * Add alarm structure to the NTNameValue.
-         * @return this instance of a {@code NTNameValueBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
          * Add timeStamp structure to the NTNameValue.
-         * @return this instance of a {@code NTNameValueBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
-         * Create a {@code Structure} that represents NTNameValue.
+         * Create a <b>Structure</b> that represents NTNameValue.
          * This resets this instance state and allows new instance to be created.
-         * @return a new instance of a {@code Structure}.
+         * @return a new instance of <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a {@code PVStructure} that represents NTNameValue.
-         * This resets this instance state and allows new {@code instance to be created.
-         * @return a new instance of a {@code PVStructure}
+         * Create a <b>PVStructure</b> that represents NTNameValue.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of <b>PVStructure</b>
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a {@code NTNameValue} instance.
-         * This resets this instance state and allows new {@code instance to be created.
-         * @return a new instance of a {@code NTNameValue}
+         * Create a <b>NTNameValue</b> instance.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of <b>NTNameValue</b>
          */
         NTNameValuePtr create();
 
         /**
-         * Add extra {@code Field} to the type.
+         * Add extra <b>Field</b> to the type.
          * @param name name of the field.
          * @param field a field to add.
-         * @return this instance of a {@code NTNameValueBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
 
@@ -120,10 +121,9 @@ namespace detail {
 
 typedef std::tr1::shared_ptr<detail::NTNameValueBuilder> NTNameValueBuilderPtr;
 
-
-
 /**
- * Convenience Class for NTNameValue
+ * @brief Convenience Class for NTNameValue
+ *
  * @author mrk
  */
 class epicsShareClass NTNameValue

@@ -13,7 +13,8 @@
 namespace epics { namespace nt {
 
 /**
- * Utility methods for NT types.
+ * @brief Utility methods for NT types.
+ * 
  * @author mse
  */
 class epicsShareClass NTUtils {

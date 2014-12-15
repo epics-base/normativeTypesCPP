@@ -30,11 +30,6 @@
 
 namespace epics { namespace nt { 
 
-/**
- * Convenience Class for NTMultiChannel
- * @author mrk
- *
- */
 
 class NTMultiChannel;
 typedef std::tr1::shared_ptr<NTMultiChannel> NTMultiChannelPtr;
@@ -42,7 +37,8 @@ typedef std::tr1::shared_ptr<NTMultiChannel> NTMultiChannelPtr;
 namespace detail {
 
     /**
-     * Interface for in-line creating of NTMultiChannel.
+     * @brief Interface for in-line creating of NTMultiChannel.
+     *
      * One instance can be used to create multiple instances.
      * An instance of this object must not be used concurrently (an object has a state).
      * @author mse
@@ -55,77 +51,77 @@ namespace detail {
         /**
          * specify the union for the value field.
          * If this is not called then a variantUnion is the default.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of  <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer value(epics::pvData::UnionConstPtr valuePtr);
         /**
          * Add descriptor field to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addDescriptor();
         /**
          * Add alarm structure to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addAlarm();
         /**
          * Add timeStamp structure to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addTimeStamp();
         /**
          * Add severity array to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addSeverity();
         /**
          * Add status array to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addStatus();
         /**
          * Add message array to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addMessage();
         /**
          * Add secondsPastEpoch array to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addSecondsPastEpoch();
         /**
          * Add nanoseconds array to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addNanoseconds();
         /**
          * Add userTag array to the NTMultiChannel.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addUserTag();
         /**
-         * Create a {@code Structure} that represents NTMultiChannel.
+         * Create a <b>Structure</b> that represents NTMultiChannel.
          * This resets this instance state and allows new instance to be created.
-         * @return a new instance of a {@code Structure}.
+         * @return a new instance of a <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
         /**
-         * Create a {@code PVStructure} that represents NTMultiChannel.
+         * Create a <b>PVStructure</b> that represents NTMultiChannel.
          * This resets this instance state and allows new {@code instance to be created.}
-         * @return a new instance of a {@code PVStructure}
+         * @return a new instance of a <b>PVStructure</b>
          */
         epics::pvData::PVStructurePtr createPVStructure();
         /**
-         * Create a {@code NTMultiChannel} instance.
+         * Create a <b>NTMultiChannel</b> instance.
          * This resets this instance state and allows new {@code instance to be created.}
-         * @return a new instance of a {@code NTMultiChannel}
+         * @return a new instance of a <b>NTMultiChannel</b>
          */
         NTMultiChannelPtr create();
         /**
-         * Add extra {@code Field} to the type.
+         * Add extra <b>Field</b> to the type.
          * @param name name of the field.
          * @param field a field to add.
-         * @return this instance of a {@code NTMultiChannelBuilder}.
+         * @return this instance of a <b>NTMultiChannelBuilder</b>
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
     private:
@@ -156,6 +152,12 @@ namespace detail {
 typedef std::tr1::shared_ptr<detail::NTMultiChannelBuilder> NTMultiChannelBuilderPtr;
 
 
+/**
+ * @brief Convenience Class for NTMultiChannel
+ *
+ * @author mrk
+ *
+ */
 class epicsShareClass NTMultiChannel
 {
 public:

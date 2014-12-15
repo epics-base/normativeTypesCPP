@@ -32,7 +32,8 @@ typedef std::tr1::shared_ptr<NTScalar> NTScalarPtr;
 namespace detail {
 
     /**
-     * Interface for in-line creating of NTScalar.
+     * @brief Interface for in-line creating of NTScalar.
+     *
      * One instance can be used to create multiple instances.
      * An instance of this object must not be used concurrently (an object has a state).
      * @author mse
@@ -46,65 +47,65 @@ namespace detail {
         /**
          * Set a value type of a NTScalar.
          * @param scalarType the value type.
-         * @return this instance of a {@code NTTableBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer value(epics::pvData::ScalarType scalarType);
 
         /**
          * Add descriptor field to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
          * Add alarm structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
          * Add timeStamp structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
          * Add display structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addDisplay();
 
         /**
          * Add control structure to the NTScalar.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addControl();
 
         /**
-         * Create a {@code Structure} that represents NTScalar.
+         * Create a <b>Structure</b> that represents NTScalar.
          * This resets this instance state and allows new instance to be created.
-         * @return a new instance of a {@code Structure}.
+         * @return a new instance of a <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a {@code PVStructure} that represents NTScalar.
-         * This resets this instance state and allows new {@code instance to be created.
-         * @return a new instance of a {@code PVStructure}
+         * Create a <b>PVStructure</b> that represents NTScalar.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of a <b>PVStructure</b>.
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a {@code NTScalar} instance.
-         * This resets this instance state and allows new {@code instance to be created.
-         * @return a new instance of a {@code NTScalar}
+         * Create a <b>NTScalar</b> instance.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of a <b>NTScalar</b>.
          */
         NTScalarPtr create();
         /**
-         * Add extra {@code Field} to the type.
+         * Add extra <b>Field</b> to the type.
          * @param name name of the field.
          * @param field a field to add.
-         * @return this instance of a {@code NTScalarBuilder}.
+         * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
 
@@ -136,7 +137,8 @@ typedef std::tr1::shared_ptr<detail::NTScalarBuilder> NTScalarBuilderPtr;
 
 
 /**
- * Convenience Class for NTScalar
+ * @brief Convenience Class for NTScalar
+ *
  * @author mrk
  */
 class epicsShareClass NTScalar

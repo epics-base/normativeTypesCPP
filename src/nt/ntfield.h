@@ -30,11 +30,6 @@
 #include <shareLib.h>
 
 namespace epics { namespace nt {
-/**
- * Convenience Class for introspection fields of a Normative Type
- * @author mrk
- * 
- */
 
 class NTField;
 typedef std::tr1::shared_ptr<NTField> NTFieldPtr;
@@ -42,6 +37,12 @@ typedef std::tr1::shared_ptr<NTField> NTFieldPtr;
 class PVNTField;
 typedef std::tr1::shared_ptr<PVNTField> PVNTFieldPtr;
 
+/**
+ * @brief Convenience Class for introspection fields of a Normative Type
+ *
+ * @author mrk
+ * 
+ */
 class epicsShareClass NTField {
 public:
     POINTER_DEFINITIONS(NTField);
@@ -139,7 +140,8 @@ private:
 };
 
 /**
- * Convenience Class for data fields of a Normative Type
+ * @brief Convenience Class for data fields of a Normative Type
+ *
  * @author mrk
  * 
  */
@@ -212,4 +214,5 @@ private:
 };
 
 }}
+
 #endif  /* NTFIELD_H */

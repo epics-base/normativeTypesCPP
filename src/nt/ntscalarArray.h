@@ -33,7 +33,8 @@ typedef std::tr1::shared_ptr<NTScalarArray> NTScalarArrayPtr;
 namespace detail {
 
     /**
-     * Interface for in-line creating of NTScalarArray.
+     * @brief Interface for in-line creating of NTScalarArray.
+     *
      * One instance can be used to create multiple instances.
      * An instance of this object must not be used concurrently (an object has a state).
      * @author mse
@@ -47,65 +48,65 @@ namespace detail {
         /**
          * Set a value type of a NTScalarArray.
          * @param elementType the value array element type.
-         * @return this instance of a {@code NTTableBuilder}.
+         * @return this instance of <b>NTScalarArrayBuilder</b>.
          */
         shared_pointer arrayValue(epics::pvData::ScalarType elementType);
 
         /**
          * Add descriptor field to the NTScalarArray.
-         * @return this instance of a {@code NTScalarArrayBuilder}.
+         * @return this instance of <b>NTScalarArrayBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
          * Add alarm structure to the NTScalarArray.
-         * @return this instance of a {@code NTScalarArrayBuilder}.
+         * @return this instance of <b>NTScalarArrayBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
          * Add timeStamp structure to the NTScalarArray.
-         * @return this instance of a {@code NTScalarArrayBuilder}.
+         * @return this instance of <b>NTScalarArrayBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
          * Add display structure to the NTScalarArray.
-         * @return this instance of a {@code NTScalarArrayBuilder}.
+         * @return this instance of <b>NTScalarArrayBuilder</b>.
          */
         shared_pointer addDisplay();
 
         /**
          * Add control structure to the NTScalarArray.
-         * @return this instance of a {@code NTScalarArrayBuilder}.
+         * @return this instance of <b>NTScalarArrayBuilder</b>.
          */
         shared_pointer addControl();
 
         /**
-         * Create a {@code Structure} that represents NTScalarArray.
+         * Create a <b>Structure</b> that represents NTScalarArray.
          * This resets this instance state and allows new instance to be created.
-         * @return a new instance of a {@code Structure}.
+         * @return a new instance of <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a {@code PVStructure} that represents NTScalarArray.
-         * This resets this instance state and allows new {@code instance to be created.
-         * @return a new instance of a {@code PVStructure}
+         * Create a <b>PVStructure</b> that represents NTScalarArray.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of <b>PVStructure</b>.
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a {@code NTScalarArray} instance.
-         * This resets this instance state and allows new {@code instance to be created.
-         * @return a new instance of a {@code NTScalarArray}
+         * Create a <b>NTScalarArray</b> instance.
+         * This resets this instance state and allows new instance to be created.
+         * @return a new instance of <b>NTScalarArray</b>.
          */
         NTScalarArrayPtr create();
         /**
-         * Add extra {@code Field} to the type.
+         * Add extra <b>Field</b> to the type.
          * @param name name of the field.
          * @param field a field to add.
-         * @return this instance of a {@code NTScalarArrayBuilder}.
+         * @return this instance of <b>NTScalarArrayBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
 
@@ -137,7 +138,8 @@ typedef std::tr1::shared_ptr<detail::NTScalarArrayBuilder> NTScalarArrayBuilderP
 
 
 /**
- * Convenience Class for NTScalarArray
+ * @brief Convenience Class for NTScalarArray
+ *
  * @author mrk
  */
 class epicsShareClass NTScalarArray
