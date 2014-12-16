@@ -57,7 +57,7 @@ make runtests
 ###########################################
 # Create distribution
 
-tar --exclude=test* -czf normativeTypes.CB-dist.tar.gz bin lib include dbd
+tar --exclude=test* -czf normativeTypes.CB-dist.tar.gz lib include
 
 ###########################################
 # Publish documentation
