@@ -320,6 +320,11 @@ PVStructureArrayPtr NTNDArray::getDimension() const
     return pvNTNDArray->getSubField<PVStructureArray>("dimension");
 }
 
+PVIntPtr NTNDArray::getUniqueId() const
+{
+    return pvNTNDArray->getSubField<PVInt>("uniqueId");
+}
+
 PVStructurePtr NTNDArray::getDataTimeStamp() const
 {
     return pvNTNDArray->getSubField<PVStructure>("dataTimeStamp");
