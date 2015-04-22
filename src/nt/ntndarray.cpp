@@ -310,11 +310,6 @@ PVLongPtr NTNDArray::getUncompressedDataSize() const
     return pvNTNDArray->getSubField<PVLong>("uncompressedSize");
 }
 
-PVStructureArrayPtr NTNDArray::getAttribute() const
-{
-    return pvNTNDArray->getSubField<PVStructureArray>("attribute");
-}
-
 PVStructureArrayPtr NTNDArray::getDimension() const
 {
     return pvNTNDArray->getSubField<PVStructureArray>("dimension");
@@ -328,6 +323,11 @@ PVIntPtr NTNDArray::getUniqueId() const
 PVStructurePtr NTNDArray::getDataTimeStamp() const
 {
     return pvNTNDArray->getSubField<PVStructure>("dataTimeStamp");
+}
+
+PVStructureArrayPtr NTNDArray::getAttribute() const
+{
+    return pvNTNDArray->getSubField<PVStructureArray>("attribute");
 }
 
 PVStringPtr NTNDArray::getDescriptor() const

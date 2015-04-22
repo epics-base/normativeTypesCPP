@@ -230,12 +230,6 @@ public:
     epics::pvData::PVLongPtr getUncompressedDataSize() const;
 
     /**
-     * Get the attribute field.
-     * @return the PVStructurePtr.
-     */
-    epics::pvData::PVStructureArrayPtr getAttribute() const;
-
-    /**
      * Get the dimension field.
      * @return the PVStructurePtr.
      */
@@ -252,6 +246,12 @@ public:
      * @return PVStructurePtr.
      */
     epics::pvData::PVStructurePtr getDataTimeStamp() const;
+
+    /**
+     * Get the attribute field.
+     * @return the PVStructurePtr.
+     */
+    epics::pvData::PVStructureArrayPtr getAttribute() const;
 
     /**
      * Get the descriptor field.
