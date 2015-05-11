@@ -116,11 +116,11 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
         if (descriptor)
             fb->add("descriptor", pvString);
 
-        if (timeStamp)
-            fb->add("timeStamp", standardField->timeStamp());
-
         if (alarm)
             fb->add("alarm", standardField->alarm());
+
+        if (timeStamp)
+            fb->add("timeStamp", standardField->timeStamp());
 
         if (display)
             fb->add("display", standardField->display());

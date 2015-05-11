@@ -112,17 +112,17 @@ StructureConstPtr NTMultiChannelBuilder::createStructure()
     fields[ind++] =  fieldCreate->createScalarArray(pvString);
     names[ind] = "isConnected";
     fields[ind++] =  fieldCreate->createScalarArray(pvBoolean);
-    if(timeStamp) {
-        names[ind] = "timeStamp";
-        fields[ind++] = standardField->timeStamp();
+    if(descriptor) {
+        names[ind] = "descriptor";
+        fields[ind++] = fieldCreate->createScalar(pvString);
     }
     if(alarm) {
         names[ind] = "alarm";
         fields[ind++] = standardField->alarm();
     }
-    if(descriptor) {
-        names[ind] = "descriptor";
-        fields[ind++] = fieldCreate->createScalar(pvString);
+    if(timeStamp) {
+        names[ind] = "timeStamp";
+        fields[ind++] = standardField->timeStamp();
     }
     if(severity) {
         names[ind] = "severity";
