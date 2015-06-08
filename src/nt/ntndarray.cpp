@@ -25,6 +25,8 @@ const std::string ntAttrStr("epics:nt/NTAttribute:1.0");
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 
+static Mutex mutex;
+
 StructureConstPtr NTNDArrayBuilder::createStructure()
 {
     enum
@@ -38,15 +40,13 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
     const size_t NUMBER_OF_INDICES = DISPLAY_INDEX+1;
     const size_t NUMBER_OF_STRUCTURES = 1 << NUMBER_OF_INDICES;
 
+    Lock xx(mutex);
+
     static StructureConstPtr ntndarrayStruc[NUMBER_OF_STRUCTURES];
     static UnionConstPtr valueType;
     static StructureConstPtr codecStruc;
     static StructureConstPtr dimensionStruc;
     static StructureConstPtr attributeStruc;
-
-    static Mutex mutex;
-
-    Lock xx(mutex);
 
     StructureConstPtr returnedStruc;
 
