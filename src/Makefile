@@ -1,7 +1,7 @@
 TOP = ..
 include $(TOP)/configure/CONFIG
 
-SRC = $(TOP)/src/
+SRC = $(TOP)/src
 
 SRC_DIRS += $(SRC)/nt
 
@@ -24,7 +24,7 @@ LIBSRCS += nttable.cpp
 LIBSRCS += ntmultiChannel.cpp
 LIBSRCS += ntndarray.cpp
 
-LIBRARY=nt
+LIBRARY = nt
 
 nt_LIBS += pvData Com
 
