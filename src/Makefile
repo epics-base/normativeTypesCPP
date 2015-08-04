@@ -13,6 +13,7 @@ INC += ntscalarArray.h
 INC += ntnameValue.h
 INC += nttable.h
 INC += ntmultiChannel.h
+INC += ntscalarMultiChannel.h
 INC += ntndarray.h
 
 LIBSRCS += ntutils.cpp
@@ -22,6 +23,7 @@ LIBSRCS += ntscalarArray.cpp
 LIBSRCS += ntnameValue.cpp
 LIBSRCS += nttable.cpp
 LIBSRCS += ntmultiChannel.cpp
+LIBSRCS += ntscalarMultiChannel.cpp
 LIBSRCS += ntndarray.cpp
 
 LIBRARY = nt
