@@ -24,6 +24,10 @@ TESTPROD_HOST += ntmultiChannelTest
 ntmultiChannelTest_SRCS += ntmultiChannelTest.cpp
 TESTS += ntmultiChannelTest
 
+TESTPROD_HOST += ntscalarMultiChannelTest
+ntscalarMultiChannelTest_SRCS += ntscalarMultiChannelTest.cpp
+TESTS += ntscalarMultiChannelTest
+
 TESTPROD_HOST += nttableTest
 nttableTest_SRCS = nttableTest.cpp
 TESTS += nttableTest
