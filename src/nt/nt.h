@@ -17,6 +17,7 @@
 #include <pv/nttable.h>
 #include <pv/ntndarray.h>
 #include <pv/ntmultiChannel.h>
+#include <pv/ntscalarMultiChannel.h>
 
 #endif  /* NT_H */
 
