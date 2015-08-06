@@ -47,37 +47,37 @@ namespace detail {
         /**
          * Set a value type of a NTScalar.
          * @param scalarType the value type.
-         * @return this instance of <b>NTTableBuilder</b>.
+         * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer value(epics::pvData::ScalarType scalarType);
 
         /**
          * Add descriptor field to the NTScalar.
-         * @return this instance of <b>NTTableBuilder</b>.
+         * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
          * Add alarm structure to the NTScalar.
-         * @return this instance of <b>NTTableBuilder</b>.
+         * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
          * Add timeStamp structure to the NTScalar.
-         * @return this instance of <b>NTTableBuilder</b>.
+         * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
          * Add display structure to the NTScalar.
-         * @return this instance of <b>NTTableBuilder</b>.
+         * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addDisplay();
 
         /**
          * Add control structure to the NTScalar.
-         * @return this instance of <b>NTTableBuilder</b>.
+         * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addControl();
 
@@ -105,7 +105,7 @@ namespace detail {
          * Add extra <b>Field</b> to the type.
          * @param name name of the field.
          * @param field a field to add.
-         * @return this instance of <b>NTTableBuilder</b>.
+         * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
 
