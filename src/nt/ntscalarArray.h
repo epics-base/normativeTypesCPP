@@ -286,4 +286,4 @@ private:
 };
 
 }}
-#endif  /* NTScalarArray_H */
+#endif  /* NTSCALARARRAY_H */

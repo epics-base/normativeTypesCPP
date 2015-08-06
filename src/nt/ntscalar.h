@@ -283,4 +283,4 @@ private:
 };
 
 }}
-#endif  /* NTScalar_H */
+#endif  /* NTSCALAR_H */
