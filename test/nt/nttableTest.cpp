@@ -236,7 +236,7 @@ void test_wrap()
 }
 
 MAIN(testNTTable) {
-    testPlan(46);
+    testPlan(48);
     test_builder();
     test_labels();
     test_nttable();
