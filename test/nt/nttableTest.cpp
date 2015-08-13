@@ -37,12 +37,14 @@ void test_builder()
 
     testOk1(NTTable::is_a(structure));
     testOk1(structure->getID() == NTTable::URI);
-    testOk1(structure->getNumberFields() == 5);
+    testOk1(structure->getNumberFields() == 7);
     testOk1(structure->getField("labels").get() != 0);
     testOk1(structure->getField("value").get() != 0);
     testOk1(structure->getField("descriptor").get() != 0);
     testOk1(structure->getField("alarm").get() != 0);
     testOk1(structure->getField("timeStamp").get() != 0);
+    testOk1(structure->getField("extra1").get() != 0);
+    testOk1(structure->getField("extra2").get() != 0);
 
     StructureConstPtr s = dynamic_pointer_cast<const Structure>(structure->getField("value"));
 #define TEST_COLUMN(name, type) \
