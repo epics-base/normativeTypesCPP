@@ -58,12 +58,11 @@ StructureConstPtr NTTableBuilder::createStructure()
     if (timeStamp)
         builder->add("timeStamp", ntField->createTimeStamp());
 
-    StructureConstPtr s = builder->createStructure();
-
     size_t extraCount = extraFieldNames.size();
     for (size_t i = 0; i< extraCount; i++)
         builder->add(extraFieldNames[i], extraFields[i]);
 
+    StructureConstPtr s = builder->createStructure();
 
     reset();
     return s;
