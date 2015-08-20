@@ -1,0 +1,202 @@
+/* ntattribute.cpp */
+/**
+ * Copyright - See the COPYRIGHT that is included with this distribution.
+ * EPICS pvDataCPP is distributed subject to a Software License Agreement found
+ * in file LICENSE that is included with this distribution.
+ */
+
+#define epicsExportSharedSymbols
+#include <pv/ntattribute.h>
+#include <pv/ntutils.h>
+
+using namespace std;
+using namespace epics::pvData;
+
+namespace epics { namespace nt {
+
+static NTFieldPtr ntField = NTField::get();
+
+namespace detail {
+
+static NTFieldPtr ntField = NTField::get();
+
+
+StructureConstPtr NTAttributeBuilder::createStructure()
+{
+    FieldBuilderPtr builder =
+            getFieldCreate()->createFieldBuilder()->
+               setId(NTAttribute::URI)->
+               add("name", pvString)->
+               add("value", getFieldCreate()->createVariantUnion());
+
+    if (tags)
+        builder->addArray("tags", pvString);
+
+    if (descriptor)
+        builder->add("descriptor", pvString);
+
+    if (alarm)
+        builder->add("alarm", ntField->createAlarm());
+
+    if (timeStamp)
+        builder->add("timeStamp", ntField->createTimeStamp());
+
+    size_t extraCount = extraFieldNames.size();
+    for (size_t i = 0; i< extraCount; i++)
+        builder->add(extraFieldNames[i], extraFields[i]);
+
+
+    StructureConstPtr s = builder->createStructure();
+
+    reset();
+    return s;
+}
+
+NTAttributeBuilder::shared_pointer NTAttributeBuilder::addTags()
+{
+    tags = true;
+    return shared_from_this();
+}
+
+NTAttributeBuilder::shared_pointer NTAttributeBuilder::addDescriptor()
+{
+    descriptor = true;
+    return shared_from_this();
+}
+
+NTAttributeBuilder::shared_pointer NTAttributeBuilder::addAlarm()
+{
+    alarm = true;
+    return shared_from_this();
+}
+
+NTAttributeBuilder::shared_pointer NTAttributeBuilder::addTimeStamp()
+{
+    timeStamp = true;
+    return shared_from_this();
+}
+
+PVStructurePtr NTAttributeBuilder::createPVStructure()
+{
+    return getPVDataCreate()->createPVStructure(createStructure());
+}
+
+NTAttributePtr NTAttributeBuilder::create()
+{
+    return NTAttributePtr(new NTAttribute(createPVStructure()));
+}
+
+NTAttributeBuilder::NTAttributeBuilder()
+{
+    reset();
+}
+
+void NTAttributeBuilder::reset()
+{
+    descriptor = false;
+    alarm = false;
+    timeStamp = false;
+    extraFieldNames.clear();
+    extraFields.clear();
+}
+
+NTAttributeBuilder::shared_pointer NTAttributeBuilder::add(string const & name, FieldConstPtr const & field)
+{
+    extraFields.push_back(field); extraFieldNames.push_back(name);
+    return shared_from_this();
+}
+
+}
+
+const std::string NTAttribute::URI("epics:nt/NTAttribute:1.0");
+
+NTAttribute::shared_pointer NTAttribute::wrap(PVStructurePtr const & structure)
+{
+    if(!isCompatible(structure)) return shared_pointer();
+    return wrapUnsafe(structure);
+}
+
+NTAttribute::shared_pointer NTAttribute::wrapUnsafe(PVStructurePtr const & structure)
+{
+    return shared_pointer(new NTAttribute(structure));
+}
+
+bool NTAttribute::is_a(StructureConstPtr const & structure)
+{
+    return NTUtils::is_a(structure->getID(), URI);
+}
+
+bool NTAttribute::isCompatible(PVStructurePtr const & pvStructure)
+{
+    if(!pvStructure) return false;
+
+    PVUnionPtr pvValue = pvStructure->getSubField<PVUnion>("value");
+    if(!pvValue) return false;
+
+    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
+    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
+
+    pvField = pvStructure->getSubField("alarm");
+    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
+
+    pvField = pvStructure->getSubField("timeStamp");
+    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
+
+    return true;
+}
+
+NTAttributeBuilderPtr NTAttribute::createBuilder()
+{
+    return NTAttributeBuilderPtr(new detail::NTAttributeBuilder());
+}
+
+bool NTAttribute::attachTimeStamp(PVTimeStamp &pvTimeStamp) const
+{
+    PVStructurePtr ts = getTimeStamp();
+    if (ts)
+        return pvTimeStamp.attach(ts);
+    else
+        return false;
+}
+
+bool NTAttribute::attachAlarm(PVAlarm &pvAlarm) const
+{
+    PVStructurePtr al = getAlarm();
+    if (al)
+        return pvAlarm.attach(al);
+    else
+        return false;
+}
+
+PVStructurePtr NTAttribute::getPVStructure() const
+{
+    return pvNTAttribute;
+}
+
+PVStringPtr NTAttribute::getDescriptor() const
+{
+    return pvNTAttribute->getSubField<PVString>("descriptor");
+}
+
+PVStructurePtr NTAttribute::getTimeStamp() const
+{
+    return pvNTAttribute->getSubField<PVStructure>("timeStamp");
+}
+
+PVStructurePtr NTAttribute::getAlarm() const
+{
+    return pvNTAttribute->getSubField<PVStructure>("alarm");
+}
+
+PVUnionPtr NTAttribute::getValue() const
+{
+    return pvValue;
+}
+
+NTAttribute::NTAttribute(PVStructurePtr const & pvStructure) :
+    pvNTAttribute(pvStructure), pvValue(pvNTAttribute->getSubField<PVUnion>("value"))
+{
+}
+
+
+}}
