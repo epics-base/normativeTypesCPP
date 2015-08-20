@@ -88,12 +88,11 @@ NTTableBuilder::shared_pointer NTTableBuilder::addTimeStamp()
 
 PVStructurePtr NTTableBuilder::createPVStructure()
 {
-    PVStructurePtr s = getPVDataCreate()->createPVStructure(createStructure());
-
     // fill in labels with default values (the column names)
     size_t len = columnNames.size();
     shared_vector<string> l(len);
     for(size_t i=0; i<len; ++i) l[i] = columnNames[i];
+    PVStructurePtr s = getPVDataCreate()->createPVStructure(createStructure());
     s->getSubField<PVStringArray>("labels")->replace(freeze(l));
     return s;
 }
