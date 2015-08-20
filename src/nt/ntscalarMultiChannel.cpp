@@ -84,10 +84,16 @@ NTScalarMultiChannelBuilder::shared_pointer NTScalarMultiChannelBuilder::addUser
     return shared_from_this();
 }
 
+NTScalarMultiChannelBuilder::shared_pointer NTScalarMultiChannelBuilder::addIsConnected()
+{
+    isConnected = true;
+    return shared_from_this();
+}
+
 StructureConstPtr NTScalarMultiChannelBuilder::createStructure()
 {
     StandardFieldPtr standardField = getStandardField();
-    size_t nfields = 3;
+    size_t nfields = 2;
     size_t extraCount = extraFieldNames.size();
     nfields += extraCount;
     if(descriptor) ++nfields;
@@ -99,6 +105,7 @@ StructureConstPtr NTScalarMultiChannelBuilder::createStructure()
     if(secondsPastEpoch) ++nfields;
     if(nanoseconds) ++nfields;
     if(userTag) ++nfields;
+    if(isConnected) ++nfields;
     FieldConstPtrArray fields(nfields);
     StringArray names(nfields);
     size_t ind = 0;
@@ -106,8 +113,6 @@ StructureConstPtr NTScalarMultiChannelBuilder::createStructure()
     fields[ind++] =  fieldCreate->createScalarArray(valueType);
     names[ind] = "channelName";
     fields[ind++] =  fieldCreate->createScalarArray(pvString);
-    names[ind] = "isConnected";
-    fields[ind++] =  fieldCreate->createScalarArray(pvBoolean);
     if(descriptor) {
         names[ind] = "descriptor";
         fields[ind++] = fieldCreate->createScalar(pvString);
@@ -143,6 +148,10 @@ StructureConstPtr NTScalarMultiChannelBuilder::createStructure()
     if(userTag) {
         names[ind] = "userTag";
         fields[ind++] = fieldCreate->createScalarArray(pvInt);
+    }
+    if(isConnected) {
+        names[ind] = "isConnected";
+        fields[ind++] =  fieldCreate->createScalarArray(pvBoolean);
     }
     for (size_t i = 0; i< extraCount; i++) {
         names[ind] = extraFieldNames[i];
@@ -184,6 +193,9 @@ void NTScalarMultiChannelBuilder::reset()
     secondsPastEpoch = false;
     nanoseconds = false;
     userTag = false;
+    // TODO When client code updated, don't include isConnected by default
+    // i.e. change line below to isConnected = false;
+    isConnected = true;
 }
 
 

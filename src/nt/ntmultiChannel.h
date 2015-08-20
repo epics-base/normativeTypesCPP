@@ -100,6 +100,11 @@ namespace detail {
          */
         shared_pointer addUserTag();
         /**
+         * Add isConnected array to the NTMultiChannel.
+         * @return this instance of <b>NTMultiChannelBuilder</b>.
+         */
+        shared_pointer addIsConnected();
+        /**
          * Create a <b>Structure</b> that represents NTMultiChannel.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>Structure</b>.
@@ -139,6 +144,7 @@ namespace detail {
         bool secondsPastEpoch;
         bool nanoseconds;
         bool userTag;
+        bool isConnected;
 
         // NOTE: this preserves order, however it does not handle duplicates
         epics::pvData::StringArray extraFieldNames;
