@@ -6,3 +6,4 @@ dbd/
 configure/*.local
 html/
 **/O.*
+**/**/O.*
