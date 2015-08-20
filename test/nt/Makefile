@@ -44,6 +44,10 @@ TESTPROD_HOST += ntenumTest
 ntenumTest_SRCS = ntenumTest.cpp
 TESTS += ntenumTest
 
+TESTPROD_HOST += ntunionTest
+ntunionTest_SRCS = ntunionTest.cpp
+TESTS += ntunionTest
+
 TESTPROD_HOST += ntutilsTest
 ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest

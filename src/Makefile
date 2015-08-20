@@ -17,6 +17,7 @@ INC += ntscalarMultiChannel.h
 INC += ntndarray.h
 INC += ntmatrix.h
 INC += ntenum.h
+INC += ntunion.h
 
 LIBSRCS += ntutils.cpp
 LIBSRCS += ntfield.cpp
@@ -29,6 +30,7 @@ LIBSRCS += ntscalarMultiChannel.cpp
 LIBSRCS += ntndarray.cpp
 LIBSRCS += ntmatrix.cpp
 LIBSRCS += ntenum.cpp
+LIBSRCS += ntunion.cpp
 
 LIBRARY = nt
 
