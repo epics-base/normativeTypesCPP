@@ -48,6 +48,10 @@ TESTPROD_HOST += ntunionTest
 ntunionTest_SRCS = ntunionTest.cpp
 TESTS += ntunionTest
 
+TESTPROD_HOST += ntaggregateTest
+ntaggregateTest_SRCS = ntaggregateTest.cpp
+TESTS += ntaggregateTest
+
 TESTPROD_HOST += ntutilsTest
 ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest

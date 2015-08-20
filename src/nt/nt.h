@@ -21,6 +21,7 @@
 #include <pv/ntmatrix.h>
 #include <pv/ntenum.h>
 #include <pv/ntunion.h>
+#include <pv/ntaggregate.h>
 
 #endif  /* NT_H */
 

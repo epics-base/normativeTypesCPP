@@ -18,6 +18,7 @@ INC += ntndarray.h
 INC += ntmatrix.h
 INC += ntenum.h
 INC += ntunion.h
+INC += ntaggregate.h
 
 LIBSRCS += ntutils.cpp
 LIBSRCS += ntfield.cpp
@@ -31,6 +32,7 @@ LIBSRCS += ntndarray.cpp
 LIBSRCS += ntmatrix.cpp
 LIBSRCS += ntenum.cpp
 LIBSRCS += ntunion.cpp
+LIBSRCS += ntaggregate.cpp
 
 LIBRARY = nt
 
