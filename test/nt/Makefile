@@ -40,6 +40,10 @@ TESTPROD_HOST += ntmatrixTest
 ntmatrixTest_SRCS = ntmatrixTest.cpp
 TESTS += ntmatrixTest
 
+TESTPROD_HOST += ntenumTest
+ntenumTest_SRCS = ntenumTest.cpp
+TESTS += ntenumTest
+
 TESTPROD_HOST += ntutilsTest
 ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest

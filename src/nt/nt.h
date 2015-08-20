@@ -19,6 +19,7 @@
 #include <pv/ntmultiChannel.h>
 #include <pv/ntscalarMultiChannel.h>
 #include <pv/ntmatrix.h>
+#include <pv/ntenum.h>
 
 #endif  /* NT_H */
 
