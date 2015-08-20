@@ -188,9 +188,20 @@ PVStructurePtr NTAttribute::getAlarm() const
     return pvNTAttribute->getSubField<PVStructure>("alarm");
 }
 
+
+PVStringPtr NTAttribute::getName() const
+{
+    return pvNTAttribute->getSubField<PVString>("name");
+}
+
 PVUnionPtr NTAttribute::getValue() const
 {
     return pvValue;
+}
+
+PVStringArrayPtr NTAttribute::getTags() const
+{
+    return pvNTAttribute->getSubField<PVStringArray>("tags");
 }
 
 NTAttribute::NTAttribute(PVStructurePtr const & pvStructure) :

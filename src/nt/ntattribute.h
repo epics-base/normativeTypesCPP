@@ -211,10 +211,22 @@ public:
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
+     * Get the name field.
+     * @return The PVString for the name.
+     */
+    epics::pvData::PVStringPtr getName() const;
+
+    /**
      * Get the value field.
      * @return The PVUnion for the values.
      */
     epics::pvData::PVUnionPtr getValue() const;
+
+    /**
+     * Get the tags field.
+     * @return The PVStringArray for the tags, which may be null.
+     */
+    epics::pvData::PVStringArrayPtr getTags() const;
 
 private:
     NTAttribute(epics::pvData::PVStructurePtr const & pvStructure);
