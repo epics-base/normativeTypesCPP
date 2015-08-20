@@ -36,6 +36,10 @@ TESTPROD_HOST += ntndarrayTest
 ntndarrayTest_SRCS = ntndarrayTest.cpp
 TESTS += ntndarrayTest
 
+TESTPROD_HOST += ntmatrixTest
+ntmatrixTest_SRCS = ntmatrixTest.cpp
+TESTS += ntmatrixTest
+
 TESTPROD_HOST += ntutilsTest
 ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest
