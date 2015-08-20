@@ -278,16 +278,20 @@ NTMultiChannel::NTMultiChannel(PVStructurePtr const & pvStructure)
 }
 
 
-void  NTMultiChannel::attachTimeStamp(PVTimeStamp &pv) const
+bool  NTMultiChannel::attachTimeStamp(PVTimeStamp &pv) const
 {
-    if(!pvTimeStamp) return;
-    pv.attach(pvTimeStamp);
+    if (pvTimeStamp)
+        return pv.attach(pvTimeStamp);
+    else
+        return false;
 }
 
-void  NTMultiChannel::attachAlarm(PVAlarm &pv) const
+bool  NTMultiChannel::attachAlarm(PVAlarm &pv) const
 {
-    if(!pvAlarm) return;
-    pv.attach(pvAlarm);
+    if (pvAlarm)
+        return pv.attach(pvAlarm);
+    else
+        return false;
 }
 
 }}

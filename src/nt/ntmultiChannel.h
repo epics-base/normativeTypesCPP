@@ -212,18 +212,21 @@ public:
      * Destructor
      */
     ~NTMultiChannel() {}
-     /**
-      * Attach a pvTimeStamp.
-      * @param pvTimeStamp The pvTimeStamp that will be attached.
-      * Does nothing if no timeStamp
-      */
-    void attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
+    /**
+     * Attach a pvTimeStamp.
+     * @param pvTimeStamp The pvTimeStamp that will be attached.
+     * Does nothing if no timeStamp.
+     * @return true if the operation was successfull (i.e. this instance
+has a timeStamp field), otherwise false.
+     */
+    bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
     /**
      * Attach a pvAlarm.
      * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm
+     * Does nothing if no alarm.
+     * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
      */
-    void attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
+    bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
     /**
      * Get the pvStructure.
      * @return PVStructurePtr.
