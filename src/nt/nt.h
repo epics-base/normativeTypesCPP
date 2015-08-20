@@ -18,6 +18,11 @@
 #include <pv/ntndarray.h>
 #include <pv/ntmultiChannel.h>
 #include <pv/ntscalarMultiChannel.h>
+#include <pv/ntmatrix.h>
+#include <pv/ntenum.h>
+#include <pv/ntunion.h>
+#include <pv/ntaggregate.h>
+#include <pv/ntattribute.h>
 
 #endif  /* NT_H */
 
