@@ -20,7 +20,7 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-NTTableBuilder::shared_pointer NTTableBuilder::add(
+NTTableBuilder::shared_pointer NTTableBuilder::addColumn(
         std::string const & name, epics::pvData::ScalarType scalarType
         )
 {

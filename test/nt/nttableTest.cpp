@@ -22,9 +22,9 @@ void test_builder()
     testOk(builder.get() != 0, "Got builder");
 
     StructureConstPtr structure = builder->
-            add("column0", pvDouble)->
-            add("column1", pvString)->
-            add("column2", pvInt)->
+            addColumn("column0", pvDouble)->
+            addColumn("column1", pvString)->
+            addColumn("column2", pvInt)->
             addDescriptor()->
             addAlarm()->
             addTimeStamp()->
@@ -64,8 +64,8 @@ void test_builder()
     try
     {
         structure = builder->
-                add("column0", pvDouble)->
-                add("column0", pvString)->
+                addColumn("column0", pvDouble)->
+                addColumn("column0", pvString)->
                 createStructure();
         testFail("duplicate column name");
     } catch (std::runtime_error &) {
@@ -81,9 +81,9 @@ void test_labels()
     testOk(builder.get() != 0, "Got builder");
 
     PVStructurePtr pvStructure = builder->
-            add("column0", pvDouble)->
-            add("column1", pvString)->
-            add("column2", pvInt)->
+            addColumn("column0", pvDouble)->
+            addColumn("column1", pvString)->
+            addColumn("column2", pvInt)->
             createPVStructure();
     testOk1(pvStructure.get() != 0);
     if (!pvStructure)
@@ -110,9 +110,9 @@ void test_nttable()
     testOk(builder.get() != 0, "Got builder");
 
     NTTablePtr ntTable = builder->
-            add("column0", pvDouble)->
-            add("column1", pvString)->
-            add("column2", pvInt)->
+            addColumn("column0", pvDouble)->
+            addColumn("column1", pvString)->
+            addColumn("column2", pvInt)->
             addDescriptor()->
             addAlarm()->
             addTimeStamp()->
@@ -220,9 +220,9 @@ void test_wrap()
     testOk(builder.get() != 0, "Got builder");
 
     PVStructurePtr pvStructure = builder->
-            add("column0", pvDouble)->
-            add("column1", pvString)->
-            add("column2", pvInt)->
+            addColumn("column0", pvDouble)->
+            addColumn("column1", pvString)->
+            addColumn("column2", pvInt)->
             createPVStructure();
     testOk1(pvStructure.get() != 0);
     if (!pvStructure)

@@ -53,7 +53,7 @@ namespace detail {
          * @param elementType column type, a scalar array.
          * @return this instance of <b>NTTableBuilder</b>.
          */
-        shared_pointer add(std::string const & name, epics::pvData::ScalarType elememtType);
+        shared_pointer addColumn(std::string const & name, epics::pvData::ScalarType elememtType);
 
         /**
          * Add descriptor field to the NTTable.
