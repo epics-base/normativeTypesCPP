@@ -82,6 +82,7 @@ namespace detail {
 
         /**
          * Create a <b>PVStructure</b> that represents NTTable.
+         * The returned PVStructure will have labels equal to the column names.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>PVStructure</b>.
          */
@@ -89,6 +90,8 @@ namespace detail {
 
         /**
          * Create a <b>NTTable</b> instance.
+         * The returned NTTable will wrap a PVStructure which will have
+         * labels equal to the column names.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>NTTable</b>.
          */
@@ -106,7 +109,7 @@ namespace detail {
 
         void reset();
 
-        std::vector<std::string> labels;
+        std::vector<std::string> columnNames;
         std::vector<epics::pvData::ScalarType> types;
 
         bool descriptor;
@@ -192,7 +195,7 @@ public:
      * Attach an pvAlarm.
      * @param pvAlarm The pvAlarm that will be attached.
      * Does nothing if no alarm.
-      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+     * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
      */
     bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
 

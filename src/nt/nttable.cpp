@@ -24,10 +24,10 @@ NTTableBuilder::shared_pointer NTTableBuilder::add(
         std::string const & name, epics::pvData::ScalarType scalarType
         )
 {
-    if (std::find(labels.begin(), labels.end(), name) != labels.end())
+    if (std::find(columnNames.begin(), columnNames.end(), name) != columnNames.end())
         throw std::runtime_error("duplicate column name");
 
-    labels.push_back(name);
+    columnNames.push_back(name);
     types.push_back(scalarType);
 
     return shared_from_this();
@@ -43,9 +43,9 @@ StructureConstPtr NTTableBuilder::createStructure()
                addArray("labels", pvString)->
                addNestedStructure("value");
 
-    vector<string>::size_type len = labels.size();
+    vector<string>::size_type len = columnNames.size();
     for (vector<string>::size_type i = 0; i < len; i++)
-        nestedBuilder->addArray(labels[i], types[i]);
+        nestedBuilder->addArray(columnNames[i], types[i]);
 
     builder = nestedBuilder->endNested();
 
@@ -88,10 +88,12 @@ NTTableBuilder::shared_pointer NTTableBuilder::addTimeStamp()
 
 PVStructurePtr NTTableBuilder::createPVStructure()
 {
-    size_t len = labels.size();
-    shared_vector<string> l(len);
-    for(size_t i=0; i<len; ++i) l[i] = labels[i];
     PVStructurePtr s = getPVDataCreate()->createPVStructure(createStructure());
+
+    // fill in labels with default values (the column names)
+    size_t len = columnNames.size();
+    shared_vector<string> l(len);
+    for(size_t i=0; i<len; ++i) l[i] = columnNames[i];
     s->getSubField<PVStringArray>("labels")->replace(freeze(l));
     return s;
 }
@@ -108,7 +110,7 @@ NTTableBuilder::NTTableBuilder()
 
 void NTTableBuilder::reset()
 {
-    labels.clear();
+    columnNames.clear();
     types.clear();
     descriptor = false;
     alarm = false;
