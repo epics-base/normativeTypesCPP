@@ -52,6 +52,10 @@ TESTPROD_HOST += ntaggregateTest
 ntaggregateTest_SRCS = ntaggregateTest.cpp
 TESTS += ntaggregateTest
 
+TESTPROD_HOST += ntattributeTest
+ntattributeTest_SRCS = ntattributeTest.cpp
+TESTS += ntattributeTest
+
 TESTPROD_HOST += ntutilsTest
 ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest
