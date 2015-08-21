@@ -7,6 +7,7 @@ SRC_DIRS += $(SRC)/nt
 
 INC += nt.h
 INC += ntutils.h
+INC += ntid.h
 INC += ntfield.h
 INC += ntscalar.h
 INC += ntscalarArray.h
