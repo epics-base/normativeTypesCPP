@@ -21,6 +21,7 @@ INC += ntunion.h
 INC += ntaggregate.h
 INC += ntattribute.h
 INC += ntcontinuum.h
+INC += nthistogram.h
 
 LIBSRCS += ntutils.cpp
 LIBSRCS += ntfield.cpp
@@ -37,6 +38,7 @@ LIBSRCS += ntunion.cpp
 LIBSRCS += ntaggregate.cpp
 LIBSRCS += ntattribute.cpp
 LIBSRCS += ntcontinuum.cpp
+LIBSRCS += nthistogram.cpp
 
 LIBRARY = nt
 
