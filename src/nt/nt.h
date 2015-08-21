@@ -25,6 +25,7 @@
 #include <pv/ntattribute.h>
 #include <pv/ntcontinuum.h>
 #include <pv/nthistogram.h>
+#include <pv/nturi.h>
 
 #endif  /* NT_H */
 
