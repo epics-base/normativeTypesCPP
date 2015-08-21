@@ -139,7 +139,7 @@ public:
     static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
+     * Wrap (aka dynamic cast, or wrap) the structure to NTAttribute without checking for isCompatible
      * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTAttribute.
      * @return NTAttribute instance.
      */
@@ -151,14 +151,41 @@ public:
      * @return (false,true) if (is not, is) an NTAttribute.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Is the pvStructure compatible with  NTAttribute.
+     * Is the structure an NTAttribute.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTAttribute.
+     */
+    static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
+
+    /**
+     * Is the Structure compatible with NTAttribute.
      * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The pvStructure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) an NTAttribute.
+     */
+    static bool isCompatible(
+        epics::pvData::StructureConstPtr const &structure);
+
+    /**
+     * Is the PVStructure compatible with NTAttribute.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTAttribute.
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
+
+    /**
+     * Checks if the specified structure is a valid NTAttribute.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTAttribute
+     * @return (false,true) if (is not, is) a valid NTAttribute.
+     */
+    bool isValid();
+
     /**
      * Create a NTAttribute builder instance.
      * @return builder instance.

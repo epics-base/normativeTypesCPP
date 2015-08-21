@@ -187,22 +187,48 @@ public:
      * @return NTScalarMultiChannel instance.
      */
     static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+
     /**
-     * Is the Structure an NTScalarMultiChannel.
-     * This method structure->getID() and checks if it is the same as the URI.
+     * Is the structure an NTScalarMultiChannel.
      * @param structure The structure to test.
      * @return (false,true) if (is not, is) an NTScalarMultiChannel.
      */
-    static bool is_a(
-        epics::pvData::StructureConstPtr const &structure);
+    static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Is the pvStructure compatible with  NTScalarMultiChannel.
+     * Is the structure an NTScalarMultiChannel.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTScalarMultiChannel.
+     */
+    static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
+
+    /**
+     * Is the Structure compatible with NTScalarMultiChannel.
      * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The pvStructure to test.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) an NTScalarMultiChannel.
+     */
+    static bool isCompatible(
+        epics::pvData::StructureConstPtr const &structure);
+
+    /**
+     * Is the PVStructure compatible with NTScalarMultiChannel.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The PVStructure to test.
      * @return (false,true) if (is not, is) an NTScalarMultiChannel.
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
+
+    /**
+     * Checks if the specified structure is a valid NTScalarMultiChannel.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTScalarMultiChannel
+     * @return (false,true) if (is not, is) a valid NTScalarMultiChannel.
+     */
+    bool isValid();
+
     /**
      * Create a NTScalarMultiChannelBuilder instance
      * @return builder instance.

@@ -171,14 +171,41 @@ public:
      * @return (false,true) if (is not, is) an NTScalar.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Is the pvStructure compatible with  NTScalar.
+     * Is the structure an NTScalar.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTScalar.
+     */
+    static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
+
+    /**
+     * Is the Structure compatible with NTScalar.
      * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The pvStructure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) an NTScalar.
+     */
+    static bool isCompatible(
+        epics::pvData::StructureConstPtr const &structure);
+
+    /**
+     * Is the PVStructure compatible with NTScalar.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTScalar.
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
+
+    /**
+     * Checks if the specified structure is a valid NTScalar.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTScalar
+     * @return (false,true) if (is not, is) a valid NTScalar.
+     */
+    bool isValid();
+
     /**
      * Create a NTScalar builder instance.
      * @return builder instance.

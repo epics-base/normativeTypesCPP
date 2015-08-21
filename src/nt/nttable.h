@@ -164,14 +164,41 @@ public:
      * @return (false,true) if (is not, is) an NTTable.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Is the pvStructure compatible with  NTTable.
+     * Is the structure an NTTable.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTTable.
+     */
+    static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
+
+    /**
+     * Is the Structure compatible with NTTable.
      * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The pvStructure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) an NTTable.
+     */
+    static bool isCompatible(
+        epics::pvData::StructureConstPtr const &structure);
+
+    /**
+     * Is the PVStructure compatible with NTTable.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTTable.
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
+
+    /**
+     * Checks if the specified structure is a valid NTTable.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTTable
+     * @return (false,true) if (is not, is) a valid NTTable.
+     */
+    bool isValid();
+
     /**
      * Create a NTTable builder instance.
      * @return builder instance.

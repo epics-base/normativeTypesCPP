@@ -186,22 +186,48 @@ public:
      * @return NTMultiChannel instance.
      */
     static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+
     /**
-     * Is the Structure an NTMultiChannel.
-     * This method structure->getID() and checks if it is the same as the URI.
+     * Is the structure an NTMultiChannel.
      * @param structure The structure to test.
      * @return (false,true) if (is not, is) an NTMultiChannel.
      */
-    static bool is_a(
-        epics::pvData::StructureConstPtr const &structure);
+    static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Is the pvStructure compatible with  NTMultiChannel.
+     * Is the structure an NTMultiChannel.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTMultiChannel.
+     */
+    static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
+
+    /**
+     * Is the Structure compatible with NTMultiChannel.
      * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The pvStructure to test.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) an NTMultiChannel.
+     */
+    static bool isCompatible(
+        epics::pvData::StructureConstPtr const &structure);
+
+    /**
+     * Is the PVStructure compatible with NTMultiChannel.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The PVStructure to test.
      * @return (false,true) if (is not, is) an NTMultiChannel.
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
+
+    /**
+     * Checks if the specified structure is a valid NTMultiChannel.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTMultiChannel
+     * @return (false,true) if (is not, is) a valid NTMultiChannel.
+     */
+    bool isValid();
+
     /**
      * Create a NTMultiChannelBuilder instance
      * @return builder instance.

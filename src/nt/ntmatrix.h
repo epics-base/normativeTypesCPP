@@ -149,12 +149,11 @@ public:
     static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
+     * Wrap (aka dynamic cast, or wrap) the structure to NTMatrix without checking for isCompatible
      * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTMatrix.
      * @return NTMatrix instance.
      */
     static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
-
 
     /**
      * Is the structure an NTMatrix.
@@ -162,14 +161,40 @@ public:
      * @return (false,true) if (is not, is) an NTMatrix.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
+
     /**
-     * Is the pvStructure compatible with  NTMatrix..
+     * Is the structure an NTMatrix.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTMatrix.
+     */
+    static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
+
+    /**
+     * Is the Structure compatible with NTMatrix.
      * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The pvStructure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) an NTMatrix.
+     */
+    static bool isCompatible(
+        epics::pvData::StructureConstPtr const &structure);
+
+    /**
+     * Is the PVStructure compatible with NTMatrix.
+     * This method introspects the fields to see if they are compatible.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) an NTMatrix.
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
+
+    /**
+     * Checks if the specified structure is a valid NTMatrix.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTMatrix
+     * @return (false,true) if (is not, is) a valid NTMatrix.
+     */
+    bool isValid();
 
     /**
      * Create a NTMatrix builder instance.
