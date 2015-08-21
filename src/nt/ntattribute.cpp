@@ -133,7 +133,10 @@ bool NTAttribute::isCompatible(PVStructurePtr const & pvStructure)
     PVUnionPtr pvValue = pvStructure->getSubField<PVUnion>("value");
     if(!pvValue) return false;
 
+    // TODO tags
+
     PVFieldPtr pvField = pvStructure->getSubField("descriptor");
+
     if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
 
     pvField = pvStructure->getSubField("alarm");

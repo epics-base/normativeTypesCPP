@@ -23,6 +23,7 @@ INC += ntattribute.h
 INC += ntcontinuum.h
 INC += nthistogram.h
 INC += nturi.h
+INC += ntndarrayAttribute.h
 
 LIBSRCS += ntutils.cpp
 LIBSRCS += ntfield.cpp
@@ -41,6 +42,7 @@ LIBSRCS += ntattribute.cpp
 LIBSRCS += ntcontinuum.cpp
 LIBSRCS += nthistogram.cpp
 LIBSRCS += nturi.cpp
+LIBSRCS += ntndarrayAttribute.cpp
 
 LIBRARY = nt
 
