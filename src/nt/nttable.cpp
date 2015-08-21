@@ -203,6 +203,11 @@ PVStringArrayPtr NTTable::getLabels() const
     return pvNTTable->getSubField<PVStringArray>("labels");
 }
 
+StringArray const & NTTable::getColumnNames() const
+{
+    return pvNTTable->getStructure()->getFieldNames();
+}
+
 PVFieldPtr NTTable::getColumn(std::string const & columnName) const
 {
     return pvNTTable->getSubField("value." + columnName);

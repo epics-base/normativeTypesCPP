@@ -257,6 +257,13 @@ public:
     epics::pvData::PVStringArrayPtr getLabels() const;
 
     /**
+     * Get the column names for the table.
+     * For each name, calling getColumn should return the column, which should not be null.
+     * @return The column names.
+     */
+    epics::pvData::StringArray const & getColumnNames() const;
+
+    /**
      * Get the PVField (column) for a field that follows the label field.
      * @param columnName The name of the column.
      * @return The PVFieldPtr for the field.
