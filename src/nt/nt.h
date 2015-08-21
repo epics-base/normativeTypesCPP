@@ -23,6 +23,7 @@
 #include <pv/ntunion.h>
 #include <pv/ntaggregate.h>
 #include <pv/ntattribute.h>
+#include <pv/ntcontinuum.h>
 
 #endif  /* NT_H */
 
