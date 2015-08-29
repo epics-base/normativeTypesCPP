@@ -9,6 +9,7 @@
 
 #define epicsExportSharedSymbols
 #include <pv/ntndarray.h>
+#include <pv/ntndarrayAttribute.h>
 #include <pv/ntutils.h>
 
 using namespace std;
@@ -247,7 +248,7 @@ bool NTNDArray::isCompatible(PVStructurePtr const & pvStructure)
     pvField = pvStructure->getSubField("dataTimeStamp");
     if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
     PVStructureArrayPtr pvAttribute = pvStructure->getSubField<PVStructureArray>("attribute");
-    if(pvAttribute->getStructureArray()->getStructure()->getID().compare(ntAttrStr)!=0) return false;
+    if(!NTNDArrayAttribute::isCompatible(pvAttribute->getStructureArray()->getStructure())) return false;
     return true;
 }
 
