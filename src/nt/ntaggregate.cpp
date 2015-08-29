@@ -82,13 +82,11 @@ NTAggregateBuilder::shared_pointer NTAggregateBuilder::addFirst()
     return shared_from_this();
 }
 
-
 NTAggregateBuilder::shared_pointer NTAggregateBuilder::addFirstTimeStamp()
 {
     firstTimeStamp = true;
     return shared_from_this();
 }
-
 
 NTAggregateBuilder::shared_pointer NTAggregateBuilder::addLast()
 {
@@ -96,13 +94,11 @@ NTAggregateBuilder::shared_pointer NTAggregateBuilder::addLast()
     return shared_from_this();
 }
 
-
 NTAggregateBuilder::shared_pointer NTAggregateBuilder::addLastTimeStamp()
 {
     lastTimeStamp = true;
     return shared_from_this();
 }
-
 
 NTAggregateBuilder::shared_pointer NTAggregateBuilder::addMax()
 {
@@ -110,15 +106,11 @@ NTAggregateBuilder::shared_pointer NTAggregateBuilder::addMax()
     return shared_from_this();
 }
 
-
 NTAggregateBuilder::shared_pointer NTAggregateBuilder::addMin()
 {
     min = true;
     return shared_from_this();
 }
-
-
-
 
 NTAggregateBuilder::shared_pointer NTAggregateBuilder::addDescriptor()
 {
