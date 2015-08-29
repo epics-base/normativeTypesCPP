@@ -129,18 +129,46 @@ bool NTHistogram::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTHistogram::isCompatible(StructureConstPtr const &structure)
+{
+    if(!structure.get()) return false;
+
+    ScalarArrayConstPtr rangesField = structure->getField<ScalarArray>("ranges");
+    if(!rangesField.get() || rangesField->getElementType() != pvDouble) return false;
+
+    ScalarArrayConstPtr valueField = structure->getField<ScalarArray>("value");
+    if(!valueField.get()) return false;
+
+    ScalarType scalarType = valueField->getElementType();
+    if (scalarType != pvShort &&
+        scalarType != pvInt &&
+        scalarType != pvLong)
+        return false;
+
+    FieldConstPtr field = structure->getField("descriptor");
+    if(field)
+    {
+       ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+       if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+           return false;
+    }
+
+    field = structure->getField("alarm");
+    if (!field.get() && !ntField->isAlarm(field))
+        return false;
+
+    field = structure->getField("timeStamp");
+    if (!field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    return true;
+}
+
 bool NTHistogram::isCompatible(PVStructurePtr const & pvStructure)
 {
-    if(!pvStructure) return false;
-    PVScalarArrayPtr pvValue = pvStructure->getSubField<PVScalarArray>("value");
-    if(!pvValue) return false;
-    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
-    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
-    pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-    return true;
+    if(!pvStructure.get()) return false;
+
+    return isCompatible(pvStructure->getStructure());
 }
 
 

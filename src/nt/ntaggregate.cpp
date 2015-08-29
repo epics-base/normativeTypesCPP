@@ -190,21 +190,92 @@ bool NTAggregate::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTAggregate::isCompatible(StructureConstPtr const &structure)
+{
+    if (structure.get() == 0) return false;
+
+    ScalarConstPtr valueField = structure->getField<Scalar>("value");
+    if (valueField.get() == 0 || valueField->getScalarType() != pvDouble)
+        return false;
+
+    ScalarConstPtr nField = structure->getField<Scalar>("N");
+    if (nField.get() == 0 || nField->getScalarType() != pvLong)
+        return false;
+
+    FieldConstPtr field = structure->getField("dispersion");
+    if (field.get())
+    {
+        ScalarConstPtr dispersionField = structure->getField<Scalar>("dispersion");
+        if (!dispersionField.get() || dispersionField->getScalarType() != pvDouble)
+            return false;
+    }
+
+    field = structure->getField("first");
+    if (field.get())
+    {
+        ScalarConstPtr firstField = structure->getField<Scalar>("first");
+        if (!firstField.get() || firstField->getScalarType() != pvDouble)
+            return false;
+    }
+
+    field = structure->getField("firstTimeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    field = structure->getField("last");
+    if (field.get())
+    {
+        ScalarConstPtr lastField = structure->getField<Scalar>("last");
+        if (!lastField.get() || lastField->getScalarType() != pvDouble)
+            return false;
+    }
+
+    field = structure->getField("lastTimeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    field = structure->getField("max");
+    if (field.get())
+    {
+        ScalarConstPtr maxField = structure->getField<Scalar>("max");
+        if (!maxField.get() || maxField->getScalarType() != pvDouble)
+            return false;
+    }
+
+    field = structure->getField("min");
+    if (field.get())
+    {
+        ScalarConstPtr minField = structure->getField<Scalar>("min");
+        if (!minField.get() || minField->getScalarType() != pvDouble)
+            return false;
+    }
+
+    field = structure->getField("descriptor");
+    if (field.get())
+    {
+        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+            return false;
+    }
+
+    NTFieldPtr ntField = NTField::get();
+
+    field = structure->getField("alarm");
+    if (field.get() && !ntField->isAlarm(field))
+        return false;
+
+    field = structure->getField("timeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    return true;
+}
+
 bool NTAggregate::isCompatible(PVStructurePtr const & pvStructure)
 {
     if(!pvStructure) return false;
 
-    PVDoublePtr pvValue = pvStructure->getSubField<PVDouble>("value");
-    if(!pvValue) return false;
-
-    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
-    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
-    pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-
-    return true;
+    return isCompatible(pvStructure->getStructure());
 }
 
 NTAggregateBuilderPtr NTAggregate::createBuilder()

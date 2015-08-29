@@ -143,27 +143,55 @@ bool NTURI::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTURI::isCompatible(StructureConstPtr const & structure)
+{
+    if (!structure.get()) return false;
+
+    ScalarConstPtr schemeField = structure->getField<Scalar>("scheme");
+    if (schemeField.get() == 0 || schemeField->getScalarType() != pvString)
+        return false;
+
+    ScalarConstPtr pathField = structure->getField<Scalar>("path");
+    if (pathField.get() == 0 || pathField->getScalarType() != pvString)
+        return false;
+
+    FieldConstPtr field = structure->getField("authority");
+    if (field.get())
+    {
+        ScalarConstPtr authorityField = structure->getField<Scalar>("authority");
+        if (!authorityField.get() || authorityField->getScalarType() != pvString)
+            return false;
+    }
+
+    field = structure->getField("query");
+    if (field.get())
+    {
+        StructureConstPtr queryField = structure->getField<Structure>("query");
+        if (!queryField.get())
+            return false;
+
+        FieldConstPtrArray const & fields = queryField->getFields();
+        for (FieldConstPtrArray::const_iterator it = fields.begin();
+             it != fields.end(); ++it)
+        {
+            if ((*it)->getType() != scalar) return false;
+            ScalarType scalarType = std::tr1::dynamic_pointer_cast<const Scalar>(
+               (*it))->getScalarType();
+            if (scalarType != pvString &&
+                scalarType != pvInt &&
+                scalarType != pvDouble) return false;
+        }
+    }
+
+    return true;
+}
+
+
 bool NTURI::isCompatible(PVStructurePtr const & pvStructure)
 {
     if(!pvStructure) return false;
 
-    PVStringPtr pvScheme = pvStructure->getSubField<PVString>("scheme");
-    if(!pvScheme) return false;
-
-    PVStringPtr pvPath = pvStructure->getSubField<PVString>("path");
-    if(!pvPath) return false;
-
-    PVFieldPtr pvAuthority = pvStructure->getSubField("authority");
-    PVStringPtr pvAuthority2 = pvStructure->getSubField<PVString>("authority");
-    if(!pvAuthority && pvAuthority2) return false;
-
-    PVFieldPtr pvQuery = pvStructure->getSubField("query");
-    PVStructurePtr pvQuery2 = pvStructure->getSubField<PVStructure>("query");
-    if(!pvAuthority && pvAuthority2) return false; 
-
-    //TODO check query field types
-
-    return true;
+    return isCompatible(pvStructure->getStructure());
 }
 
 NTURIBuilderPtr NTURI::createBuilder()

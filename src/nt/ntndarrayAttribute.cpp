@@ -7,6 +7,7 @@
 
 #define epicsExportSharedSymbols
 #include <pv/ntndarrayAttribute.h>
+#include <pv/ntattribute.h>
 #include <pv/ntutils.h>
 
 using namespace std;
@@ -130,31 +131,31 @@ bool NTNDArrayAttribute::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTNDArrayAttribute::isCompatible(StructureConstPtr const & structure)
+{
+    if (!NTAttribute::isCompatible(structure)) return false;
+
+    // descriptor required field for attibute in an ndarray
+    ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+    if (descriptorField.get() == 0 || descriptorField->getScalarType() != pvString)
+        return false;
+
+    ScalarConstPtr sourcedTypeField = structure->getField<Scalar>("sourceType");
+    if (sourcedTypeField.get() == 0 || sourcedTypeField->getScalarType() != pvInt)
+        return false;
+
+    ScalarConstPtr sourcedField = structure->getField<Scalar>("source");
+    if (sourcedField.get() == 0 || sourcedField->getScalarType() != pvString)
+        return false;
+
+    return true;
+}
+
 bool NTNDArrayAttribute::isCompatible(PVStructurePtr const & pvStructure)
 {
     if(!pvStructure) return false;
 
-    PVUnionPtr pvValue = pvStructure->getSubField<PVUnion>("value");
-    if(!pvValue) return false;
-
-    // TODO tags
-
-    PVStringPtr pvDescriptor = pvStructure->getSubField<PVString>("descriptor");
-    if(!pvDescriptor) return false;
-
-    PVStringPtr pvSource = pvStructure->getSubField<PVString>("source");
-    if(!pvSource) return false;
-
-    PVIntPtr pvSourceType = pvStructure->getSubField<PVInt>("sourceType");
-    if(!pvSourceType) return false;
-
-    PVFieldPtr pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-
-    return true;
+    return isCompatible(pvStructure->getStructure());
 }
 
 NTNDArrayAttributeBuilderPtr NTNDArrayAttribute::createBuilder()

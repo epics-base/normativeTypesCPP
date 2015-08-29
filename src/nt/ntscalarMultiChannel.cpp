@@ -225,30 +225,94 @@ bool NTScalarMultiChannel::is_a(StructureConstPtr const &structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+
+bool NTScalarMultiChannel::isCompatible(StructureConstPtr const & structure)
+{
+    if (!structure.get()) return false;
+
+    ScalarArrayConstPtr valueField = structure->getField<ScalarArray>("value");
+    if (!valueField.get()) return false;
+
+    ScalarArrayConstPtr channelNameField = structure->getField<ScalarArray>(
+        "channelName");
+    if (!channelNameField.get()) return false;
+    if (channelNameField->getElementType() != pvString) return false;
+
+    FieldConstPtr field = structure->getField("severity");
+    if (field.get())
+    {
+        ScalarArrayConstPtr severityField = structure->getField<ScalarArray>("severity");
+        if (!severityField.get() || severityField->getElementType() != pvInt)
+            return false;
+    }
+
+    field = structure->getField("status");
+    if (field.get())
+    {
+        ScalarArrayConstPtr statusField = structure->getField<ScalarArray>("status");
+        if (!statusField.get() || statusField->getElementType() != pvInt)
+            return false;
+    }
+
+    field = structure->getField("message");
+    if (field.get())
+    {
+        ScalarArrayConstPtr messageField = structure->getField<ScalarArray>("message");
+        if (!messageField.get() || messageField->getElementType() != pvString)
+           return false;
+    }
+
+    field = structure->getField("secondsPastEpoch");
+    if (field.get())
+    {
+        ScalarArrayConstPtr secondsPastEpochField = structure->getField<ScalarArray>("secondsPastEpoch");
+        if (!secondsPastEpochField.get() || secondsPastEpochField->getElementType() != pvLong)
+            return false;
+    }
+
+    field = structure->getField("nanoseconds");
+    if (field.get())
+    {
+        ScalarArrayConstPtr nanosecondsField = structure->getField<ScalarArray>("nanoseconds");
+        if (!nanosecondsField.get() || nanosecondsField->getElementType() != pvInt)
+            return false;
+    }
+
+    field = structure->getField("userTag");
+    if (field.get())
+    {
+        ScalarArrayConstPtr userTagField = structure->getField<ScalarArray>("userTag");
+        if (!userTagField.get() || userTagField->getElementType() != pvInt)
+            return false;
+    }
+
+    field = structure->getField("descriptor");
+    if (field.get())
+    {
+        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+            return false;
+    }
+
+    NTFieldPtr ntField = NTField::get();
+
+    field = structure->getField("alarm");
+    if (field.get() && !ntField->isAlarm(field))
+        return false;
+
+    field = structure->getField("timeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    return true;
+}
+
+
 bool NTScalarMultiChannel::isCompatible(PVStructurePtr const &pvStructure)
 {
-    if(!pvStructure) return false;
-    PVScalarArrayPtr pvValue = pvStructure->getSubField<PVScalarArray>("value");
-    if(!pvValue) return false;
-    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
-    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
-    pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("severity");
-    if(pvField && !pvStructure->getSubField<PVIntArray>("severity")) return false;
-    pvField = pvStructure->getSubField("status");
-    if(pvField && !pvStructure->getSubField<PVIntArray>("status")) return false;
-    pvField = pvStructure->getSubField("message");
-    if(pvField && !pvStructure->getSubField<PVStringArray>("message")) return false;
-    pvField = pvStructure->getSubField("secondsPastEpoch");
-    if(pvField && !pvStructure->getSubField<PVLongArray>("secondsPastEpoch")) return false;
-    pvField = pvStructure->getSubField("nanoseconds");
-    if(pvField && !pvStructure->getSubField<PVIntArray>("nanoseconds")) return false;
-    pvField = pvStructure->getSubField("userTag");
-    if(pvField && !pvStructure->getSubField<PVIntArray>("userTag")) return false;
-    return true;
+    if(!pvStructure.get()) return false;
+
+    return isCompatible(pvStructure->getStructure());
 }
 
 NTScalarMultiChannelBuilderPtr NTScalarMultiChannel::createBuilder()

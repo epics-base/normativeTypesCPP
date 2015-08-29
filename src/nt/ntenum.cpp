@@ -117,21 +117,41 @@ bool NTEnum::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTEnum::isCompatible(StructureConstPtr const &structure)
+{
+    if (structure.get() == 0) return false;
+
+    NTFieldPtr ntField = NTField::get();
+
+    FieldConstPtr valueField = structure->getField("value");
+    if (!valueField.get() || !ntField->isEnumerated(valueField))
+        return false;
+
+    FieldConstPtr field = structure->getField("descriptor");
+    if (field.get())
+    {
+        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+            return false;
+    }
+
+    field = structure->getField("alarm");
+    if (field.get() && !ntField->isAlarm(field))
+        return false;
+
+    field = structure->getField("timeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    return true;
+}
+
+
 bool NTEnum::isCompatible(PVStructurePtr const & pvStructure)
 {
     if(!pvStructure) return false;
-    PVStructurePtr pvValue = pvStructure->getSubField<PVStructure>("value");
-    if(!pvValue) return false;
-    if (!ntField->isEnumerated(pvValue->getField())) return false;
 
-    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
-    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
-    pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-
-    return true;
+    return isCompatible(pvStructure->getStructure());
 }
 
 NTEnumBuilderPtr NTEnum::createBuilder()

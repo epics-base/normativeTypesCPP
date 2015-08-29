@@ -143,16 +143,51 @@ bool NTTable::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTTable::isCompatible(StructureConstPtr const & structure)
+{
+    if (!structure.get()) return false;
+
+    StructureConstPtr valueField = structure->getField<Structure>("value");
+    if (!valueField.get())
+        return false;
+
+    FieldConstPtrArray const & fields = valueField->getFields();
+    for (FieldConstPtrArray::const_iterator it = fields.begin();
+         it != fields.end(); ++it)
+    {
+        if ((*it)->getType() != scalarArray) return false;
+    }
+
+    ScalarArrayConstPtr labelsField = structure->getField<ScalarArray>("labels");
+    if (!labelsField.get() || labelsField->getElementType() != pvString)
+        return false;
+
+    FieldConstPtr field = structure->getField("descriptor");
+    if (field.get())
+    {
+        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+            return false;
+    }
+
+    NTFieldPtr ntField = NTField::get();
+
+    field = structure->getField("alarm");
+    if (field.get() && !ntField->isAlarm(field))
+        return false;
+
+    field = structure->getField("timeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    return true;
+}
+
 bool NTTable::isCompatible(PVStructurePtr const & pvStructure)
 {
     if(!pvStructure) return false;
-    PVFieldPtr pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-    PVStringArrayPtr pvLabel = pvStructure->getSubField<PVStringArray>("labels");
-    if(!pvLabel) return false;
-    return true;
+
+    return isCompatible(pvStructure->getStructure());
 }
 
 NTTableBuilderPtr NTTable::createBuilder()

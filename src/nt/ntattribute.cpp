@@ -126,26 +126,53 @@ bool NTAttribute::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTAttribute::isCompatible(StructureConstPtr const & structure)
+{
+    if (structure.get() == 0) return false;
+
+    ScalarConstPtr nameField = structure->getField<Scalar>("name");
+    if (nameField.get() == 0 || nameField->getScalarType() != pvString)
+        return false;
+
+    UnionConstPtr valueField = structure->getField<Union>("value");
+    if (valueField.get() == 0 || !valueField->isVariant())
+        return false;
+
+    FieldConstPtr field = structure->getField("tags");
+    if (field.get())
+    {
+        ScalarArrayConstPtr tagsField = structure->getField<ScalarArray>("tags");
+        if (tagsField.get() == 0 || tagsField->getElementType() != pvString)
+            return false;
+    }
+
+    field = structure->getField("descriptor");
+    if (field.get())
+    {
+        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+            return false;
+    }
+
+    NTFieldPtr ntField = NTField::get();
+
+    field = structure->getField("alarm");
+    if (field.get() && !ntField->isAlarm(field))
+        return false;
+
+    field = structure->getField("timeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    return true;
+}
+
+
 bool NTAttribute::isCompatible(PVStructurePtr const & pvStructure)
 {
     if(!pvStructure) return false;
 
-    PVUnionPtr pvValue = pvStructure->getSubField<PVUnion>("value");
-    if(!pvValue) return false;
-
-    // TODO tags
-
-    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
-
-    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
-
-    pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-
-    return true;
+    return isCompatible(pvStructure->getStructure());
 }
 
 NTAttributeBuilderPtr NTAttribute::createBuilder()
