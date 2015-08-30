@@ -171,6 +171,10 @@ bool NTHistogram::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTHistogram::isValid()
+{
+    return (getValue()->getLength()+1 == getRanges()->getLength());
+}
 
 NTHistogramBuilderPtr NTHistogram::createBuilder()
 {

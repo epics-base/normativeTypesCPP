@@ -168,6 +168,11 @@ bool NTNameValue::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTNameValue::isValid()
+{
+    return (getValue<PVScalarArray>()->getLength() == getName()->getLength());
+}
+
 NTNameValueBuilderPtr NTNameValue::createBuilder()
 {
     return NTNameValueBuilderPtr(new detail::NTNameValueBuilder());

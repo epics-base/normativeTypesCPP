@@ -189,6 +189,10 @@ bool NTScalarArray::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTScalarArray::isValid()
+{
+    return true;
+}
 
 NTScalarArrayBuilderPtr NTScalarArray::createBuilder()
 {

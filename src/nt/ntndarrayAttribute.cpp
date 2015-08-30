@@ -158,6 +158,11 @@ bool NTNDArrayAttribute::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTNDArrayAttribute::isValid()
+{
+    return true;
+}
+
 NTNDArrayAttributeBuilderPtr NTNDArrayAttribute::createBuilder()
 {
     return NTNDArrayAttributeBuilderPtr(new detail::NTNDArrayAttributeBuilder());

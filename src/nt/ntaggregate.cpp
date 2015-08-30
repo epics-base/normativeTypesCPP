@@ -278,6 +278,11 @@ bool NTAggregate::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTAggregate::isValid()
+{
+    return true;
+}
+
 NTAggregateBuilderPtr NTAggregate::createBuilder()
 {
     return NTAggregateBuilderPtr(new detail::NTAggregateBuilder());

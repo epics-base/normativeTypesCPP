@@ -154,6 +154,11 @@ bool NTEnum::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTEnum::isValid()
+{
+    return true;
+}
+
 NTEnumBuilderPtr NTEnum::createBuilder()
 {
     return NTEnumBuilderPtr(new detail::NTEnumBuilder());

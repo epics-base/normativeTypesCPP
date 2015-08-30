@@ -193,6 +193,11 @@ bool NTScalar::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTScalar::isValid()
+{
+    return true;
+}
+
 NTScalarBuilderPtr NTScalar::createBuilder()
 {
     return NTScalarBuilderPtr(new detail::NTScalarBuilder());

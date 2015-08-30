@@ -161,6 +161,11 @@ bool NTContinuum::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTContinuum::isValid()
+{
+    return ((getUnits()->getLength()-1)*getBase()->getLength() ==
+            getValue()->getLength());
+}
 
 NTContinuumBuilderPtr NTContinuum::createBuilder()
 {

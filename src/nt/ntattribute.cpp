@@ -175,6 +175,11 @@ bool NTAttribute::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTAttribute::isValid()
+{
+    return true;
+}
+
 NTAttributeBuilderPtr NTAttribute::createBuilder()
 {
     return NTAttributeBuilderPtr(new detail::NTAttributeBuilder());

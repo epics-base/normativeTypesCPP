@@ -181,6 +181,31 @@ bool NTMatrix::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTMatrix::isValid()
+{
+    int valueLength = getValue()->getLength();
+    if (valueLength == 0)
+        return false;
+
+    PVIntArrayPtr pvDim = getDim();
+    if (pvDim.get())
+    {
+        int length = pvDim->getLength();
+        if (length != 1 && length !=2)
+            return false;
+
+        PVIntArray::const_svector data = pvDim->view();
+        int expectedLength = 1;
+        for (PVIntArray::const_svector::const_iterator it = data.begin();
+                 it != data.end(); ++it)
+        {
+             expectedLength *= *it;
+        }
+        if (expectedLength != valueLength)
+        return false;
+    }
+    return true;
+}
 
 NTMatrixBuilderPtr NTMatrix::createBuilder()
 {

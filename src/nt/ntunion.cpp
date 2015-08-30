@@ -154,6 +154,11 @@ bool NTUnion::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTUnion::isValid()
+{
+    return true;
+}
+
 NTUnionBuilderPtr NTUnion::createBuilder()
 {
     return NTUnionBuilderPtr(new detail::NTUnionBuilder());
