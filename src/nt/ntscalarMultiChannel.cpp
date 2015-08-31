@@ -315,6 +315,27 @@ bool NTScalarMultiChannel::isCompatible(PVStructurePtr const &pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTScalarMultiChannel::isValid()
+{
+    size_t valueLength = getValue()->getLength();
+    if (getChannelName()->getLength() != valueLength) return false;
+
+    PVScalarArrayPtr arrayFields[] = {
+          getSeverity(), getStatus(), getMessage(), 
+          getSecondsPastEpoch(), getNanoseconds(), getUserTag()
+    };
+    size_t N = sizeof(arrayFields)/sizeof(arrayFields[0]);
+
+    PVScalarArrayPtr arrayField;
+    for (PVScalarArrayPtr * pa = arrayFields; pa != arrayFields+N; ++pa)
+    {
+        arrayField = *pa;
+        if (arrayField.get() && arrayField->getLength() != valueLength)
+            return false;
+    }
+    return true; 
+}
+
 NTScalarMultiChannelBuilderPtr NTScalarMultiChannel::createBuilder()
 {
     return NTScalarMultiChannelBuilderPtr(new detail::NTScalarMultiChannelBuilder());

@@ -190,6 +190,32 @@ bool NTTable::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTTable::isValid()
+{
+    PVFieldPtrArray const & columns = pvValue->getPVFields();
+        
+    if (getLabels()->getLength() != columns.size()) return false;
+    boolean first = true;
+    int length = 0;
+    for (PVFieldPtrArray::const_iterator it = columns.begin();
+        it != columns.end();++it)
+    {
+        PVScalarArrayPtr column = std::tr1::dynamic_pointer_cast<PVScalarArray>(*it);
+        if (!column.get()) return false;
+        int colLength = column->getLength();
+        if (first)
+        {
+            length = colLength;
+            first = false;
+        }
+        else if (length != colLength)
+            return false;
+    }
+
+    return true;
+}
+
+
 NTTableBuilderPtr NTTable::createBuilder()
 {
     return NTTableBuilderPtr(new detail::NTTableBuilder());

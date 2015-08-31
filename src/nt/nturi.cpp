@@ -194,6 +194,11 @@ bool NTURI::isCompatible(PVStructurePtr const & pvStructure)
     return isCompatible(pvStructure->getStructure());
 }
 
+bool NTURI::isValid()
+{
+    return true;
+}
+
 NTURIBuilderPtr NTURI::createBuilder()
 {
     return NTURIBuilderPtr(new detail::NTURIBuilder());
