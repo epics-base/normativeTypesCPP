@@ -288,6 +288,7 @@ public:
 private:
     NTTable(epics::pvData::PVStructurePtr const & pvStructure);
     epics::pvData::PVStructurePtr pvNTTable;
+    epics::pvData::PVStructurePtr pvValue;
     friend class detail::NTTableBuilder;
 };
 

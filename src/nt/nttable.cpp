@@ -245,11 +245,11 @@ StringArray const & NTTable::getColumnNames() const
 
 PVFieldPtr NTTable::getColumn(std::string const & columnName) const
 {
-    return pvNTTable->getSubField("value." + columnName);
+    return pvValue->getSubField(columnName);
 }
 
 NTTable::NTTable(PVStructurePtr const & pvStructure) :
-    pvNTTable(pvStructure)
+    pvNTTable(pvStructure), pvValue(pvNTTable->getSubField<PVStructure>("value"))
 {}
 
 
