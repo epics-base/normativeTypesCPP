@@ -195,7 +195,7 @@ bool NTTable::isValid()
     PVFieldPtrArray const & columns = pvValue->getPVFields();
         
     if (getLabels()->getLength() != columns.size()) return false;
-    boolean first = true;
+    bool first = true;
     int length = 0;
     for (PVFieldPtrArray::const_iterator it = columns.begin();
         it != columns.end();++it)
