@@ -223,32 +223,94 @@ bool NTNDArray::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTNDArray::isCompatible(StructureConstPtr const &structure)
+{
+    if(!structure.get()) return false;
+
+    UnionConstPtr valueField = structure->getField<Union>("value");
+    if(!NTValueType::isCompatible(valueField)) return false;
+
+    StructureConstPtr codecField = structure->getField<Structure>("codec");
+    if(!NTCodec::isCompatible(codecField)) return false;
+
+    ScalarConstPtr compressedSizeField = structure->getField<Scalar>("compressedSize");
+    if (compressedSizeField.get() == 0)
+        return false;
+
+    if (compressedSizeField->getScalarType() != pvLong)
+        return false;
+
+
+    ScalarConstPtr uncompressedSizeField = structure->getField<Scalar>("uncompressedSize");
+    if (uncompressedSizeField.get() == 0)
+        return false;
+
+    if (uncompressedSizeField->getScalarType() != pvLong)
+        return false;
+
+    StructureArrayConstPtr dimensionField = structure->getField<StructureArray>("dimension");
+    if (dimensionField.get() == 0)
+        return false;
+    StructureConstPtr dimElementStruc = dimensionField->getStructure();
+
+    if(!NTDimension::isCompatible(dimElementStruc))
+       return false;
+
+    NTFieldPtr ntField = NTField::get();
+
+    StructureConstPtr dataTimeStampField = structure->getField<Structure>(
+        "dataTimeStamp");
+    if (dataTimeStampField.get() == 0 || !ntField->isTimeStamp(dataTimeStampField))
+        return false;
+
+
+    ScalarConstPtr uniqueIdField = structure->getField<Scalar>("uniqueId");
+    if (uniqueIdField.get() == 0)
+        return false;
+
+    if (uniqueIdField->getScalarType() != pvInt)
+        return false;
+
+
+    StructureArrayConstPtr attributeField = structure->getField<StructureArray>( "attribute");
+
+    StructureConstPtr attributeElementStruc = attributeField->getStructure();
+
+    if (!NTNDArrayAttribute::isCompatible(attributeElementStruc))
+        return false;
+
+
+    FieldConstPtr field = structure->getField("descriptor");
+    if (field.get())
+    {
+        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
+        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+            return false;
+    }
+
+    field = structure->getField("alarm");
+    if (field.get() && !ntField->isAlarm(field))
+        return false;
+
+    field = structure->getField("timeStamp");
+    if (field.get() && !ntField->isTimeStamp(field))
+        return false;
+
+    field = structure->getField("display");
+    if (field.get() && !ntField->isDisplay(field))
+        return false;
+
+    return true;
+}
+
+
 bool NTNDArray::isCompatible(PVStructurePtr const & pvStructure)
 {
-    if(!pvStructure) return false;
-    PVUnionPtr pvValue = pvStructure->getSubField<PVUnion>("value");
-    if(!pvValue) return false;
-    PVFieldPtr pvField = pvStructure->getSubField("descriptor");
-    if(pvField && !pvStructure->getSubField<PVString>("descriptor")) return false;
-    pvField = pvStructure->getSubField("alarm");
-    if(pvField && !ntField->isAlarm(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("timeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-    pvField = pvStructure->getSubField("display");
-    if(pvField && !ntField->isDisplay(pvField->getField())) return false;
-    if(!pvStructure->getSubField<PVLong>("compressedSize")) return false;
-    if(!pvStructure->getSubField<PVLong>("uncompressedSize")) return false;
-    PVStructurePtr pvCodec = pvStructure->getSubField<PVStructure>("codec");
-    if(!pvCodec) return false;
-    if(!pvCodec->getSubField<PVString>("name")) return false;
-    if(!pvCodec->getSubField<PVUnion>("parameters")) return false;
-    PVStructureArrayPtr pvDimension = pvStructure->getSubField<PVStructureArray>("dimension");
-    if(pvDimension->getStructureArray()->getStructure()->getID().compare("dimension_t")!=0) return false;
-    if(!pvStructure->getSubField<PVInt>("uniqueId")) return false;
-    pvField = pvStructure->getSubField("dataTimeStamp");
-    if(pvField && !ntField->isTimeStamp(pvField->getField())) return false;
-    PVStructureArrayPtr pvAttribute = pvStructure->getSubField<PVStructureArray>("attribute");
-    if(!NTNDArrayAttribute::isCompatible(pvAttribute->getStructureArray()->getStructure())) return false;
+    if(!pvStructure.get()) return false;
+
+    return isCompatible(pvStructure->getStructure());
+}
+
     return true;
 }
 
