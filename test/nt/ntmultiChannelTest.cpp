@@ -77,6 +77,7 @@ static void test()
             addAlarm()->
             addTimeStamp()->
             addSeverity() ->
+            addIsConnected() ->
             create();
     testOk1(multiChannel.get() != 0);
     pvStructure = multiChannel->getPVStructure();
@@ -118,6 +119,7 @@ static void test()
             addSecondsPastEpoch() ->
             addNanoseconds() ->
             addUserTag() ->
+            addIsConnected() ->
             create();
     testOk1(multiChannel.get() != 0);
     pvStructure = multiChannel->getPVStructure();
