@@ -305,6 +305,11 @@ public:
 
 private:
     NTNDArray(epics::pvData::PVStructurePtr const & pvStructure);
+
+    epics::pvData::int64 getExpectedUncompressedSize();
+    epics::pvData::int64 getValueSize();
+    epics::pvData::int64 getValueTypeSize();
+
     epics::pvData::PVStructurePtr pvNTNDArray;
 
     friend class detail::NTNDArrayBuilder;
