@@ -6,6 +6,7 @@
 #ifndef NTID_H
 #define NTID_H
 
+#include <string>
 
 namespace epics { 
 
@@ -27,14 +28,14 @@ public:
      * @param id The the id to be parsed.
      * @return NTNDArray instance on success, null otherwise.
      */
-    NTID(String id);
+    NTID(const std::string &id);
     /**
      * Get the full name of the id, i.e. the original ID
      *
      * For example above returns "epics:nt/NTNDArray:1.2"
      * @return the full name
      */
-    String getFullName();
+    std::string getFullName();
 
     /**
      * Get the fully qualified name including namespaces, but excluding version numbers
@@ -42,7 +43,7 @@ public:
      * For example above return "epics:nt/NTNDArray"
      * @return the fully qualified name
      */ 
-    String getQualifiedName();
+    std::string getQualifiedName();
 
     /**
      * Get the namespace
@@ -50,7 +51,7 @@ public:
      * For example above return "epics:nt"
      * @return the namespace
      */
-    String getNamespace();
+    std::string getNamespace();
 
     /**
      * Get the unqualified name, without namespace or version
@@ -58,7 +59,7 @@ public:
      * For example above return "NTNDArray"
      * @return the unqualified name
      */
-    String getName();
+    std::string getName();
 
     /**
      * Get the unqualified name, without namespace or version
@@ -66,7 +67,7 @@ public:
      * For example above return "NTNDArray"
      * @return the unqualified name
      */
-    String getVersion();
+    std::string getVersion();
 
     /**
      * Get the Major version as a string
@@ -74,14 +75,14 @@ public:
      * For example above return "1"
      * @return the Major string
      */
-    String getMajorVersionString();
+    std::string getMajorVersionString();
 
     /**
      * Does the ID contain a major version and is it a number
      *
      * @return true if it contains a major version number
      */
-    boolean hasMajorVersion();
+    bool hasMajorVersion();
 
     /**
      * Get the Major version as an integer
@@ -97,14 +98,14 @@ public:
      * For example above return "1"
      * @return the Major string
      */
-    String getMinorVersionString();
+    std::string getMinorVersionString();
 
     /**
      * Does the ID contain a minor version and is it a number
      *
      * @return true if it contains a minor version number
      */
-    boolean hasMinorVersion();
+    bool hasMinorVersion();
 
     /**
      * Get the Minor version as an integer
@@ -112,7 +113,32 @@ public:
      * For example above return 1
      * @return the Minor string
      */
-    int getMinorVersion()
+    int getMinorVersion();
+
+private:
+    std::string fullName;
+    std::string qualifiedName;
+    std::string namespaceStr;
+    std::string name;
+    std::string version;
+
+    size_t nsSepIndex;
+    size_t versionSepIndex;
+    bool nsQualified;
+    bool hasVersion;
+
+    size_t endMajorIndex;
+    std::string majorVersionStr;
+    bool majorVersionParsed;
+    bool hasMajor;
+    int majorVersion;
+
+    size_t endMinorIndex;
+    std::string minorVersionStr;
+    bool minorVersionParsed;
+    bool hasMinor;
+    int minorVersion;
+
 };
 
 }}

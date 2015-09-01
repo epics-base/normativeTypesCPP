@@ -27,6 +27,7 @@ INC += nturi.h
 INC += ntndarrayAttribute.h
 
 LIBSRCS += ntutils.cpp
+LIBSRCS += ntid.cpp
 LIBSRCS += ntfield.cpp
 LIBSRCS += ntscalar.cpp
 LIBSRCS += ntscalarArray.cpp
