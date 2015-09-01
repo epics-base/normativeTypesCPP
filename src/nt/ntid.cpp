@@ -121,7 +121,9 @@ namespace nt {
         {
             try {
                 using pvData::detail::parseToPOD;
-                parseToPOD(getMajorVersionString(), &majorVersion);
+                uint32_t mv;
+                parseToPOD(getMajorVersionString(), &mv);
+                majorVersion = static_cast<int>(mv);
                 hasMajor = true;
             } catch (...) {}
             majorVersionParsed = true;
@@ -164,7 +166,9 @@ namespace nt {
         {
             try {
                 using pvData::detail::parseToPOD;
-                parseToPOD(getMinorVersionString(), &minorVersion);
+                uint32_t mv;
+                parseToPOD(getMinorVersionString(), &mv);
+                minorVersion = static_cast<int>(mv);
                 hasMinor = true;
             } catch (...) {}
             minorVersionParsed = true;
