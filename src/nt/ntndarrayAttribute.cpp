@@ -33,8 +33,7 @@ StructureConstPtr NTNDArrayAttributeBuilder::createStructure()
     if (tags)
         builder->addArray("tags", pvString);
 
-    //if (descriptor)
-        builder->add("descriptor", pvString);
+    builder->add("descriptor", pvString);
 
     builder->add("sourceType", pvInt);
 
