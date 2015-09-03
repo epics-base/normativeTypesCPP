@@ -22,8 +22,6 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-const std::string ntAttrStr("epics:nt/NTAttribute:1.0");
-
 static FieldCreatePtr fieldCreate = getFieldCreate();
 static PVDataCreatePtr pvDataCreate = getPVDataCreate();
 
@@ -96,13 +94,7 @@ StructureConstPtr NTNDArrayBuilder::createStructure()
 
         if (!attributeStruc)
         {
-            attributeStruc = fb->setId(ntAttrStr)->
-		        add("name", pvString)->
-			    add("value", fieldCreate->createVariantUnion())->
-			    add("descriptor", pvString)->
-                add("sourceType", pvInt)->
-                add("source", pvString)->
-               createStructure();
+            attributeStruc = NTNDArrayAttribute::createBuilder()->createStructure();
         }
 
         fb->setId(NTNDArray::URI)->
