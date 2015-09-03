@@ -18,8 +18,6 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-static NTFieldPtr ntField = NTField::get();
-
 NTScalarBuilder::shared_pointer NTScalarBuilder::value(
         epics::pvData::ScalarType scalarType
         )

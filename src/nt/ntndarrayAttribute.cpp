@@ -19,9 +19,6 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-static NTFieldPtr ntField = NTField::get();
-
-
 StructureConstPtr NTNDArrayAttributeBuilder::createStructure()
 {
     FieldBuilderPtr builder =

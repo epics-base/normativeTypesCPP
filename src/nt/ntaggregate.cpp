@@ -18,9 +18,6 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
-static NTFieldPtr ntField = NTField::get();
-
-
 StructureConstPtr NTAggregateBuilder::createStructure()
 {
     FieldBuilderPtr builder =
