@@ -60,6 +60,10 @@ TESTPROD_HOST += ntcontinuumTest
 ntattributeTest_SRCS = ntcontinuumTest.cpp
 TESTS += ntcontinuumTest
 
+TESTPROD_HOST += nthistogramTest
+ntattributeTest_SRCS = nthistogramTest.cpp
+TESTS += nthistogramTest
+
 TESTPROD_HOST += ntutilsTest
 ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest
