@@ -154,11 +154,11 @@ bool NTHistogram::isCompatible(StructureConstPtr const &structure)
     }
 
     field = structure->getField("alarm");
-    if (!field.get() && !ntField->isAlarm(field))
+    if (field.get() && !ntField->isAlarm(field))
         return false;
 
     field = structure->getField("timeStamp");
-    if (!field.get() && !ntField->isTimeStamp(field))
+    if (field.get() && !ntField->isTimeStamp(field))
         return false;
 
     return true;
