@@ -56,6 +56,10 @@ TESTPROD_HOST += ntattributeTest
 ntattributeTest_SRCS = ntattributeTest.cpp
 TESTS += ntattributeTest
 
+TESTPROD_HOST += ntndarrayAttributeTest
+ntndarrayAttributeTest_SRCS = ntndarrayAttributeTest.cpp
+TESTS += ntndarrayAttributeTest
+
 TESTPROD_HOST += ntcontinuumTest
 ntattributeTest_SRCS = ntcontinuumTest.cpp
 TESTS += ntcontinuumTest
