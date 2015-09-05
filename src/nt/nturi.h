@@ -75,14 +75,6 @@ namespace detail {
          shared_pointer addQueryInt(std::string const & name);
 
         /**
-         * Add a column of given <b>Scalar</b> type.
-         * @param name name of the column.
-         * @param elementType column type, a scalar array.
-         * @return this instance of <b>NTURIBuilder</b>.
-         */
-        //shared_pointer addColumn(std::string const & name, epics::pvData::ScalarType elememtType);
-
-        /**
          * Create a <b>Structure</b> that represents NTURI.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>Structure</b>.
