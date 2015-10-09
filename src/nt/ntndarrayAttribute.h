@@ -117,7 +117,7 @@ typedef std::tr1::shared_ptr<detail::NTNDArrayAttributeBuilder> NTNDArrayAttribu
 
 
 /**
- * @briVIntPtref Convenience Class for NTNDArrayAttribute
+ * @brief Convenience Class for NTNDArrayAttribute
  *
  * @author dgh
  */
