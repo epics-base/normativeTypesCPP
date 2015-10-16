@@ -18,6 +18,16 @@ static NTFieldPtr ntField = NTField::get();
 
 namespace detail {
 
+NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::value(
+        epics::pvData::ScalarType elementType
+        )
+{
+    valueType = elementType;
+    valueTypeSet = true;
+
+    return shared_from_this();
+}
+
 NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::arrayValue(
         epics::pvData::ScalarType elementType
         )
@@ -129,15 +139,15 @@ NTScalarArrayBuilder::shared_pointer NTScalarArrayBuilder::add(string const & na
 
 const std::string NTScalarArray::URI("epics:nt/NTScalarArray:1.0");
 
-NTScalarArray::shared_pointer NTScalarArray::wrap(PVStructurePtr const & structure)
+NTScalarArray::shared_pointer NTScalarArray::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTScalarArray::shared_pointer NTScalarArray::wrapUnsafe(PVStructurePtr const & structure)
+NTScalarArray::shared_pointer NTScalarArray::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTScalarArray(structure));
+    return shared_pointer(new NTScalarArray(pvStructure));
 }
 
 bool NTScalarArray::is_a(StructureConstPtr const & structure)

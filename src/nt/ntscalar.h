@@ -45,66 +45,67 @@ namespace detail {
         POINTER_DEFINITIONS(NTScalarBuilder);
 
         /**
-         * Set a value type of a NTScalar.
+         * Sets the value type of an NTScalar.
          * @param scalarType the value type.
          * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer value(epics::pvData::ScalarType scalarType);
 
         /**
-         * Add descriptor field to the NTScalar.
+         * Adds descriptor field to the NTScalar.
          * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
-         * Add alarm structure to the NTScalar.
+         * Adds alarm field to the NTScalar.
          * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
-         * Add timeStamp structure to the NTScalar.
+         * Adds timeStamp field to the NTScalar.
          * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
-         * Add display structure to the NTScalar.
+         * Adds display field to the NTScalar.
          * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addDisplay();
 
         /**
-         * Add control structure to the NTScalar.
+         * Adds control field to the NTScalar.
          * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer addControl();
 
         /**
-         * Create a <b>Structure</b> that represents NTScalar.
+         * Creates a <b>Structure</b> that represents NTScalar.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a <b>PVStructure</b> that represents NTScalar.
+         * Creates a <b>PVStructure</b> that represents NTScalar.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>PVStructure</b>.
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a <b>NTScalar</b> instance.
+         * Creates a <b>NTScalar</b> instance.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>NTScalar</b>.
          */
         NTScalarPtr create();
+
         /**
-         * Add extra <b>Field</b> to the type.
-         * @param name name of the field.
-         * @param field a field to add.
+         * Adds extra <b>Field</b> to the type.
+         * @param name the name of the field.
+         * @param field the field to be added.
          * @return this instance of <b>NTScalarBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
@@ -149,65 +150,92 @@ public:
     static const std::string URI;
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTScalar.
-     * First isCompatible is called.
-     * This method will nullptr if the structure is is not compatible.
-     * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTScalar.
-     * @return NTScalar instance on success, nullptr otherwise.
+     * Creates an NTScalar wrapping the specified PVStructure if the latter is compatible.
+     * <p>
+     * Checks the supplied PVStructure is compatible with NTScalar
+     * and if so returns an NTScalar which wraps it.
+     * This method will return null if the structure is is not compatible
+     * or is null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTScalar instance wrapping pvStructure on success, null otherwise
      */
-    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTScalar.
-     * @return NTScalar instance.
+     * Creates an NTScalar wrapping the specified PVStructure, regardless of the latter's compatibility.
+     * <p>
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTScalar or is non-null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTScalar instance wrapping pvStructure
      */
-    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the structure an NTScalar.
-     * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTScalar.
+     * Returns whether the specified Structure reports to be a compatible NTScalar.
+     * <p>
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTScalar through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTScalar
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Is the structure an NTScalar.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTScalar.
+     * Returns whether the specified PVStructure reports to be a compatible NTScalar.
+     * <p>
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTScalar through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTScalar
      */
     static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the Structure compatible with NTScalar.
-     * This method introspects the fields to see if they are compatible.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) an NTScalar.
+     * Returns whether the specified Structure is compatible with NTScalar.
+     * <p>
+     * Checks if the specified Structure is compatible with this version
+     * of NTScalar through the introspection interface.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTScalar
      */
     static bool isCompatible(
         epics::pvData::StructureConstPtr const &structure);
 
     /**
-     * Is the PVStructure compatible with NTScalar.
-     * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTScalar.
+     * Returns whether the specified PVStructure is compatible with NTScalar.
+     * <p>
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTScalar through the introspection interface.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTScalar
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
-     * Checks if the specified structure is a valid NTScalar.
+     * Returns whether the wrapped PVStructure is valid with respect to this
+     * version of NTScalar.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTScalar
-     * @return (false,true) if (is not, is) a valid NTScalar.
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTScalar
      */
     bool isValid();
 
     /**
-     * Create a NTScalar builder instance.
+     * Creates an NTScalar builder instance.
      * @return builder instance.
      */
     static NTScalarBuilderPtr createBuilder();
@@ -218,82 +246,84 @@ public:
     ~NTScalar() {}
 
      /**
-      * Attach a pvTimeStamp.
-      * @param pvTimeStamp The pvTimeStamp that will be attached.
-      * Does nothing if no timeStamp.
+      * Attaches a PVTimeStamp to the wrapped PVStructure.
+      * Does nothing if no timeStamp field.
+      * @param pvTimeStamp the PVTimeStamp that will be attached.
       * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
       */
     bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
 
     /**
-     * Attach an pvAlarm.
-     * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm.
-      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+     * Attaches a PVAlarm to the wrapped PVStructure.
+     * Does nothing if no alarm field.
+     * @param pvAlarm the PVAlarm that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has an alarm field), otherwise false.
      */
     bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
 
     /**
-     * Attach an pvDisplay.
-     * @param pvDisplay The pvDisplay that will be attached.
-     * Does nothing if no display.
-      * @return true if the operation was successfull (i.e. this instance has a display field), otherwise false.
+     * Attaches a PVDisplay to the wrapped PVStructure.
+     * Does nothing if no display field.
+     * @param pvDisplay the PVDisplay that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has a display field), otherwise false.
      */
     bool attachDisplay(epics::pvData::PVDisplay &pvDisplay) const;
 
     /**
-     * Attach an pvControl.
-     * @param pvControl The pvControl that will be attached.
-     * Does nothing if no control.
-      * @return true if the operation was successfull (i.e. this instance has a control field), otherwise false.
+     * Attaches an PVControl to the wrapped PVStructure.
+     * Does nothing if no control field.
+     * @param pvControl The PVControl that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has a control field), otherwise false.
      */
     bool attachControl(epics::pvData::PVControl &pvControl) const;
 
     /**
-     * Get the pvStructure.
-     * @return PVStructurePtr.
+     * Returns the PVStructure wrapped by this instance.
+     * @return the PVStructure wrapped by this instance.
      */
     epics::pvData::PVStructurePtr getPVStructure() const;
 
     /**
-     * Get the descriptor field.
-     * @return The pvString or null if no function field.
+     * Returns the descriptor field.
+     * @return the descriptor field or null if no descriptor field.
      */
     epics::pvData::PVStringPtr getDescriptor() const;
 
     /**
-     * Get the timeStamp.
-     * @return PVStructurePtr which may be null.
+     * Returns the timeStamp field.
+     * @return the timStamp field or null if no timeStamp field.
      */
     epics::pvData::PVStructurePtr getTimeStamp() const;
 
     /**
-     * Get the alarm.
-     * @return PVStructurePtr which may be null.
+     * Returns the alarm field.
+     * @return the alarm field or null if no alarm field.
      */
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
-     * Get the display.
+     * Returns the display.
      * @return PVStructurePtr which may be null.
      */
     epics::pvData::PVStructurePtr getDisplay() const;
 
     /**
-     * Get the control.
+     * Returns the control.
      * @return PVStructurePtr which may be null.
      */
     epics::pvData::PVStructurePtr getControl() const;
 
     /**
-     * Get the value field.
+     * Returns the value field.
      * @return The PVField for the values.
      */
     epics::pvData::PVFieldPtr getValue() const;
 
     /**
-     * Get the value field of a specified type (e.g. PVDouble).
-     * @return The <PVT> field for the values.
+     * Returns the value field of a specified type (for example, PVDouble).
+     * @tparam PVT the expected type of the value field which should be
+     *             be PVScalar or a derived class.
+     * @return the value field or null if it is not of the expected type.
      */
     template<typename PVT>
     std::tr1::shared_ptr<PVT> getValue() const

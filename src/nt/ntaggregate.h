@@ -42,89 +42,90 @@ namespace detail {
         POINTER_DEFINITIONS(NTAggregateBuilder);
 
         /**
-         * Add dispersion field to the NTAggregate.
+         * Adds dispersion field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addDispersion();
 
         /**
-         * Add first field to the NTAggregate.
+         * Adds first field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addFirst();
 
         /**
-         * Add firstTimeStamp field to the NTAggregate.
+         * Adds firstTimeStamp field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addFirstTimeStamp();
 
         /**
-         * Add last field to the NTAggregate.
+         * Adds last field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addLast();
 
         /**
-         * Add lastTimeStamp field to the NTAggregate.
+         * Adds lastTimeStamp field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addLastTimeStamp();
 
         /**
-         * Add max field to the NTAggregate.
+         * Adds max field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addMax();
 
         /**
-         * Add min field to the NTAggregate.
+         * Adds min field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addMin();
 
         /**
-         * Add descriptor field to the NTAggregate.
+         * Adds descriptor field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
-         * Add alarm structure to the NTAggregate.
+         * Adds alarm field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
-         * Add timeStamp structure to the NTAggregate.
+         * Adds timeStamp field to the NTAggregate.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
-         * Create a <b>Structure</b> that represents NTAggregate.
+         * Creates a <b>Structure</b> that represents NTAggregate.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a <b>PVStructure</b> that represents NTAggregate.
+         * Creates a <b>PVStructure</b> that represents NTAggregate.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>PVStructure</b>.
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a <b>NTAggregate</b> instance.
+         * Creates a <b>NTAggregate</b> instance.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>NTAggregate</b>.
          */
         NTAggregatePtr create();
+
         /**
-         * Add extra <b>Field</b> to the type.
-         * @param name name of the field.
-         * @param field a field to add.
+         * Adds extra <b>Field</b> to the type.
+         * @param name the name of the field.
+         * @param field the field to be added.
          * @return this instance of <b>NTAggregateBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
@@ -171,65 +172,92 @@ public:
     static const std::string URI;
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTAggregate.
-     * First isCompatible is called.
-     * This method will nullptr if the structure is is not compatible.
-     * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTAggregate.
-     * @return NTAggregate instance on success, nullptr otherwise.
+     * Creates an NTAggregate wrapping the specified PVStructure if the latter is compatible.
+     * <p>
+     * Checks the supplied PVStructure is compatible with NTAggregate
+     * and if so returns an NTAggregate which wraps it.
+     * This method will return null if the structure is is not compatible
+     * or is null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return the NTAggregate instance on success, null otherwise
      */
-    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTAggregate without checking for isCompatible
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTAggregate.
-     * @return NTAggregate instance.
+     * Creates an NTAggregate wrapping the specified PVStructure, regardless of the latter's compatibility.
+     * <p>
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTAggregate or is non-null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return the NTAggregate instance
      */
-    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the structure an NTAggregate.
-     * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTAggregate.
+     * Returns whether the specified Structure reports to be a compatible NTAggregate.
+     * <p>
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTAggregate through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTAggregate
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Is the structure an NTAggregate.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTAggregate.
+     * Returns whether the specified PVStructure reports to be a compatible NTAggregate.
+     * <p>
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTAggregate through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test.
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTAggregate.
      */
     static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the Structure compatible with NTAggregate.
-     * This method introspects the fields to see if they are compatible.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) an NTAggregate.
+     * Returns whether the specified Structure is compatible with NTAggregate.
+     * <p>
+     * Checks if the specified Structure is compatible with this version
+     * of NTAggregate through introspection interface.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTAggregate
      */
     static bool isCompatible(
         epics::pvData::StructureConstPtr const &structure);
 
     /**
-     * Is the PVStructure compatible with NTAggregate.
-     * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTAggregate.
+     * Returns whether the specified PVStructure is compatible with NTAggregate.
+     * <p>
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTAggregate through introspection interface.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTAggregate
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
-     * Checks if the specified structure is a valid NTAggregate.
+     * Returns whether the wrapped PVStructure is valid with respect to this
+     * version of NTAggregate.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value data as
+     * well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTAggregate
-     * @return (false,true) if (is not, is) a valid NTAggregate.
+     * @return (false,true) if wrapped PVStructure a valid NTAggregate
      */
     bool isValid();
 
     /**
-     * Create a NTAggregate builder instance.
+     * Creates an NTAggregate builder instance.
      * @return builder instance.
      */
     static NTAggregateBuilderPtr createBuilder();
@@ -240,96 +268,96 @@ public:
     ~NTAggregate() {}
 
      /**
-      * Attach a pvTimeStamp.
-      * @param pvTimeStamp The pvTimeStamp that will be attached.
-      * Does nothing if no timeStamp.
+      * Attaches a PVTimeStamp to the wrapped PVStructure.
+      * Does nothing if no timeStamp field.
+      * @param pvTimeStamp the PVTimeStamp that will be attached.
       * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
       */
     bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
 
     /**
-     * Attach an pvAlarm.
-     * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm.
-      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+     * Attaches a PVAlarm to the wrapped PVStructure.
+     * Does nothing if no alarm field.
+     * @param pvAlarm the PVAlarm that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has an alarm field), otherwise false.
      */
     bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
 
     /**
-     * Get the pvStructure.
-     * @return PVStructurePtr.
+     * Returns the PVStructure wrapped by this instance.
+     * @return the PVStructure wrapped by this instance.
      */
     epics::pvData::PVStructurePtr getPVStructure() const;
 
     /**
-     * Get the descriptor field.
-     * @return The pvString or null if no function field.
+     * Returns the descriptor field.
+     * @return the descriptor field or null if no such field.
      */
     epics::pvData::PVStringPtr getDescriptor() const;
 
     /**
-     * Get the timeStamp.
-     * @return PVStructurePtr which may be null.
+     * Returns the timeStamp field.
+     * @return the timStamp field or null if no such field.
      */
     epics::pvData::PVStructurePtr getTimeStamp() const;
 
     /**
-     * Get the alarm.
-     * @return PVStructurePtr which may be null.
+     * Returns the alarm field.
+     * @return the alarm field or null if no such field.
      */
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
-     * Get the value field.
-     * @return The PVDouble for the value.
+     * Returns the value field.
+     * @return the value field.
      */
     epics::pvData::PVDoublePtr getValue() const;
 
     /**
-     * Get the N field.
-     * @return The PVLong for the N field.
+     * Returns the N field.
+     * @return the N field.
      */
     epics::pvData::PVLongPtr getN() const;
 
     /**
-     * Get the dispersion field.
-     * @return The PVDouble for the dispersion which may be null
+     * Returns the dispersion field.
+     * @return the dispersion or null if no such field.
      */
     epics::pvData::PVDoublePtr getDispersion() const;
 
     /**
-     * Get the first field.
-     * @return The PVDouble for the first field which may be null
+     * Returns the first field.
+     * @return the first field or null if no such field.
      */
     epics::pvData::PVDoublePtr getFirst() const;
 
     /**
-     * Get the firstTimeStamp field.
-     * @return PVStructurePtr which may be null.
+     * Returns the firstTimeStamp field.
+     * @return the firstTimeStamp field or null if no such field.
      */
     epics::pvData::PVStructurePtr getFirstTimeStamp() const;
 
     /**
-     * Get the last field.
-     * @return The PVDouble for the last field which may be null
+     * Returns the last field.
+     * @return the last field or null if no such field.
      */
     epics::pvData::PVDoublePtr getLast() const;
 
     /**
-     * Get the lastTimeStamp field.
-     * @return PVStructurePtr which may be null.
+     * Returns the lastTimeStamp field.
+     * @return the lastTimeStamp field or null if no such field.
      */
     epics::pvData::PVStructurePtr getLastTimeStamp() const;
 
     /**
-     * Get the max field.
-     * @return The PVDouble for the max field which may be null
+     * Returns the max field.
+     * @return the max field or null if no such field.
      */
     epics::pvData::PVDoublePtr getMax() const;
 
     /**
-     * Get the min field.
-     * @return The PVDouble for the max field which may be null
+     * Returns the min field.
+     * @return the min field or null if no such field.
      */
     epics::pvData::PVDoublePtr getMin() const;
 

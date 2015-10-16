@@ -45,13 +45,13 @@ namespace detail {
         POINTER_DEFINITIONS(NTURIBuilder);
 
         /**
-         * Add authority field to the NTURI.
+         * Adds authority field to the NTURI.
          * @return this instance of <b>NTURIBuilder</b>.
          */
         shared_pointer addAuthority();
 
         /**
-         * Add extra <b>Scalar</b> of ScalarType pvString
+         * Adds extra <b>Scalar</b> of ScalarType pvString
          * to the query field of the type.
          * @param name name of the field.
          * @return this instance of <b>NTURIBuilder</b>.
@@ -59,7 +59,7 @@ namespace detail {
          shared_pointer addQueryString(std::string const & name);
 
         /**
-         * Add extra <b>Scalar</b> of ScalarType pvDouble
+         * Adds extra <b>Scalar</b> of ScalarType pvDouble
          * to the query field of the type.
          * @param name name of the field.
          * @return this instance of <b>NTURIBuilder</b>.
@@ -67,7 +67,7 @@ namespace detail {
          shared_pointer addQueryDouble(std::string const & name);
 
         /**
-         * Add extra <b>Scalar</b> of ScalarType pvInt
+         * Adds extra <b>Scalar</b> of ScalarType pvInt
          * to the query field of the type.
          * @param name name of the field.
          * @return this instance of <b>NTURIBuilder</b>.
@@ -75,14 +75,14 @@ namespace detail {
          shared_pointer addQueryInt(std::string const & name);
 
         /**
-         * Create a <b>Structure</b> that represents NTURI.
+         * Creates a <b>Structure</b> that represents NTURI.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a <b>PVStructure</b> that represents NTURI.
+         * Creates a <b>PVStructure</b> that represents NTURI.
          * The returned PVStructure will have labels equal to the column names.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>PVStructure</b>.
@@ -90,17 +90,18 @@ namespace detail {
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a <b>NTURI</b> instance.
+         * Creates a <b>NTURI</b> instance.
          * The returned NTURI will wrap a PVStructure which will have
          * labels equal to the column names.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>NTURI</b>.
          */
         NTURIPtr create();
+
         /**
-         * Add extra <b>Field</b> to the type.
-         * @param name name of the field.
-         * @param field a field to add.
+         * Adds extra <b>Field</b> to the type.
+         * @param name the name of the field.
+         * @param field the field to be added.
          * @return this instance of <b>NTURIBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
@@ -141,65 +142,91 @@ public:
     static const std::string URI;
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTURI.
-     * First isCompatible is called.
-     * This method will nullptr if the structure is is not compatible.
-     * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTURI.
-     * @return NTURI instance on success, nullptr otherwise.
+     * Creates an NTURI wrapping the specified PVStructure if the latter is compatible.
+     * <p>
+     * Checks the supplied PVStructure is compatible with NTURI
+     * and if so returns an NTURI which wraps it.
+     * This method will return null if the structure is is not compatible
+     * or is null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTURI instance wrapping pvStructure on success, null otherwise
      */
-    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTURI.
-     * @return NTURI instance.
+     * Creates an NTScalar wrapping the specified PVStructure, regardless of the latter's compatibility.
+     * <p>
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTScalar or is non-null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTScalar instance wrapping pvStructure
      */
-    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the structure an NTURI.
-     * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTURI.
+     * Returns whether the specified Structure reports to be a compatible NTScalar.
+     * <p>
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTScalar through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if (is not, is) a compatible NTScalar
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Is the structure an NTURI.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTURI.
+     * Returns whether the specified PVStructure reports to be a compatible NTURI.
+     * <p>
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTURI through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test.
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTURI.
      */
     static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the Structure compatible with NTURI.
-     * This method introspects the fields to see if they are compatible.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) an NTURI.
+     * Returns whether the specified Structure is compatible with NTURI.
+     * <p>
+     * Checks if the specified Structure is compatible with this version
+     * of NTURI through the introspection interface.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTURI
      */
     static bool isCompatible(
         epics::pvData::StructureConstPtr const &structure);
 
     /**
-     * Is the PVStructure compatible with NTURI.
-     * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTURI.
+     * Returns whether the specified PVStructure is compatible with NTURI.
+     * <p>
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTURI through the introspection interface.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTURI
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
-     * Checks if the specified structure is a valid NTURI.
+     * Returns whether the wrapped PVStructure is a valid NTURI.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTURI
-     * @return (false,true) if (is not, is) a valid NTURI.
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTURI.
      */
     bool isValid();
 
     /**
-     * Create a NTURI builder instance.
+     * Creates an NTURI builder instance.
      * @return builder instance.
      */
     static NTURIBuilderPtr createBuilder();
@@ -210,37 +237,37 @@ public:
     ~NTURI() {}
 
     /**
-     * Get the pvStructure.
-     * @return PVStructurePtr.
+     * Returns the PVStructure wrapped by this instance.
+     * @return the PVStructure wrapped by this instance.
      */
     epics::pvData::PVStructurePtr getPVStructure() const;
 
     /**
-     * Get the scheme field.
-     * @return The PVString for the scheme.
+     * Returns the scheme field.
+     * @return the scheme field.
      */
     epics::pvData::PVStringPtr getScheme() const;
 
     /**
-     * Get the authority field.
-     * @return The PVString for the authority.
+     * Returns the authority field.
+     * @return the authority field or null if no such field.
      */
     epics::pvData::PVStringPtr getAuthority() const;
 
     /**
-     * Get the path field.
-     * @return The PVString for the path.
+     * Returns the path field.
+     * @return the path field.
      */
     epics::pvData::PVStringPtr getPath() const;
 
     /**
-     * Get the query field.
-     * @return The PVStructure for the query.
+     * Returns the query field.
+     * @return the query field or null if no such field.
      */
     epics::pvData::PVStructurePtr getQuery() const;
 
     /**
-     * Get the names of the query fields for the URI.
+     * Returns the names of the query fields for the URI.
      * For each name, calling getQueryField should return
      * the query field, which should not be null.
      * @return The query field names.
@@ -248,21 +275,25 @@ public:
     epics::pvData::StringArray const & getQueryNames() const;
 
     /**
-     * Get the PVField (column) for a field that follows the label field.
-     * @param columnName The name of the column.
-     * @return The PVFieldPtr for the field.
+     * Returns the subfield of the query field with the specified name.
+     * @param name the name of the subfield.
+     * @return the the subfield of the query field or null if the field does not exist.
      */
-    epics::pvData::PVFieldPtr getQueryField(std::string const & columnName) const;
+    epics::pvData::PVFieldPtr getQueryField(std::string const & name) const;
 
     /**
-     * Get the PVField (column) for a field that follows the label field of a specified type (e.g. PVDoubleArray).
-     * @param columnName The name of the column.
-     * @return The <PVT> field.
+     * Returns the subfield of the query field (parameter) with the specified
+     * name and of a specified expected type (for example, PVString).
+     * @tparam PVT the expected type of the subfield which should be
+     *             be PVString, PVInt pr PVDouble.
+     * @param name the subfield of the query field or null if the field does
+     *             not exist or is not of the expected type.
+     * @return The PVT field.
      */
     template<typename PVT>
-    std::tr1::shared_ptr<PVT> getQueryField(std::string const & columnName) const
+    std::tr1::shared_ptr<PVT> getQueryField(std::string const & name) const
     {
-        epics::pvData::PVFieldPtr pvField = getQueryField(columnName);
+        epics::pvData::PVFieldPtr pvField = getQueryField(name);
         if (pvField.get())
             return std::tr1::dynamic_pointer_cast<PVT>(pvField);
         else

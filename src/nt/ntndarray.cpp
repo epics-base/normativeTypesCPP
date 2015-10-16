@@ -280,15 +280,15 @@ public:
     }
 };
 
-NTNDArray::shared_pointer NTNDArray::wrap(PVStructurePtr const & structure)
+NTNDArray::shared_pointer NTNDArray::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTNDArray::shared_pointer NTNDArray::wrapUnsafe(PVStructurePtr const & structure)
+NTNDArray::shared_pointer NTNDArray::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTNDArray(structure));
+    return shared_pointer(new NTNDArray(pvStructure));
 }
 
 bool NTNDArray::is_a(StructureConstPtr const & structure)
@@ -502,6 +502,15 @@ bool NTNDArray::attachAlarm(PVAlarm &pvAlarm) const
     PVStructurePtr al = getAlarm();
     if (al)
         return pvAlarm.attach(al);
+    else
+        return false;
+}
+
+bool NTNDArray::attachDisplay(PVDisplay &pvDisplay) const
+{
+    PVStructurePtr dp = getDisplay();
+    if (dp)
+        return pvDisplay.attach(dp);
     else
         return false;
 }

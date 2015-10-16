@@ -117,15 +117,15 @@ NTMatrixBuilder::shared_pointer NTMatrixBuilder::add(string const & name, FieldC
 
 const std::string NTMatrix::URI("epics:nt/NTMatrix:1.0");
 
-NTMatrix::shared_pointer NTMatrix::wrap(PVStructurePtr const & structure)
+NTMatrix::shared_pointer NTMatrix::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTMatrix::shared_pointer NTMatrix::wrapUnsafe(PVStructurePtr const & structure)
+NTMatrix::shared_pointer NTMatrix::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTMatrix(structure));
+    return shared_pointer(new NTMatrix(pvStructure));
 }
 
 bool NTMatrix::is_a(StructureConstPtr const & structure)

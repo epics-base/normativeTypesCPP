@@ -54,81 +54,96 @@ namespace detail {
          * @return this instance of  <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer value(epics::pvData::UnionConstPtr valuePtr);
+
         /**
-         * Add descriptor field to the NTMultiChannel.
+         * Adds descriptor field to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addDescriptor();
+
         /**
-         * Add alarm structure to the NTMultiChannel.
+         * Adds alarm field to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addAlarm();
+
         /**
-         * Add timeStamp structure to the NTMultiChannel.
+         * Adds timeStamp field to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addTimeStamp();
+
         /**
-         * Add severity array to the NTMultiChannel.
+         * Adds severity array to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addSeverity();
+
         /**
-         * Add status array to the NTMultiChannel.
+         * Adds status array to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addStatus();
+
         /**
-         * Add message array to the NTMultiChannel.
+         * Adds message array to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addMessage();
+
         /**
-         * Add secondsPastEpoch array to the NTMultiChannel.
+         * Adds secondsPastEpoch array to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addSecondsPastEpoch();
+
         /**
-         * Add nanoseconds array to the NTMultiChannel.
+         * Adds nanoseconds array to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addNanoseconds();
+
         /**
-         * Add userTag array to the NTMultiChannel.
+         * Adds userTag array to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addUserTag();
+
         /**
-         * Add isConnected array to the NTMultiChannel.
+         * Adds isConnected array to the NTMultiChannel.
          * @return this instance of <b>NTMultiChannelBuilder</b>.
          */
         shared_pointer addIsConnected();
+
         /**
-         * Create a <b>Structure</b> that represents NTMultiChannel.
+         * Creates a <b>Structure</b> that represents NTMultiChannel.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
+
         /**
-         * Create a <b>PVStructure</b> that represents NTMultiChannel.
-         * This resets this instance state and allows new {@code instance to be created.}
+         * Creates a <b>PVStructure</b> that represents NTMultiChannel.
+         * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>PVStructure</b>
          */
         epics::pvData::PVStructurePtr createPVStructure();
+
         /**
-         * Create a <b>NTMultiChannel</b> instance.
-         * This resets this instance state and allows new {@code instance to be created.}
+         * Creates a <b>NTMultiChannel</b> instance.
+         * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>NTMultiChannel</b>
          */
         NTMultiChannelPtr create();
+
         /**
-         * Add extra <b>Field</b> to the type.
-         * @param name name of the field.
-         * @param field a field to add.
+         * Adds extra <b>Field</b> to the type.
+         * @param name the name of the field.
+         * @param field the field to be added.
          * @return this instance of a <b>NTMultiChannelBuilder</b>
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
+
     private:
         NTMultiChannelBuilder();
 
@@ -172,64 +187,92 @@ public:
     static const std::string URI;
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel.
-     * First isCompatible is called.
-     * This method will nullptr if the structure is is not compatible.
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTMultiChannel.
-     * @return NTMultiChannel instance on success, nullptr otherwise.
+     * Creates an NTMultiChannel wrapping the specified PVStructure if the latter is compatible.
+     * <p>
+     * Checks the supplied PVStructure is compatible with NTMultiChannel
+     * and if so returns an NTMultiChannel which wraps it.
+     * This method will return null if the structure is is not compatible
+     * or is null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTMultiChannel instance wrapping pvStructure on success, null otherwise
      */
-    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTMultiChannel.
-     * @return NTMultiChannel instance.
+     * Creates an NTMultiChannel wrapping the specified PVStructure, regardless of the latter's compatibility.
+     * <p>
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTMultiChannel or is non-null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTMultiChannel instance wrapping pvStructure
      */
-    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the structure an NTMultiChannel.
-     * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * Returns whether the specified Structure reports to be a compatible NTMultiChannel.
+     * <p>
+     * Checks whether the specified Structure reports compatibility with this
+     * version of NTMultiChannel through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTMultiChannel
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Is the structure an NTMultiChannel.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * Returns whether the specified PVStructure reports to be a compatible NTMultiChannel.
+     * <p>
+     * Checks whether the specified PVStructure reports compatibility with this
+     * version of NTMultiChannel through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTMultiChannel
      */
     static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the Structure compatible with NTMultiChannel.
-     * This method introspects the fields to see if they are compatible.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * Returns whether the specified Structure is compatible with NTMultiChannel.
+     * <p>
+     * Checks whether the specified Structure is compatible with this version
+     * of NTMultiChannel through the introspection interface.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTMultiChannel
      */
     static bool isCompatible(
         epics::pvData::StructureConstPtr const &structure);
 
     /**
-     * Is the PVStructure compatible with NTMultiChannel.
-     * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTMultiChannel.
+     * Returns whether the specified PVStructure is compatible with NTMultiChannel.
+     * <p>
+     * Checks whether the specified PVStructure is compatible with this version
+     * of NTMultiChannel through the introspection interface.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTMultiChannel
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
-     * Checks if the specified structure is a valid NTMultiChannel.
+     * Checks whether the wrapped PVStructure is valid with respect to this
+     * version of NTMultiChannel.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTMultiChannel
-     * @return (false,true) if (is not, is) a valid NTMultiChannel.
+     * @return (false,true) if the wrapped PVStructure (is not, is) a valid NTMultiChannel
      */
     bool isValid();
 
     /**
-     * Create a NTMultiChannelBuilder instance
+     * Creates an NTMultiChannelBuilder instance
      * @return builder instance.
      */
     static  NTMultiChannelBuilderPtr createBuilder();
@@ -238,99 +281,113 @@ public:
      * Destructor
      */
     ~NTMultiChannel() {}
-    /**
-     * Attach a pvTimeStamp.
-     * @param pvTimeStamp The pvTimeStamp that will be attached.
-     * Does nothing if no timeStamp.
-     * @return true if the operation was successfull (i.e. this instance
-has a timeStamp field), otherwise false.
-     */
+     /**
+      * Attaches a PVTimeStamp to the wrapped PVStructure.
+      * Does nothing if no timeStamp field.
+      * @param pvTimeStamp the PVTimeStamp that will be attached.
+      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+      */
     bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
+
     /**
-     * Attach a pvAlarm.
-     * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm.
-     * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+     * Attaches a PVAlarm to the wrapped PVStructure.
+     * Does nothing if no alarm field.
+     * @param pvAlarm the PVAlarm that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has an alarm field), otherwise false.
      */
     bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
+
     /**
-     * Get the pvStructure.
-     * @return PVStructurePtr.
+     * Returns the PVStructure wrapped by this instance.
+     * @return the PVStructure wrapped by this instance.
      */
     epics::pvData::PVStructurePtr getPVStructure() const
     {return pvNTMultiChannel;}
+
     /**
-     * Get the timeStamp.
-     * @return PVStructurePtr which may be null.
-     */
-    epics::pvData::PVStructurePtr getTimeStamp() const
-    {return pvTimeStamp;}
-    /**
-     * Get the alarm.
-     * @return PVStructurePtr which may be null.
-     */
-    epics::pvData::PVStructurePtr getAlarm() const
-     {return pvAlarm;}
-    /**
-     * Get the value of each channel.
-     * @return PVUnionArrayPtr
-     */
-    epics::pvData::PVUnionArrayPtr getValue() const 
-    {return pvValue;}
-    /**
-     * Get the channelName of each channel.
-     * @return PVStringArrayPtr
-     */
-    epics::pvData::PVStringArrayPtr getChannelName() const 
-    { return pvChannelName;};
-    /**
-     * Get the connection state of each channel.
-     * @return PVBooleanArrayPtr
-     */
-    epics::pvData::PVBooleanArrayPtr getIsConnected() const 
-    { return pvIsConnected;};
-    /**
-     * Get the severity of each channel.
-     * @return PVIntArrayPtr which may be null.
-     */
-    epics::pvData::PVIntArrayPtr getSeverity() const 
-    {return pvSeverity;}
-    /**
-     * Get the status of each channel.
-     * @return PVIntArrayPtr which may be null.
-     */
-    epics::pvData::PVIntArrayPtr getStatus() const 
-    {return pvStatus;}
-    /**
-     * Get the message of each chnnel.
-     * @return PVStringArrayPtr which may be null.
-     */
-    epics::pvData::PVStringArrayPtr getMessage() const 
-    {return pvMessage;}
-    /**
-     * Get the secondsPastEpoch of each channel.
-     * @return PVLongArrayPtr which may be null.
-     */
-    epics::pvData::PVLongArrayPtr getSecondsPastEpoch() const 
-    {return pvSecondsPastEpoch;}
-    /**
-     * Get the nanoseconds of each channel.
-     * @return PVIntArrayPtr which may be null.
-     */
-    epics::pvData::PVIntArrayPtr getNanoseconds() const 
-    {return pvNanoseconds;}
-    /**
-     * Get the userTag of each channel.
-     * @return PVIntArrayPtr which may be null.
-     */
-    epics::pvData::PVIntArrayPtr getUserTag() const 
-    {return pvUserTag;}
-    /**
-     * Get the descriptor.
-     * @return PVStringPtr which may be null.
+     * Return the descriptor field.
+     * @return the descriptor field or null if no descriptor field.
      */
     epics::pvData::PVStringPtr getDescriptor() const 
     {return pvDescriptor;}
+
+    /**
+     * Returns the timeStamp field.
+     * @return the timeStamp field or null if no such field.
+     */
+    epics::pvData::PVStructurePtr getTimeStamp() const
+    {return pvTimeStamp;}
+
+    /**
+     * Returns the alarm field.
+     * @return the alarm field or null if no such field.
+     */
+    epics::pvData::PVStructurePtr getAlarm() const
+     {return pvAlarm;}
+
+    /**
+     * Returns the field with the value of each channel.
+     * @return the value field.
+     */
+    epics::pvData::PVUnionArrayPtr getValue() const 
+    {return pvValue;}
+
+    /**
+     * Returns the field with the channelName of each channel.
+     * @return the channelName field 
+     */
+    epics::pvData::PVStringArrayPtr getChannelName() const 
+    { return pvChannelName;};
+
+    /**
+     * Returns the field with the connection state of each channel.
+     * @return the isConnected field or null if no such field
+     */
+    epics::pvData::PVBooleanArrayPtr getIsConnected() const 
+    { return pvIsConnected;};
+
+    /**
+     * Returns the field with the severity of each channel.
+     * @return the severity field or null if no such field.
+     */
+    epics::pvData::PVIntArrayPtr getSeverity() const 
+    {return pvSeverity;}
+
+    /**
+     * Returns the field with the status of each channel.
+     * @return the status field or null if no such field
+     */
+    epics::pvData::PVIntArrayPtr getStatus() const 
+    {return pvStatus;}
+
+    /**
+     * Returns the field with the message of each channel.
+     * @return message field or null if no such field.
+     */
+    epics::pvData::PVStringArrayPtr getMessage() const 
+    {return pvMessage;}
+
+    /**
+     * Returns the field with the secondsPastEpoch of each channel.
+     * @return the secondsPastEpoch  field or null if no such field.
+     */
+    epics::pvData::PVLongArrayPtr getSecondsPastEpoch() const 
+    {return pvSecondsPastEpoch;}
+
+    /**
+     * Returns the field with the nanoseconds of each channel.
+     * @return nanoseconds field or null if no such field.
+     */
+    epics::pvData::PVIntArrayPtr getNanoseconds() const 
+    {return pvNanoseconds;}
+
+    /**
+     * Returns the field with the userTag of each channel.
+     * @return the userTag field or null if no such field.
+     */
+    epics::pvData::PVIntArrayPtr getUserTag() const 
+    {return pvUserTag;}
+
 private:
     NTMultiChannel(epics::pvData::PVStructurePtr const & pvStructure);
     epics::pvData::PVStructurePtr pvNTMultiChannel;

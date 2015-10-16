@@ -100,15 +100,15 @@ NTContinuumBuilder::shared_pointer NTContinuumBuilder::add(string const & name, 
 
 const std::string NTContinuum::URI("epics:nt/NTContinuum:1.0");
 
-NTContinuum::shared_pointer NTContinuum::wrap(PVStructurePtr const & structure)
+NTContinuum::shared_pointer NTContinuum::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTContinuum::shared_pointer NTContinuum::wrapUnsafe(PVStructurePtr const & structure)
+NTContinuum::shared_pointer NTContinuum::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTContinuum(structure));
+    return shared_pointer(new NTContinuum(pvStructure));
 }
 
 bool NTContinuum::is_a(StructureConstPtr const & structure)

@@ -112,10 +112,10 @@ NTNameValueBuilder::shared_pointer NTNameValueBuilder::add(string const & name, 
 
 const std::string NTNameValue::URI("epics:nt/NTNameValue:1.0");
 
-NTNameValue::shared_pointer NTNameValue::wrap(PVStructurePtr const & structure)
+NTNameValue::shared_pointer NTNameValue::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
 NTNameValue::shared_pointer NTNameValue::wrapUnsafe(PVStructurePtr const & structure)

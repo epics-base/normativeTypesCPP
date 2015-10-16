@@ -42,47 +42,47 @@ namespace detail {
         POINTER_DEFINITIONS(NTUnionBuilder);
 
         /**
-         * Add descriptor field to the NTUnion.
+         * Adds descriptor field to the NTUnion.
          * @return this instance of <b>NTUnionBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
-         * Add alarm structure to the NTUnion.
+         * Adds alarm field to the NTUnion.
          * @return this instance of <b>NTUnionBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
-         * Add timeStamp structure to the NTUnion.
+         * Adds timeStamp field to the NTUnion.
          * @return this instance of <b>NTUnionBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
-         * Create a <b>Structure</b> that represents NTUnion.
+         * Creates a <b>Structure</b> that represents NTUnion.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a <b>PVStructure</b> that represents NTUnion.
+         * Creates a <b>PVStructure</b> that represents NTUnion.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>PVStructure</b>.
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a <b>NTUnion</b> instance.
+         * Creates a <b>NTUnion</b> instance.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of a <b>NTUnion</b>.
          */
         NTUnionPtr create();
         /**
-         * Add extra <b>Field</b> to the type.
-         * @param name name of the field.
-         * @param field a field to add.
+         * Adds extra <b>Field</b> to the type.
+         * @param name the name of the field.
+         * @param field the field to be added.
          * @return this instance of <b>NTUnionBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
@@ -124,65 +124,88 @@ public:
     static const std::string URI;
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTUnion.
-     * First isCompatible is called.
-     * This method will nullptr if the structure is is not compatible.
-     * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTUnion.
-     * @return NTUnion instance on success, nullptr otherwise.
+     * Creates an NTUnion wrapping the specified PVStructure if the latter is compatible.
+     * <p>
+     * Checks the supplied PVStructure is compatible with NTUnion
+     * and if so returns an NTUnion which wraps it.
+     * This method will return null if the structure is is not compatible
+     * or is null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTUnion instance wrapping pvStructure on success, null otherwise
      */
-    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTUnion without checking for isCompatible
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTUnion.
-     * @return NTUnion instance.
+     * Creates an NTUnion wrapping the specified PVStructure, regardless of the latter's compatibility.
+     * <p>
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTUnion or is non-null.
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTUnion instance wrapping pvStructure
      */
-    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the structure an NTUnion.
-     * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTUnion.
+     * Returns whether the specified Structure reports to be a compatible NTUnion.
+     * <p>
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTUnion through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTUnion
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Is the structure an NTUnion.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTUnion.
+     * Returns whether the specified PVStructure reports to be a compatible NTUnion.
+     *
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTUnion through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTUnion
      */
     static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the Structure compatible with NTUnion.
-     * This method introspects the fields to see if they are compatible.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) an NTUnion.
+     * Returns whether the specified Structure is compatible with NTUnion.
+     * <p>
+     * Checks if the specified Structure is compatible with this version
+     * of NTUnion through the introspection interface.
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTUnion
      */
     static bool isCompatible(
         epics::pvData::StructureConstPtr const &structure);
 
     /**
-     * Is the PVStructure compatible with NTUnion.
-     * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTUnion.
+     * Returns whether the specified PVStructure is compatible with NTUnion.
+     * <p>
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTUnion through the introspection interface
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTUnion
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
-     * Checks if the specified structure is a valid NTUnion.
+     * Returns whether the wrapped PVStructure is a valid NTUnion.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTUnion
-     * @return (false,true) if (is not, is) a valid NTUnion.
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTUnion
      */
     bool isValid();
 
     /**
-     * Create a NTUnion builder instance.
+     * Creates an NTUnion builder instance.
      * @return builder instance.
      */
     static NTUnionBuilderPtr createBuilder();
@@ -193,48 +216,48 @@ public:
     ~NTUnion() {}
 
      /**
-      * Attach a pvTimeStamp.
-      * @param pvTimeStamp The pvTimeStamp that will be attached.
-      * Does nothing if no timeStamp.
+      * Attaches a PVTimeStamp to the wrapped PVStructure.
+      * Does nothing if no timeStamp field.
+      * @param pvTimeStamp the PVTimeStamp that will be attached.
       * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
       */
     bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
 
     /**
-     * Attach an pvAlarm.
-     * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm.
-      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+     * Attaches a PVAlarm to the wrapped PVStructure.
+     * Does nothing if no alarm field.
+     * @param pvAlarm the PVAlarm that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has an alarm field), otherwise false.
      */
     bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
 
     /**
-     * Get the pvStructure.
-     * @return PVStructurePtr.
+     * Returns the PVStructure wrapped by this instance.
+     * @return the PVStructure wrapped by this instance.
      */
     epics::pvData::PVStructurePtr getPVStructure() const;
 
     /**
-     * Get the descriptor field.
-     * @return The pvString or null if no function field.
+     * Returns the descriptor field.
+     * @return the descriptor field or null if no descriptor field.
      */
     epics::pvData::PVStringPtr getDescriptor() const;
 
     /**
-     * Get the timeStamp.
-     * @return PVStructurePtr which may be null.
+     * Returns the timeStamp field.
+     * @return the timStamp field or null if no timeStamp field.
      */
     epics::pvData::PVStructurePtr getTimeStamp() const;
 
     /**
-     * Get the alarm.
-     * @return PVStructurePtr which may be null.
+     * Returns the alarm field.
+     * @return the alarm field or null if no alarm field.
      */
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
-     * Get the value field.
-     * @return The PVUnion for the values.
+     * Returns the value field.
+     * @return the value field.
      */
     epics::pvData::PVUnionPtr getValue() const;
 

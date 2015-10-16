@@ -45,55 +45,55 @@ namespace detail {
         POINTER_DEFINITIONS(NTNameValueBuilder);
 
         /**
-         * Set a value array <b>Scalar</b> type.
-         * @param scalarType value array scalar array.
+         * Sets the value array <b>Scalar</b> type.
+         * @param scalarType the value field element ScalarType
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer value(epics::pvData::ScalarType scalarType);
 
         /**
-         * Add descriptor field to the NTNameValue.
+         * Adds descriptor field to the NTNameValue.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
-         * Add alarm structure to the NTNameValue.
+         * Adds alarm field to the NTNameValue.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
-         * Add timeStamp structure to the NTNameValue.
+         * Adds timeStamp field to the NTNameValue.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
-         * Create a <b>Structure</b> that represents NTNameValue.
+         * Creates a <b>Structure</b> that represents NTNameValue.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a <b>PVStructure</b> that represents NTNameValue.
+         * Creates a <b>PVStructure</b> that represents NTNameValue.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>PVStructure</b>
          */
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a <b>NTNameValue</b> instance.
+         * Creates a <b>NTNameValue</b> instance.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>NTNameValue</b>
          */
         NTNameValuePtr create();
 
         /**
-         * Add extra <b>Field</b> to the type.
-         * @param name name of the field.
-         * @param field a field to add.
+         * Adds extra <b>Field</b> to the type.
+         * @param name the name of the field.
+         * @param field the field to be added.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
@@ -134,65 +134,90 @@ public:
     static const std::string URI;
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTNameValue.
-     * First isCompatible is called.
-     * This method will nullptr if the structure is is not compatible.
-     * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTNameValue.
-     * @return NTNameValue instance on success, nullptr otherwise.
+     * Creates an NTNameValue wrapping the specified PVStructure if the latter is compatible.
+     * <p>
+     * Checks the supplied PVStructure is compatible with NTNameValue
+     * and if so returns an NTNameValue which wraps it.
+     * This method will return null if the structure is is not compatible
+     * or is null.
+     *
+     * @param pvStructure the PVStructure to be wrapped.
+     * @return NTNameValue instance wrapping pvStructure on success, null otherwise.
      */
-    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTNameValue without checking for isCompatible
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTNameValue.
-     * @return NTNameValue instance.
+     * Creates an NTNameValue wrapping the specified PVStructure, regardless of the latter's compatibility.
+     * <p>
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTNameValue or is non-null.
+     *
+     * @param pvStructure the PVStructure to be wrapped.
+     * @return NTNameValue instance wrapping pvStructure.
      */
-    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the structure an NTNameValue.
-     * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTNameValue.
+     * Returns whether the specified Structure reports to be a compatible NTNameValue.
+     * <p>
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTNameValue through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test.
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTNameValue.
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Is the structure an NTNameValue.
+     * Returns whether the specified PVStructure reports to be a compatible NTNameValue.
+     * <p>
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTNameValue through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
      * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTNameValue.
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTNameValue.
      */
     static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the Structure compatible with NTNameValue.
-     * This method introspects the fields to see if they are compatible.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) an NTNameValue.
+     * Returns whether the specified Structure is compatible with NTNameValue.
+     * <p>
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTNameValue through the introspection interface.
+     * @param structure the Structure to test.
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTNameValue.
      */
     static bool isCompatible(
         epics::pvData::StructureConstPtr const &structure);
 
     /**
-     * Is the PVStructure compatible with NTNameValue.
-     * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTNameValue.
+     * Returns whether the specified PVStructure is compatible with NTNameValue.
+     * <p>
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTNameValue through the introspection interface.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTNameValue
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
-     * Checks if the specified structure is a valid NTNameValue.
+     * Returns whether the wrapped PVStructure is valid with respect to this
+     * version of NTNameValue.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTNameValue
-     * @return (false,true) if (is not, is) a valid NTNameValue.
+     * @return (false,true) if the wrapped PVStructure (is not, is) a valid NTNameValue
      */
     bool isValid();
 
     /**
-     * Create a NTNameValue builder instance.
+     * Creates an NTNameValue builder instance.
      * @return builder instance.
      */
     static NTNameValueBuilderPtr createBuilder();
@@ -203,60 +228,63 @@ public:
     ~NTNameValue() {}
 
      /**
-      * Attach a pvTimeStamp.
-      * @param pvTimeStamp The pvTimeStamp that will be attached.
-      * Does nothing if no timeStamp.
+      * Attaches a PVTimeStamp to the wrapped PVStructure.
+      * Does nothing if no timeStamp field.
+      * @param pvTimeStamp the PVTimeStamp that will be attached.
       * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
       */
     bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
 
     /**
-     * Attach an pvAlarm.
-     * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm.
-      * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+     * Attaches a PVAlarm to the wrapped PVStructure.
+     * Does nothing if no alarm field.
+     * @param pvAlarm the PVAlarm that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has an alarm field), otherwise false.
      */
     bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
 
     /**
-     * Get the pvStructure.
-     * @return PVStructurePtr.
+     * Returns the PVStructure wrapped by this instance.
+     * @return the PVStructure wrapped by this instance.
      */
     epics::pvData::PVStructurePtr getPVStructure() const;
 
     /**
-     * Get the descriptor field.
-     * @return The pvString or null if no function field.
+     * Returns the descriptor field.
+     * @return the descriptor field or null if no descriptor field.
      */
     epics::pvData::PVStringPtr getDescriptor() const;
 
     /**
-     * Get the timeStamp.
-     * @return PVStructurePtr which may be null.
+     * Returns the timeStamp field.
+     * @return the timStamp field or null if no timeStamp field.
      */
     epics::pvData::PVStructurePtr getTimeStamp() const;
 
     /**
-     * Get the alarm.
-     * @return PVStructurePtr which may be null.
+     * Returns the alarm field.
+     * @return the alarm field or null if no alarm field.
      */
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
-     * Get the name array field.
+     * Returns the name array field.
      * @return The PVStringArray for the name.
      */
     epics::pvData::PVStringArrayPtr getName() const;
 
     /**
-     * Get the value array field.
+     * Returns the value array field.
      * @return The PVField for the value.
      */
     epics::pvData::PVFieldPtr getValue() const;
 
     /**
-     * Get the value array field of a specified type (e.g. PVDoubleArray).
-     * @return The <PVT> array for the value.
+     * Returns the value array field of a specified expected type (e.g. PVDoubleArray).
+     *
+     * @tparam PVT The expected type of the value field which should be
+     *             be PVScalarArray or a derived class.
+     * @return The PVT array for the value.
      */
     template<typename PVT>
     std::tr1::shared_ptr<PVT> getValue() const
