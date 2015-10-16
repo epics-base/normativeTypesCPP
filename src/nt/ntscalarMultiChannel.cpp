@@ -207,15 +207,15 @@ NTScalarMultiChannelBuilder::shared_pointer NTScalarMultiChannelBuilder::add(str
 
 const std::string NTScalarMultiChannel::URI("epics:nt/NTScalarMultiChannel:1.0");
 
-NTScalarMultiChannel::shared_pointer NTScalarMultiChannel::wrap(PVStructurePtr const & structure)
+NTScalarMultiChannel::shared_pointer NTScalarMultiChannel::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTScalarMultiChannel::shared_pointer NTScalarMultiChannel::wrapUnsafe(PVStructurePtr const & structure)
+NTScalarMultiChannel::shared_pointer NTScalarMultiChannel::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTScalarMultiChannel(structure));
+    return shared_pointer(new NTScalarMultiChannel(pvStructure));
 }
 
 bool NTScalarMultiChannel::is_a(StructureConstPtr const &structure)

@@ -127,15 +127,15 @@ NTURIBuilder::shared_pointer NTURIBuilder::add(string const & name, FieldConstPt
 
 const std::string NTURI::URI("epics:nt/NTURI:1.0");
 
-NTURI::shared_pointer NTURI::wrap(PVStructurePtr const & structure)
+NTURI::shared_pointer NTURI::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTURI::shared_pointer NTURI::wrapUnsafe(PVStructurePtr const & structure)
+NTURI::shared_pointer NTURI::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTURI(structure));
+    return shared_pointer(new NTURI(pvStructure));
 }
 
 bool NTURI::is_a(StructureConstPtr const & structure)

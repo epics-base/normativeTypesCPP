@@ -113,15 +113,15 @@ NTHistogramBuilder::shared_pointer NTHistogramBuilder::add(string const & name, 
 
 const std::string NTHistogram::URI("epics:nt/NTHistogram:1.0");
 
-NTHistogram::shared_pointer NTHistogram::wrap(PVStructurePtr const & structure)
+NTHistogram::shared_pointer NTHistogram::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTHistogram::shared_pointer NTHistogram::wrapUnsafe(PVStructurePtr const & structure)
+NTHistogram::shared_pointer NTHistogram::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTHistogram(structure));
+    return shared_pointer(new NTHistogram(pvStructure));
 }
 
 bool NTHistogram::is_a(StructureConstPtr const & structure)

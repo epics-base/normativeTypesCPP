@@ -171,15 +171,15 @@ NTAggregateBuilder::shared_pointer NTAggregateBuilder::add(string const & name, 
 
 const std::string NTAggregate::URI("epics:nt/NTAggregate:1.0");
 
-NTAggregate::shared_pointer NTAggregate::wrap(PVStructurePtr const & structure)
+NTAggregate::shared_pointer NTAggregate::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTAggregate::shared_pointer NTAggregate::wrapUnsafe(PVStructurePtr const & structure)
+NTAggregate::shared_pointer NTAggregate::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTAggregate(structure));
+    return shared_pointer(new NTAggregate(pvStructure));
 }
 
 bool NTAggregate::is_a(StructureConstPtr const & structure)

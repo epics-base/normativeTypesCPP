@@ -111,15 +111,15 @@ NTNDArrayAttributeBuilder::shared_pointer NTNDArrayAttributeBuilder::add(string 
 
 const std::string NTNDArrayAttribute::URI("epics:nt/NTAttribute:1.0");
 
-NTNDArrayAttribute::shared_pointer NTNDArrayAttribute::wrap(PVStructurePtr const & structure)
+NTNDArrayAttribute::shared_pointer NTNDArrayAttribute::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTNDArrayAttribute::shared_pointer NTNDArrayAttribute::wrapUnsafe(PVStructurePtr const & structure)
+NTNDArrayAttribute::shared_pointer NTNDArrayAttribute::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTNDArrayAttribute(structure));
+    return shared_pointer(new NTNDArrayAttribute(pvStructure));
 }
 
 bool NTNDArrayAttribute::is_a(StructureConstPtr const & structure)

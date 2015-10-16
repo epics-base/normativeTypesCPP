@@ -130,15 +130,15 @@ NTScalarBuilder::shared_pointer NTScalarBuilder::add(string const & name, FieldC
 
 const std::string NTScalar::URI("epics:nt/NTScalar:1.0");
 
-NTScalar::shared_pointer NTScalar::wrap(PVStructurePtr const & structure)
+NTScalar::shared_pointer NTScalar::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTScalar::shared_pointer NTScalar::wrapUnsafe(PVStructurePtr const & structure)
+NTScalar::shared_pointer NTScalar::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTScalar(structure));
+    return shared_pointer(new NTScalar(pvStructure));
 }
 
 bool NTScalar::is_a(StructureConstPtr const & structure)

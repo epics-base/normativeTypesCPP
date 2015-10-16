@@ -210,15 +210,15 @@ NTMultiChannelBuilder::shared_pointer NTMultiChannelBuilder::add(string const & 
 
 const std::string NTMultiChannel::URI("epics:nt/NTMultiChannel:1.0");
 
-NTMultiChannel::shared_pointer NTMultiChannel::wrap(PVStructurePtr const & structure)
+NTMultiChannel::shared_pointer NTMultiChannel::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTMultiChannel::shared_pointer NTMultiChannel::wrapUnsafe(PVStructurePtr const & structure)
+NTMultiChannel::shared_pointer NTMultiChannel::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTMultiChannel(structure));
+    return shared_pointer(new NTMultiChannel(pvStructure));
 }
 
 bool NTMultiChannel::is_a(StructureConstPtr const &structure)

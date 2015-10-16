@@ -99,15 +99,15 @@ NTEnumBuilder::shared_pointer NTEnumBuilder::add(string const & name, FieldConst
 
 const std::string NTEnum::URI("epics:nt/NTEnum:1.0");
 
-NTEnum::shared_pointer NTEnum::wrap(PVStructurePtr const & structure)
+NTEnum::shared_pointer NTEnum::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTEnum::shared_pointer NTEnum::wrapUnsafe(PVStructurePtr const & structure)
+NTEnum::shared_pointer NTEnum::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTEnum(structure));
+    return shared_pointer(new NTEnum(pvStructure));
 }
 
 bool NTEnum::is_a(StructureConstPtr const & structure)

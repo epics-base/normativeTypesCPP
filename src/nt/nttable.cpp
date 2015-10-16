@@ -127,15 +127,15 @@ NTTableBuilder::shared_pointer NTTableBuilder::add(string const & name, FieldCon
 
 const std::string NTTable::URI("epics:nt/NTTable:1.0");
 
-NTTable::shared_pointer NTTable::wrap(PVStructurePtr const & structure)
+NTTable::shared_pointer NTTable::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTTable::shared_pointer NTTable::wrapUnsafe(PVStructurePtr const & structure)
+NTTable::shared_pointer NTTable::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTTable(structure));
+    return shared_pointer(new NTTable(pvStructure));
 }
 
 bool NTTable::is_a(StructureConstPtr const & structure)

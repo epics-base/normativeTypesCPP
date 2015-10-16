@@ -100,15 +100,15 @@ NTUnionBuilder::shared_pointer NTUnionBuilder::add(string const & name, FieldCon
 
 const std::string NTUnion::URI("epics:nt/NTUnion:1.0");
 
-NTUnion::shared_pointer NTUnion::wrap(PVStructurePtr const & structure)
+NTUnion::shared_pointer NTUnion::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTUnion::shared_pointer NTUnion::wrapUnsafe(PVStructurePtr const & structure)
+NTUnion::shared_pointer NTUnion::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTUnion(structure));
+    return shared_pointer(new NTUnion(pvStructure));
 }
 
 bool NTUnion::is_a(StructureConstPtr const & structure)

@@ -108,15 +108,15 @@ NTAttributeBuilder::shared_pointer NTAttributeBuilder::add(string const & name, 
 
 const std::string NTAttribute::URI("epics:nt/NTAttribute:1.0");
 
-NTAttribute::shared_pointer NTAttribute::wrap(PVStructurePtr const & structure)
+NTAttribute::shared_pointer NTAttribute::wrap(PVStructurePtr const & pvStructure)
 {
-    if(!isCompatible(structure)) return shared_pointer();
-    return wrapUnsafe(structure);
+    if(!isCompatible(pvStructure)) return shared_pointer();
+    return wrapUnsafe(pvStructure);
 }
 
-NTAttribute::shared_pointer NTAttribute::wrapUnsafe(PVStructurePtr const & structure)
+NTAttribute::shared_pointer NTAttribute::wrapUnsafe(PVStructurePtr const & pvStructure)
 {
-    return shared_pointer(new NTAttribute(structure));
+    return shared_pointer(new NTAttribute(pvStructure));
 }
 
 bool NTAttribute::is_a(StructureConstPtr const & structure)
