@@ -48,7 +48,7 @@ namespace detail {
         POINTER_DEFINITIONS(NTTableBuilder);
 
         /**
-         * Add a column of given <b>Scalar</b> type.
+         * Adds a column of given <b>Scalar</b> type.
          * @param name name of the column.
          * @param elementType column type, a scalar array.
          * @return this instance of <b>NTTableBuilder</b>.
@@ -56,32 +56,32 @@ namespace detail {
         shared_pointer addColumn(std::string const & name, epics::pvData::ScalarType elementType);
 
         /**
-         * Add descriptor field to the NTTable.
+         * Adds descriptor field to the NTTable.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addDescriptor();
 
         /**
-         * Add alarm structure to the NTTable.
+         * Adds alarm field to the NTTable.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addAlarm();
 
         /**
-         * Add timeStamp structure to the NTTable.
+         * Adds timeStamp field to the NTTable.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer addTimeStamp();
 
         /**
-         * Create a <b>Structure</b> that represents NTTable.
+         * Creates a <b>Structure</b> that represents NTTable.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>Structure</b>.
          */
         epics::pvData::StructureConstPtr createStructure();
 
         /**
-         * Create a <b>PVStructure</b> that represents NTTable.
+         * Creates a <b>PVStructure</b> that represents NTTable.
          * The returned PVStructure will have labels equal to the column names.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>PVStructure</b>.
@@ -89,17 +89,18 @@ namespace detail {
         epics::pvData::PVStructurePtr createPVStructure();
 
         /**
-         * Create a <b>NTTable</b> instance.
+         * Creates a <b>NTTable</b> instance.
          * The returned NTTable will wrap a PVStructure which will have
          * labels equal to the column names.
          * This resets this instance state and allows new instance to be created.
          * @return a new instance of <b>NTTable</b>.
          */
         NTTablePtr create();
+
         /**
-         * Add extra <b>Field</b> to the type.
-         * @param name name of the field.
-         * @param field a field to add.
+         * Adds extra <b>Field</b> to the type.
+         * @param name the name of the field.
+         * @param field the field to be added.
          * @return this instance of <b>NTTableBuilder</b>.
          */
         shared_pointer add(std::string const & name, epics::pvData::FieldConstPtr const & field);
@@ -142,65 +143,91 @@ public:
     static const std::string URI;
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTTable.
-     * First isCompatible is called.
-     * This method will nullptr if the structure is is not compatible.
-     * This method will nullptr if the structure is nullptr.
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTTable.
-     * @return NTTable instance on success, nullptr otherwise.
+     * Creates an NTTable wrapping the specified PVStructure if the latter is compatible.
+     * <p>
+     * Checks the supplied PVStructure is compatible with NTTable
+     * and if so returns an NTTable which wraps it.
+     * This method will return null if the structure is is not compatible
+     * or is null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTTable instance wrapping pvStructure on success, null otherwise
      */
-    static shared_pointer wrap(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrap(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Wrap (aka dynamic cast, or wrap) the structure to NTMultiChannel without checking for isCompatible
-     * @param structure The structure to wrap-ed (dynamic cast, wrapped) to NTTable.
-     * @return NTTable instance.
+     * Creates an NTTable wrapping the specified PVStructure, regardless of the latter's compatibility.
+     * <p>
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTTable or is non-null.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTTable instance wrapping pvStructure
      */
-    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & structure);
+    static shared_pointer wrapUnsafe(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the structure an NTTable.
-     * @param structure The structure to test.
-     * @return (false,true) if (is not, is) an NTTable.
+     * Returns whether the specified Structure reports to be a compatible NTTable.
+     * <p>
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTTable through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTTable
      */
     static bool is_a(epics::pvData::StructureConstPtr const & structure);
 
     /**
-     * Is the structure an NTTable.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTTable.
+     * Returns whether the specified PVStructure reports to be a compatible NTTable.
+     * <p>
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTTable through its type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTTable
      */
     static bool is_a(epics::pvData::PVStructurePtr const & pvStructure);
 
     /**
-     * Is the Structure compatible with NTTable.
-     * This method introspects the fields to see if they are compatible.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) an NTTable.
+     * Returns whether the specified Structure is compatible with NTTable.
+     * <p>
+     * Checks if the specified Structure is compatible with this version
+     * of NTTable through the introspection interface.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if the specified Structure (is not, is) a compatible NTTable
      */
     static bool isCompatible(
         epics::pvData::StructureConstPtr const &structure);
 
     /**
-     * Is the PVStructure compatible with NTTable.
-     * This method introspects the fields to see if they are compatible.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) an NTTable.
+     * Returns whether the specified PVStructure is compatible with NTTable.
+     *
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTTable through the introspection interface.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if the specified PVStructure (is not, is) a compatible NTTable
      */
     static bool isCompatible(
         epics::pvData::PVStructurePtr const &pvStructure);
 
     /**
-     * Checks if the specified structure is a valid NTTable.
+     * Returns whether the specified structure is a valid NTTable.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTTable
-     * @return (false,true) if (is not, is) a valid NTTable.
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTTable
      */
     bool isValid();
 
     /**
-     * Create a NTTable builder instance.
+     * Creates an NTTable builder instance.
      * @return builder instance.
      */
     static NTTableBuilderPtr createBuilder();
@@ -211,69 +238,73 @@ public:
     ~NTTable() {}
 
      /**
-      * Attach a pvTimeStamp.
-      * @param pvTimeStamp The pvTimeStamp that will be attached.
-      * Does nothing if no timeStamp.
+      * Attaches a PVTimeStamp to the wrapped PVStructure.
+      * Does nothing if no timeStamp field.
+      * @param pvTimeStamp the PVTimeStamp that will be attached.
       * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
       */
     bool attachTimeStamp(epics::pvData::PVTimeStamp &pvTimeStamp) const;
 
     /**
-     * Attach an pvAlarm.
-     * @param pvAlarm The pvAlarm that will be attached.
-     * Does nothing if no alarm.
-     * @return true if the operation was successfull (i.e. this instance has a timeStamp field), otherwise false.
+     * Attaches a PVAlarm to the wrapped PVStructure.
+     * Does nothing if no alarm field.
+     * @param pvAlarm the PVAlarm that will be attached.
+     * @return true if the operation was successfull (i.e. this instance has an alarm field), otherwise false.
      */
     bool attachAlarm(epics::pvData::PVAlarm &pvAlarm) const;
 
     /**
-     * Get the pvStructure.
-     * @return PVStructurePtr.
+     * Returns the PVStructure wrapped by this instance.
+     * @return the PVStructure wrapped by this instance.
      */
     epics::pvData::PVStructurePtr getPVStructure() const;
 
     /**
-     * Get the descriptor field.
-     * @return The pvString or null if no function field.
+     * Returns the descriptor field.
+     * @return the descriptor field or null if no descriptor field.
      */
     epics::pvData::PVStringPtr getDescriptor() const;
 
     /**
-     * Get the timeStamp.
-     * @return PVStructurePtr which may be null.
+     * Returns the timeStamp field.
+     * @return the timStamp field or null if no such field.
      */
     epics::pvData::PVStructurePtr getTimeStamp() const;
 
     /**
-     * Get the alarm.
-     * @return PVStructurePtr which may be null.
+     * Returns the alarm field.
+     * @return the alarm field or null if no such field.
      */
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
-     * Get the labels field.
-     * @return The pvStringArray for the labels.
+     * Returns the labels field.
+     * @return the labels field.
      */
     epics::pvData::PVStringArrayPtr getLabels() const;
 
     /**
-     * Get the column names for the table.
+     * Returns the column names for the table.
      * For each name, calling getColumn should return the column, which should not be null.
-     * @return The column names.
+     * @return the column names.
      */
     epics::pvData::StringArray const & getColumnNames() const;
 
     /**
-     * Get the PVField (column) for a field that follows the label field.
-     * @param columnName The name of the column.
-     * @return The PVFieldPtr for the field.
+     * Returns the PVField for the column with the specified colum name.
+     * @param columnName the name of the column.
+     * @return the field for the column or null if column does not exist.
      */
     epics::pvData::PVFieldPtr getColumn(std::string const & columnName) const;
 
     /**
-     * Get the PVField (column) for a field that follows the label field of a specified type (e.g. PVDoubleArray).
-     * @param columnName The name of the column.
-     * @return The <PVT> field.
+     * Returns the column with the specified column name and of a specified
+     * expected type (for example, PVDoubleArray).
+     * @tparam PVT the expected type of the column which should be
+     *             be PVScalarArray or a derived class.
+     * @param columnName the name of the column.
+     * @return the field for the column or null if column does not exist
+     *         or is not of the specified type.
      */
     template<typename PVT>
     std::tr1::shared_ptr<PVT> getColumn(std::string const & columnName) const
