@@ -250,7 +250,7 @@ public:
 
     /**
      * Returns the authority field.
-     * @return the authority field if no such field.
+     * @return the authority field or null if no such field.
      */
     epics::pvData::PVStringPtr getAuthority() const;
 
@@ -262,7 +262,7 @@ public:
 
     /**
      * Returns the query field.
-     * @return the query field if no such field.
+     * @return the query field or null if no such field.
      */
     epics::pvData::PVStructurePtr getQuery() const;
 
@@ -285,7 +285,7 @@ public:
      * Returns the subfield of the query field (parameter) with the specified
      * name and of a specified expected type (for example, PVString).
      * @tparam PVT the expected type of the subfield which should be
-     *             be PVStringArray, PVIntArray pr PVDoubleArray.
+     *             be PVString, PVInt pr PVDouble.
      * @param name the subfield of the query field or null if the field does
      *             not exist or is not of the expected type.
      * @return The PVT field.

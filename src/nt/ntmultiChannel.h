@@ -348,7 +348,7 @@ public:
 
     /**
      * Returns the field with the severity of each channel.
-     * @return the severity field or null if no such field
+     * @return the severity field or null if no such field.
      */
     epics::pvData::PVIntArrayPtr getSeverity() const 
     {return pvSeverity;}

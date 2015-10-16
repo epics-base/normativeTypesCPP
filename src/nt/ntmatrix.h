@@ -290,13 +290,13 @@ public:
     epics::pvData::PVStructurePtr getDisplay() const;
 
     /**
-     * Get the value field.
+     * Returns the value field.
      * @return the value field.
      */
     epics::pvData::PVDoubleArrayPtr getValue() const;
 
     /**
-     * Get the dim field.
+     * Returns the dim field.
      * @return the dim field or or null if no such field.
      */
     epics::pvData::PVIntArrayPtr getDim() const;   

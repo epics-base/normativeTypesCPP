@@ -271,22 +271,22 @@ public:
     epics::pvData::PVStructurePtr getAlarm() const;
 
     /**
-     * Get the ranges field.
+     * Returns the ranges field.
      * @return the ranges field.
      */
     epics::pvData::PVDoubleArrayPtr getRanges() const;
 
     /**
-     * Get the value field.
+     * Returns the value field.
      * @return the value field.
      */
     epics::pvData::PVScalarArrayPtr getValue() const;
 
     /**
-     * Get the value field of a specified type (e.g. PVIntArray).
+     * Returns the value field of a specified type (e.g. PVIntArray).
      * @tparam PVT the expected type of the value field which should be
      *             be PVShortArray, PVIntArray pr PVLongArray.
-     * @return the value field or null if it is not of the expected type..
+     * @return the value field or null if it is not of the expected type.
      */
     template<typename PVT>
     std::tr1::shared_ptr<PVT> getValue() const

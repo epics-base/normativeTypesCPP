@@ -54,7 +54,7 @@ namespace detail {
 
         /**
          * Sets the value type of the NTScalarArray.
-         * @param elementType the value array element type.
+         * @param elementType the value field element ScalarType.
          * @return this instance of <b>NTScalarArrayBuilder</b>.
          * @deprecated use value instead.
          */

@@ -260,49 +260,49 @@ public:
 
     /**
      * Returns the value field.
-     * @return The PVField for the values.
+     * Returns the value field.
      */
     epics::pvData::PVUnionPtr getValue() const;
 
     /**
      * Returns the codec field.
-     * @return the PVStructurePtr.
+     * @return the codec field.
      */
     epics::pvData::PVStructurePtr getCodec() const;
 
     /**
      * Returns the compressedDataSize field.
-     * @return PVStructurePtr.
+     * @return the compressedDataSize field.
      */
     epics::pvData::PVLongPtr getCompressedDataSize() const;
 
     /**
      * Returns the uncompressedDataSize field.
-     * @return PVStructurePtr.
+     * @return the uncompressedDataSize field.
      */
     epics::pvData::PVLongPtr getUncompressedDataSize() const;
 
     /**
      * Returns the dimension field.
-     * @return the PVStructurePtr.
+     * @return the dimension field.
      */
     epics::pvData::PVStructureArrayPtr getDimension() const;
 
     /**
      * Returns the uniqueId field.
-     * @return PVStructurePtr.
+     * @return the uniqueId field.
      */
     epics::pvData::PVIntPtr getUniqueId() const;
 
     /**
-     * Returns the data timeStamp field.
-     * @return PVStructurePtr.
+     * Returns the dataTimeStamp field.
+     * @return the dataTimeStamp field.
      */
     epics::pvData::PVStructurePtr getDataTimeStamp() const;
 
     /**
      * Returns the attribute field.
-     * @return the PVStructurePtr.
+     * @return the attribute field.
      */
     epics::pvData::PVStructureArrayPtr getAttribute() const;
 
