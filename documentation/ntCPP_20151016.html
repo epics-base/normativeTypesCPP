@@ -131,17 +131,17 @@ March 16 2015</a> version the Normative Types Specification.</p>
 
 <dl>
   <dt>NTScalar</dt>
-     <dd>This has a value field that has type scalar</dd>
+     <dd>This has a value field that has type scalar.</dd>
   <dt>NTScalarArray</dt>
-     <dd>This has a value field that has type scalarArray</dd>
+     <dd>This has a value field that has type scalarArray.</dd>
   <dt>NTNameValue</dt>
       <dd>This has a field name that is a string array
        and a field value that has type scalarArray.
        Each name[i] is associated with value[i].
       </dd>
   <dt>NTTable</dt>
-      <dd>This has a string array field named labels
-       For each label there is a scalar array field with name = label.
+      <dd>This has a number of scalar array fields representing the columns of
+a table as well as a string array called containing representing column headers.
      </dd>
   <dt>NTMultiChannel</dt>
      <dd>This has a value field that is a union array.
@@ -256,20 +256,20 @@ structure parent
 <p>An alarm structure is used to report alarms and other problems to the client.
 An alarm may be associated with a value field or can be used by a server
 to report problems to the client.
-An alarm attached to a substructure of the top level structure is normally
+An alarm attached to a substructure of the top-level structure is normally
 associated with a value field.
-An alarm field attached to the top level structure can be used for either:
+An alarm field attached to the top-level structure can be used for either:
 </p>
 <ol>
-   <li>If the top level structure has a value field then it is an alarm
+   <li>If the top-level structure has a value field then it is an alarm
      for that field.
     </li>
    <li>To report other problems to the client.</li>
 </ol>
 <p>If alarms do appear at multiple levels then an alarm is always
-provided at the top level.
+provided at the top-level.
 It uses "maximize severity" to report the highest level severity
-of all alarms, i.e. the top level severity is the maximum severity
+of all alarms, i.e. the top-level severity is the maximum severity
 of all the alarms.</p>
 <p>An example is:</p>
 <pre>
@@ -286,7 +286,7 @@ structure top
        structure alarm
 </pre>
 <p>In this example power, voltage, and current all have an associated alarm.
-The top level alarm would have a severity that matches the highest level
+The top-level alarm would have a severity that matches the highest level
 severity of power, voltage, an current.</p>
 
 <p>A alarm structure has the following fields:</p>
@@ -315,15 +315,15 @@ a the data for a value field was collected.
 There can be multiple timeStamp fields.
 A timeStamp associated with a substructure is usually associated with
 a value field.
-An timeStamp field attached to the top level structure can be used for either:
+An timeStamp field attached to the top-level structure can be used for either:
 </p>
 <ol>
-   <li>If the top level structure has a value field then it can be the
+   <li>If the top-level structure has a value field then it can be the
      timeStamp for that field.
    </li>
    <li>The time when the server executed.</li>
 </ol>
-<p>NTNDArray is an example that has two top level timeStamp field with different
+<p>NTNDArray is an example that has two top-level timeStamp fields with different
 field names because it wants to report both.</p>
 
 <p>A timeStamp structure has the following fields:</p>
@@ -400,19 +400,19 @@ structure
 <p><b>NOTE:</b> NTField, described above, has support for checking to see if
 a structure is an alarmLimit structure but no other support for alarmLimit.</p>
 <p>
-PVData has support named <b>valueAlarm</b> instead of <b>alarmLimit</b>
+pvData has support named <b>valueAlarm</b> instead of <b>alarmLimit</b>
 (alarmLimit is identical to valueAlarm for type double).
 For numeric types the field names are the same but the type
 for lowAlarmLimit, lowWarningLimit, highWarningLimit, and highAlarmLimit
 is based on the scalarType.
-PVData also defines valueAlarm for a scalar boolean value field
+pvData also defines valueAlarm for a scalar boolean value field
 and for an enumerated structure.
 For these completely different field names are defined.
 valueAlarm is more for use by servers than for clients.
 Thus normative types only defines alarmLimit since this is what
 clients like plot tools use.
 If the valueAlarm fields, including alarmLimit, are desired than the standardField support from
-PVData can be used to generate a valueAlarm field as an extra field.
+pvData can be used to generate a valueAlarm field as an extra field.
 </p>
 
 <h2>Normative Type Common Features</h2>
@@ -505,26 +505,26 @@ where
     <dd>This determines the scalar type for the value field.
      This must be specified or createStructure will throw an exception.</dd>
   <dt>addDescriptor</dt>
-     <dd>Add optional field descriptor</dd>
+     <dd>Add optional field descriptor.</dd>
   <dt>addAlarm</dt>
-     <dd>Add optional field alarm</dd>
+     <dd>Add optional field alarm.</dd>
   <dt>addTimeStamp</dt>
-     <dd>Add optional field timeStamp</dd>
+     <dd>Add optional field timeStamp.</dd>
   <dt>addDisplay</dt>
-     <dd>Add optional field display</dd>
+     <dd>Add optional field display.</dd>
   <dt>addControl</dt>
-     <dd>Add optional field control</dd>
+     <dd>Add optional field control.</dd>
    <dt>createStructure</dt>
-     <dd>Create a introspection instance.</dd>
+     <dd>Create an introspection instance.</dd>
   <dt>createPVStructure</dt>
      <dd>Create the data instance.</dd>
    <dt>create</dt>
-      <dd>create an PVScalar instance.</dd>
+      <dd>create a PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
       a unique name that is not the name of any mandatory or possible optional field.</dd>
 </dl>
-<p>An NTScalaBuilder can be used to create multiple PVStructure and/or NTScalar instances.
+<p>An NTScalarBuilder can be used to create multiple PVStructure and/or NTScalar instances.
 Each time createPVScalar is called it clears all internal data after the PVStructure
 is created.</p>
 <h4>NTScalarBuilder Examples</h4>
@@ -566,7 +566,7 @@ public:
     static shared_pointer wrap(PVStructurePtr const &amp; structure);
     static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool isComparible(PVStructurePtr const &amp;pvStructure);
+    static bool isCompatible(PVStructurePtr const &amp;pvStructure);
     static NTScalarBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -587,19 +587,19 @@ private:
 where
 <dl>
    <dt>wrap</dt>
-     <dd>Given a pvStructure this creates an NTScalar that warps it.
+     <dd>Given a PVStructure this creates an NTScalar that wraps it.
        It calls <b>isCompatible</b>.
        It returns a null PVScalar if <b>isCompatible</b> returns false.
        <br />
 The primary use of wrap is by pvAccess client code.
-The server creates a pvStructure that is valid for an NTScalar
+The server creates a PVStructure that is valid for an NTScalar
 and passes it to the client.
 The client can call wrap to create an NTScalar for it's own use.
 An example is:
 <pre>
-void myCallback(PVStructurePtr const &amp; pvStructure)
+void myCallback(PVStructurePtr const &amp; PVStructure)
 {
-     NTScalarPtr ntscalar = NTScalar::wrap(pvStructure);
+     NTScalarPtr ntscalar = NTScalar::wrap(PVStructure);
      if(!ntscalar) {
        // not a valid NTScalar
      }
@@ -608,20 +608,20 @@ void myCallback(PVStructurePtr const &amp; pvStructure)
 </pre>
      </dd>
    <dt>wrapUnsafe</dt>
-     <dd>Given a pvStructure this creates an NTScalar that warps it.
+     <dd>Given a PVStructure this creates an NTScalar that wraps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTScalar.</dd>
-   <dt>isComparible</dt>
-       <dd>This method checks to see if the pvStructure has appropriate
+   <dt>isCompatible</dt>
+       <dd>This method checks to see if the PVStructure has appropriate
        fields to be an NTScalar.
        </dd>
    <dt>createBuilder</dt>
        <dd>This  method creates an NTScalarBuilder.</dd>
    <dt>attachTimeStamp</dt>
-      <dd>The timeStamp field of the NTScalar is attached to the pvTimeStamp.
+      <dd>The timeStamp field of the NTScalar is attached to pvTimeStamp.
       <br />
 An example is:
 <pre>
@@ -636,7 +636,7 @@ double diff = TimeStamp::diff(timeStamp,current); // timeStamp - current
 </pre>
       </dd>
    <dt>attachAlarm</dt>
-      <dd>The alarm field of the NTScalar is attached to the pvAlarm.
+      <dd>The alarm field of the NTScalar is attached to pvAlarm.
        If alarm is not selected as an optional field false is returned.
       If this is successful then the pvAlarm can be used to access that alarm
        fields.<br />
@@ -653,36 +653,36 @@ string message = alarm.getMessage();
 </pre>
       </dd>
    <dt>attachDisplay</dt>
-      <dd>The display field of the NTScalar is attached to the pvDisplay.
+      <dd>The display field of the NTScalar is attached to pvDisplay.
       Used similar to attachAlarm.
       </dd>
    <dt>attachControl</dt>
-      <dd>The control field of the NTScalar is attached to the pvControl.
+      <dd>The control field of the NTScalar is attached to pvControl.
       Used similar to attachAlarm.
     </dd>
    <dt>getPVStructure</dt>
-       <dd>Returns the pvStructure that NTScalar wraps.</dd>
+       <dd>Returns the PVStructure that NTScalar wraps.</dd>
     <dt>getDescriptor</dt>
        <dd>Get the descriptor.</dd>
    <dt>getTimeStamp</dt>
-       <dd>Returns the top level timeStamp.
+       <dd>Returns the top-level timeStamp.
        If the timeStamp was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getAlarm</dt>
-       <dd>Returns the top level alarm.
+       <dd>Returns the top-level alarm.
        If the alarm was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getDisplay</dt>
-       <dd>Returns the top level display.
+       <dd>Returns the top-level display.
        If the display was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getControl</dt>
-       <dd>Returns the top level control.
+       <dd>Returns the top-level control.
        If the control was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getValue</dt>
        <dd>Returns the value field.</dd>
@@ -747,21 +747,21 @@ where
     <dd>This determines the element type for the value field.
      This must be specified or createStructure will throw an exception.</dd>
   <dt>addDescriptor</dt>
-     <dd>Add optional field descriptor</dd>
+     <dd>Add optional field descriptor.</dd>
   <dt>addAlarm</dt>
-     <dd>Add optional field alarm</dd>
+     <dd>Add optional field alarm.</dd>
   <dt>addTimeStamp</dt>
-     <dd>Add optional field timeStamp</dd>
+     <dd>Add optional field timeStamp.</dd>
   <dt>addDisplay</dt>
-     <dd>Add optional field display</dd>
+     <dd>Add optional field display.</dd>
   <dt>addControl</dt>
-     <dd>Add optional field control</dd>
+     <dd>Add optional field control.</dd>
    <dt>createStructure</dt>
-     <dd>Create a introspection instance.</dd>
+     <dd>Create an introspection instance.</dd>
   <dt>createPVStructure</dt>
      <dd>Create the data instance.</dd>
    <dt>create</dt>
-      <dd>create an PVScalar instance.</dd>
+      <dd>create a PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
       a unique name that is not the name of any mandatory or possible optional field.</dd>
@@ -780,7 +780,7 @@ public:
     static shared_pointer wrap(PVStructurePtr const &amp; structure);
     static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool isComparible(PVStructurePtr const &amp;pvStructure);
+    static bool isCompatible(PVStructurePtr const &amp;pvStructure);
     static NTScalarArrayBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -801,62 +801,62 @@ private:
 where
 <dl>
    <dt>wrap</dt>
-     <dd>Given a pvStructure this creates an NTScalarArray that warps it.
-       It calls <b>isCompatible</b> returns a null PVScalarArray if <b>isCompatible</b> returns false.
+     <dd>Given a PVStructure this creates an NTScalarArray that wraps it.
+       It calls <b>isCompatible</b> and returns a null PVScalarArray if <b>isCompatible</b> returns false.
      </dd>
    <dt>wrapUnsafe</dt>
-     <dd>Given a pvStructure this creates an NTScalarArray that warps it.
+     <dd>Given a PVStructure this creates an NTScalarArray that wraps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTScalarArray.</dd>
-   <dt>isComparible</dt>
-       <dd>This method checks to see if the pvStructure has appropriate
+   <dt>isCompatible</dt>
+       <dd>This method checks to see if the PVStructure has appropriate
        fields to be an NTScalarArray.
        </dd>
    <dt>createBuilder</dt>
        <dd>This  method creates a NTScalarArrayBuilder.</dd>
    <dt>attachTimeStamp</dt>
-      <dd>The timeStamp field of the NTScalarArray is attached to the pvTimeStamp.
+      <dd>The timeStamp field of the NTScalarArray is attached to pvTimeStamp.
       </dd>
    <dt>attachAlarm</dt>
-      <dd>The alarm field of the NTScalarArray is attached to the pvAlarm.
+      <dd>The alarm field of the NTScalarArray is attached to pvAlarm.
        If alarm is not selected as an optional field false is returned.
       If this is successful then the pvAlarm can be used to access that alarm
        fields.
       </dd>
    <dt>attachDisplay</dt>
-      <dd>The display field of the NTScalarArray is attached to the pvDisplay.
+      <dd>The display field of the NTScalarArray is attached to pvDisplay.
       Used similar to attachAlarm.
       </dd>
    <dt>attachControl</dt>
-      <dd>The control field of the NTScalarArray is attached to the pvControl.
+      <dd>The control field of the NTScalarArray is attached to pvControl.
       Used similar to attachAlarm.
     </dd>
    <dt>getPVStructure</dt>
-       <dd>Returns the pvStructure that NTScalarArray wraps.</dd>
+       <dd>Returns the PVStructure that NTScalarArray wraps.</dd>
     <dt>getDescriptor</dt>
        <dd>Get the descriptor.</dd>
    <dt>getTimeStamp</dt>
-       <dd>Returns the top level timeStamp.
+       <dd>Returns the top-level timeStamp.
        If the timeStamp was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getAlarm</dt>
-       <dd>Returns the top level alarm.
+       <dd>Returns the top-level alarm.
        If the alarm was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getDisplay</dt>
-       <dd>Returns the top level display.
+       <dd>Returns the top-level display.
        If the display was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getControl</dt>
-       <dd>Returns the top level control.
+       <dd>Returns the top-level control.
        If the control was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getValue</dt>
        <dd>Returns the value field.</dd>
@@ -909,17 +909,17 @@ where
     <dd>This determines the element type for the value field.
      This must be specified or createStructure will throw an exception.</dd>
   <dt>addDescriptor</dt>
-     <dd>Add optional field descriptor</dd>
+     <dd>Add optional field descriptor.</dd>
   <dt>addAlarm</dt>
-     <dd>Add optional field alarm</dd>
+     <dd>Add optional field alarm.</dd>
   <dt>addTimeStamp</dt>
-     <dd>Add optional field timeStamp</dd>
+     <dd>Add optional field timeStamp.</dd>
    <dt>createStructure</dt>
-     <dd>Create a introspection instance.</dd>
+     <dd>Create an introspection instance.</dd>
   <dt>createPVStructure</dt>
      <dd>Create the data instance.</dd>
    <dt>create</dt>
-      <dd>create an PVScalar instance.</dd>
+      <dd>create a PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
       a unique name that is not the name of any mandatory or possible optional field.</dd>
@@ -938,7 +938,7 @@ public:
     static shared_pointer wrap(PVStructurePtr const &amp; structure);
     static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool isComparible(PVStructurePtr const &amp;pvStructure);
+    static bool isCompatible(PVStructurePtr const &amp;pvStructure);
     static NTNameValueBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -957,44 +957,44 @@ private:
 where
 <dl>
    <dt>wrap</dt>
-     <dd>Given a pvStructure this creates an NTNameValue that warps it.
-       It calls <b>isCompatible</b> returns a null NTNameValue if <b>isCompatible</b> returns false.
+     <dd>Given a PVStructure this creates an NTNameValue that wraps it.
+       It calls <b>isCompatible</b> and returns a null NTNameValue if <b>isCompatible</b> returns false.
      </dd>
    <dt>wrapUnsafe</dt>
-     <dd>Given a pvStructure this creates an NTNameValue that warps it.
+     <dd>Given a PVStructure this creates an NTNameValue that wraps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTNameValue.</dd>
-   <dt>isComparible</dt>
-       <dd>This method checks to see if the pvStructure has appropriate
+   <dt>isCompatible</dt>
+       <dd>This method checks to see if the PVStructure has appropriate
        fields to be an NTNameValue.
        </dd>
    <dt>createBuilder</dt>
        <dd>This  method creates an NTNameValueBuilder.</dd>
    <dt>attachTimeStamp</dt>
-      <dd>The timeStamp field of the NTNameValue is attached to the pvTimeStamp.
+      <dd>The timeStamp field of the NTNameValue is attached to pvTimeStamp.
       </dd>
    <dt>attachAlarm</dt>
-      <dd>The alarm field of the NTNameValue is attached to the pvAlarm.
+      <dd>The alarm field of the NTNameValue is attached to pvAlarm.
        If alarm is not selected as an optional field false is returned.
       If this is successful then the pvAlarm can be used to access that alarm
        fields.
       </dd>
    <dt>getPVStructure</dt>
-       <dd>Returns the pvStructure that NTNameValue wraps.</dd>
+       <dd>Returns the PVStructure that NTNameValue wraps.</dd>
     <dt>getDescriptor</dt>
        <dd>Get the descriptor.</dd>
    <dt>getTimeStamp</dt>
-       <dd>Returns the top level timeStamp.
+       <dd>Returns the top-level timeStamp.
        If the timeStamp was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getAlarm</dt>
-       <dd>Returns the top level alarm.
+       <dd>Returns the top-level alarm.
        If the alarm was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getName</dt>
        <dd>Returns field name.</dd>
@@ -1007,9 +1007,9 @@ where
 epics:nt/NTTable:1.0 
     string[] labels [column0,column1,column2]    // mandatory
     structure value                              // mandatory
-        double[] column0 []                      // name=labels[0]; can be any scalar type
-        string[] column1 []                      // name=labels[1]; can be any scalar type
-        int[] column2 []                         // name=labels[2]; can be any scalar type
+        double[] column0 []                      // can be any scalar type
+        string[] column1 []                      // can be any scalar type
+        int[] column2 []                         // can be any scalar type
     string descriptor                            // optional
     alarm_t alarm                                // optional
         int severity 
@@ -1032,7 +1032,7 @@ class NTTableBuilder
 {
 public:
     POINTER_DEFINITIONS(NTTableBuilder);
-    shared_pointer add(string const &amp; name,ScalarType scalarType);
+    shared_pointer addColumn(string const &amp; name,ScalarType scalarType);
     shared_pointer addDescriptor();
     shared_pointer addAlarm();
     shared_pointer addTimeStamp();
@@ -1047,20 +1047,20 @@ private:
 </pre>
 where
 <dl>
-  <dt>add</dt>
+  <dt>addColumn</dt>
     <dd>This is the name and elementType for the next column</dd>
   <dt>addDescriptor</dt>
-     <dd>Add optional field descriptor</dd>
+     <dd>Add optional field descriptor.</dd>
   <dt>addAlarm</dt>
-     <dd>Add optional field alarm</dd>
+     <dd>Add optional field alarm.</dd>
   <dt>addTimeStamp</dt>
-     <dd>Add optional field timeStamp</dd>
+     <dd>Add optional field timeStamp.</dd>
    <dt>createStructure</dt>
-     <dd>Create a introspection instance.</dd>
+     <dd>Create an introspection instance.</dd>
   <dt>createPVStructure</dt>
      <dd>Create the data instance.</dd>
    <dt>create</dt>
-      <dd>create an PVScalar instance.</dd>
+      <dd>create a PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
       a unique name that is not the name of any mandatory or possible optional field.</dd>
@@ -1078,7 +1078,7 @@ public:
     static shared_pointer wrap(PVStructurePtr const &amp; structure);
     static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool isComparible(PVStructurePtr const &amp;pvStructure);
+    static bool isCompatible(PVStructurePtr const &amp;pvStructure);
     static NTTableBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -1097,44 +1097,44 @@ private:
 where
 <dl>
    <dt>wrap</dt>
-     <dd>Given a pvStructure this creates an NTTable that warps it.
-       It calls <b>isCompatible</b> returns a null NTTable if <b>isCompatible</b> returns false.
+     <dd>Given a PVStructure this creates an NTTable that wraps it.
+       It calls <b>isCompatible</b> and returns a null NTTable if <b>isCompatible</b> returns false.
      </dd>
    <dt>wrapUnsafe</dt>
-     <dd>Given a pvStructure this creates an NTTable that warps it.
+     <dd>Given a PVStructure this creates an NTTable that wraps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTTable.</dd>
-   <dt>isComparible</dt>
-       <dd>This method checks to see if the pvStructure has appropriate
+   <dt>isCompatible</dt>
+       <dd>This method checks to see if the PVStructure has appropriate
        fields to be an NTTable.
        </dd>
    <dt>createBuilder</dt>
        <dd>This  method creates an NTTableBuilder.</dd>
    <dt>attachTimeStamp</dt>
-      <dd>The timeStamp field of the NTTable is attached to the pvTimeStamp.
+      <dd>The timeStamp field of the NTTable is attached to pvTimeStamp.
       </dd>
    <dt>attachAlarm</dt>
-      <dd>The alarm field of the NTTable is attached to the pvAlarm.
+      <dd>The alarm field of the NTTable is attached to pvAlarm.
        If alarm is not selected as an optional field false is returned.
       If this is successful then the pvAlarm can be used to access that alarm
        fields.
       </dd>
    <dt>getPVStructure</dt>
-       <dd>Returns the pvStructure that NTTable wraps.</dd>
+       <dd>Returns the PVStructure that NTTable wraps.</dd>
     <dt>getDescriptor</dt>
        <dd>Get the descriptor.</dd>
    <dt>getTimeStamp</dt>
-       <dd>Returns the top level timeStamp.
+       <dd>Returns the top-level timeStamp.
        If the timeStamp was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getAlarm</dt>
-       <dd>Returns the top level alarm.
+       <dd>Returns the top-level alarm.
        If the alarm was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getLabels</dt>
        <dd>Returns the labels field.</dd>
@@ -1192,11 +1192,11 @@ where
     If not specified the type will be a variant union.
     </dd>
   <dt>addDescriptor</dt>
-     <dd>Add optional field descriptor</dd>
+     <dd>Add optional field descriptor.</dd>
   <dt>addAlarm</dt>
-     <dd>Add optional field alarm</dd>
+     <dd>Add optional field alarm.</dd>
   <dt>addTimeStamp</dt>
-     <dd>Add optional field timeStamp</dd>
+     <dd>Add optional field timeStamp.</dd>
   <dt>addSeverity</dt>
      <dd>Add a field that has the alarm severity for each channel.</dd>
   <dt>addStatus</dt>
@@ -1210,11 +1210,11 @@ where
   <dt>addUserTag</dt>
      <dd>Add a field that has the userTag for each channel.</dd>
    <dt>createStructure</dt>
-     <dd>Create a introspection instance.</dd>
+     <dd>Create an introspection instance.</dd>
   <dt>createPVStructure</dt>
      <dd>Create the data instance.</dd>
    <dt>create</dt>
-      <dd>create an PVScalar instance.</dd>
+      <dd>create a PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
       a unique name that is not the name of any mandatory or possible optional field.</dd>
@@ -1232,7 +1232,7 @@ public:
     static shared_pointer wrap(PVStructurePtr const &amp; structure);
     static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool isComparible(PVStructurePtr const &amp;pvStructure);
+    static bool isCompatible(PVStructurePtr const &amp;pvStructure);
     static NTMultiChannelBuilderPtr createBuilder();
 
     bool attachTimeStamp(PVTimeStamp &amp;pvTimeStamp) const;
@@ -1256,44 +1256,44 @@ private:
 where
 <dl>
    <dt>wrap</dt>
-     <dd>Given a pvStructure this creates an NTMultiChannel that warps it.
-       It calls <b>isCompatible</b> returns a null NTMultiChannel if <b>isCompatible</b> returns false.
+     <dd>Given a PVStructure this creates an NTMultiChannel that wraps it.
+       It calls <b>isCompatible</b> and returns a null NTMultiChannel if <b>isCompatible</b> returns false.
      </dd>
    <dt>wrapUnsafe</dt>
-     <dd>Given a pvStructure this creates an NTMultiChannel that warps it.
+     <dd>Given a PVStructure this creates an NTMultiChannel that wraps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTMultiChannel.</dd>
-   <dt>isComparible</dt>
-       <dd>This method checks to see if the pvStructure has appropriate
+   <dt>isCompatible</dt>
+       <dd>This method checks to see if the PVStructure has appropriate
        fields to be an NTMultiChannel.
        </dd>
    <dt>createBuilder</dt>
        <dd>This  method creates an NTMultiChannelBuilder.</dd>
    <dt>attachTimeStamp</dt>
-      <dd>The timeStamp field of the NTMultiChannel is attached to the pvTimeStamp.
+      <dd>The timeStamp field of the NTMultiChannel is attached to pvTimeStamp.
       </dd>
    <dt>attachAlarm</dt>
-      <dd>The alarm field of the NTMultiChannel is attached to the pvAlarm.
+      <dd>The alarm field of the NTMultiChannel is attached to pvAlarm.
        If alarm is not selected as an optional field false is returned.
       If this is successful then the pvAlarm can be used to access that alarm
        fields.
       </dd>
    <dt>getPVStructure</dt>
-       <dd>Returns the pvStructure that NTMultiChannel wraps.</dd>
+       <dd>Returns the PVStructure that NTMultiChannel wraps.</dd>
     <dt>getDescriptor</dt>
        <dd>Get the descriptor.</dd>
    <dt>getTimeStamp</dt>
-       <dd>Returns the top level timeStamp.
+       <dd>Returns the top-level timeStamp.
        If the timeStamp was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getAlarm</dt>
-       <dd>Returns the top level alarm.
+       <dd>Returns the top-level alarm.
        If the alarm was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getValue</dt>
        <dd>Returns the value field.</dd>
@@ -1388,19 +1388,19 @@ private:
 where
 <dl>
   <dt>addDescriptor</dt>
-     <dd>Add optional field descriptor</dd>
+     <dd>Add optional field descriptor.</dd>
   <dt>addAlarm</dt>
-     <dd>Add optional field alarm</dd>
+     <dd>Add optional field alarm.</dd>
   <dt>addTimeStamp</dt>
-     <dd>Add optional field timeStamp</dd>
+     <dd>Add optional field timeStamp.</dd>
   <dt>addDisplay</dt>
-     <dd>Add optional field display</dd>
+     <dd>Add optional field display.</dd>
    <dt>createStructure</dt>
-     <dd>Create a introspection instance.</dd>
+     <dd>Create an introspection instance.</dd>
   <dt>createPVStructure</dt>
      <dd>Create the data instance.</dd>
    <dt>create</dt>
-      <dd>create an PVScalar instance.</dd>
+      <dd>create a PVScalar instance.</dd>
   <dt>add</dt>
      <dd>Add an extra field. As many fields as desired can be added but each must have
       a unique name that is not the name of any mandatory or possible optional field.</dd>
@@ -1418,7 +1418,7 @@ public:
     static shared_pointer wrap(PVStructurePtr const &amp; structure);
     static shared_pointer wrapUnsafe(PVStructurePtr const &amp; structure);
     static bool is_a(StructureConstPtr const &amp; structure);
-    static bool isComparible(PVStructurePtr const &amp;pvStructure);
+    static bool isCompatible(PVStructurePtr const &amp;pvStructure);
     static NTNDArrayBuilderPtr createBuilder();
 
     PVStringPtr getDescriptor() const;
@@ -1444,36 +1444,36 @@ private:
 where
 <dl>
    <dt>wrap</dt>
-     <dd>Given a pvStructure this creates an NTNDArray that warps it.
-       It calls <b>isCompatible</b> returns a null NTNDArray if <b>isCompatible</b> returns false.
+     <dd>Given a PVStructure this creates an NTNDArray that wraps it.
+       It calls <b>isCompatible</b> and returns a null NTNDArray if <b>isCompatible</b> returns false.
      </dd>
    <dt>wrapUnsafe</dt>
-     <dd>Given a pvStructure this creates an NTNDArray that warps it.
+     <dd>Given a PVStructure this creates an NTNDArray that wraps it.
       It does not check that the introspection interface is compatible.
       This method is dangerous.</dd>
    <dt>is_a</dt>
       <dd>This method checks to see if the structure has an ID that is 
       correct for NTNDArray.</dd>
-   <dt>isComparible</dt>
-       <dd>This method checks to see if the pvStructure has appropriate
+   <dt>isCompatible</dt>
+       <dd>This method checks to see if the PVStructure has appropriate
        fields to be an NTNDArray.
        </dd>
    <dt>createBuilder</dt>
        <dd>This  method creates an NTNDArrayBuilder.</dd>
    <dt>attachTimeStamp</dt>
-      <dd>The timeStamp field of the NTNDArray is attached to the pvTimeStamp.
+      <dd>The timeStamp field of the NTNDArray is attached to pvTimeStamp.
       </dd>
    <dt>attachDataTimeStamp</dt>
-      <dd>The dataTimeStamp field of the NTNDArray is attached to the pvTimeStamp.
+      <dd>The dataTimeStamp field of the NTNDArray is attached to pvTimeStamp.
       </dd>
    <dt>attachAlarm</dt>
-      <dd>The alarm field of the NTNDArray is attached to the pvAlarm.
+      <dd>The alarm field of the NTNDArray is attached to pvAlarm.
        If alarm is not selected as an optional field false is returned.
       If this is successful then the pvAlarm can be used to access that alarm
        fields.
       </dd>
    <dt>getPVStructure</dt>
-       <dd>Returns the pvStructure that NTNDArray wraps.</dd>
+       <dd>Returns the PVStructure that NTNDArray wraps.</dd>
    <dt>getValue</dt>
        <dd>Returns the value field.</dd>
    <dt>getCodec</dt>
@@ -1494,19 +1494,19 @@ where
     <dt>getDescriptor</dt>
        <dd>Get the descriptor.</dd>
    <dt>getTimeStamp</dt>
-       <dd>Returns the top level timeStamp.
+       <dd>Returns the top-level timeStamp.
        If the timeStamp was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getAlarm</dt>
-       <dd>Returns the top level alarm.
+       <dd>Returns the top-level alarm.
        If the alarm was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
    <dt>getDisplay</dt>
-       <dd>Returns the top level display.
+       <dd>Returns the top-level display.
        If the display was not selected as an optional field
-       a null pvStructure is returned.
+       a null PVStructure is returned.
        </dd>
 </dl>
 
