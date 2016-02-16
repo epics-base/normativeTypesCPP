@@ -45,7 +45,7 @@ namespace detail {
          * Adds tags field to the NTAttribute.
          * @return this instance of <b>NTAttributeBuilder</b>.
          */
-        virtual shared_pointer addTags();
+        shared_pointer addTags();
 
         /**
          * Adds descriptor field to the NTAttribute.
