@@ -27,6 +27,7 @@
 #include <pv/nthistogram.h>
 #include <pv/nturi.h>
 #include <pv/ntndarrayAttribute.h>
+#include <pv/ntcomplexTable.h>
 
 #endif  /* NT_H */
 
