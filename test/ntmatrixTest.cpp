@@ -59,7 +59,7 @@ void test_ntmatrix()
     NTMatrixBuilderPtr builder = NTMatrix::createBuilder();
     testOk(builder.get() != 0, "Got builder");
 
-    NTMatrixPtr ntScalarArray = builder->
+    NTMatrixPtr ntMatrix = builder->
             //arrayValue(pvInt)->
             addDim()->
             addDescriptor()->
@@ -67,15 +67,16 @@ void test_ntmatrix()
             addTimeStamp()->
             addDisplay()->
             create();
-    testOk1(ntScalarArray.get() != 0);
+    testOk1(ntMatrix.get() != 0);
 
-    testOk1(ntScalarArray->getPVStructure().get() != 0);
-    testOk1(ntScalarArray->getValue().get() != 0);
-    testOk1(ntScalarArray->getDim().get() != 0);
-    testOk1(ntScalarArray->getDescriptor().get() != 0);
-    testOk1(ntScalarArray->getAlarm().get() != 0);
-    testOk1(ntScalarArray->getTimeStamp().get() != 0);
-    testOk1(ntScalarArray->getDisplay().get() != 0);
+
+    testOk1(ntMatrix->getPVStructure().get() != 0);
+    testOk1(ntMatrix->getValue().get() != 0);
+    testOk1(ntMatrix->getDim().get() != 0);
+    testOk1(ntMatrix->getDescriptor().get() != 0);
+    testOk1(ntMatrix->getAlarm().get() != 0);
+    testOk1(ntMatrix->getTimeStamp().get() != 0);
+    testOk1(ntMatrix->getDisplay().get() != 0);
 
     //
     // example how to set values
@@ -85,7 +86,7 @@ void test_ntmatrix()
     newValues.push_back(2.0);
     newValues.push_back(8.0);
 
-    PVDoubleArrayPtr pvValueField = ntScalarArray->getValue();
+    PVDoubleArrayPtr pvValueField = ntMatrix->getValue();
     pvValueField->replace(freeze(newValues));
 
     //
@@ -102,7 +103,7 @@ void test_ntmatrix()
     // timeStamp ops
     //
     PVTimeStamp pvTimeStamp;
-    if (ntScalarArray->attachTimeStamp(pvTimeStamp))
+    if (ntMatrix->attachTimeStamp(pvTimeStamp))
     {
         testPass("timeStamp attach");
 
@@ -123,7 +124,7 @@ void test_ntmatrix()
     // alarm ops
     //
     PVAlarm pvAlarm;
-    if (ntScalarArray->attachAlarm(pvAlarm))
+    if (ntMatrix->attachAlarm(pvAlarm))
     {
         testPass("alarm attach");
 
@@ -141,7 +142,7 @@ void test_ntmatrix()
     // display ops
     //
     PVDisplay pvDisplay;
-    if (ntScalarArray->attachDisplay(pvDisplay))
+    if (ntMatrix->attachDisplay(pvDisplay))
     {
         testPass("display attach");
 
@@ -160,10 +161,10 @@ void test_ntmatrix()
     //
     // set descriptor
     //
-    ntScalarArray->getDescriptor()->put("This is a test NTMatrix");
+    ntMatrix->getDescriptor()->put("This is a test NTMatrix");
 
-    // dump ntScalarArray
-    std::cout << *ntScalarArray->getPVStructure() << std::endl;
+    // dump ntMatrix
+    std::cout << *ntMatrix->getPVStructure() << std::endl;
 
 }
 
