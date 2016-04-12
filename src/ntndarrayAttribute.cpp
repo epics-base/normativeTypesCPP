@@ -127,6 +127,11 @@ bool NTNDArrayAttribute::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTNDArrayAttribute::is_a(PVStructurePtr const & pvStructure)
+{
+    return is_a(pvStructure->getStructure());
+}
+
 bool NTNDArrayAttribute::isCompatible(StructureConstPtr const & structure)
 {
     if (!NTAttribute::isCompatible(structure)) return false;

@@ -116,6 +116,11 @@ bool NTContinuum::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTContinuum::is_a(PVStructurePtr const & pvStructure)
+{
+    return is_a(pvStructure->getStructure());
+}
+
 bool NTContinuum::isCompatible(StructureConstPtr const & structure)
 {
     if (structure.get() == 0) return false;

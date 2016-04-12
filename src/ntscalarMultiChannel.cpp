@@ -223,6 +223,10 @@ bool NTScalarMultiChannel::is_a(StructureConstPtr const &structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTScalarMultiChannel::is_a(PVStructurePtr const & pvStructure)
+{
+    return is_a(pvStructure->getStructure());
+}
 
 bool NTScalarMultiChannel::isCompatible(StructureConstPtr const & structure)
 {

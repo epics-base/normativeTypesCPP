@@ -143,6 +143,11 @@ bool NTTable::is_a(StructureConstPtr const & structure)
     return NTUtils::is_a(structure->getID(), URI);
 }
 
+bool NTTable::is_a(PVStructurePtr const & pvStructure)
+{
+    return is_a(pvStructure->getStructure());
+}
+
 bool NTTable::isCompatible(StructureConstPtr const & structure)
 {
     if (!structure.get()) return false;
