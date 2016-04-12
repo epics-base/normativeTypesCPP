@@ -66,6 +66,9 @@ void test_ntaggregate()
             create();
     testOk1(ntAggregate.get() != 0);
 
+    testOk1(NTAggregate::is_a(ntAggregate->getPVStructure()));
+    testOk1(NTAggregate::isCompatible(ntAggregate->getPVStructure()));
+
     testOk1(ntAggregate->getPVStructure().get() != 0);
     testOk1(ntAggregate->getValue().get() != 0);
     testOk1(ntAggregate->getDescriptor().get() != 0);
@@ -165,7 +168,7 @@ void test_wrap()
 }
 
 MAIN(testNTAggregate) {
-    testPlan(28);
+    testPlan(30);
     test_builder();
     test_ntaggregate();
     test_wrap();

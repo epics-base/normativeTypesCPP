@@ -76,6 +76,9 @@ void test_ntattribute()
             create();
     testOk1(ntAttribute.get() != 0);
 
+    testOk1(NTAttribute::is_a(ntAttribute->getPVStructure()));
+    testOk1(NTAttribute::isCompatible(ntAttribute->getPVStructure()));
+
     testOk1(ntAttribute->getPVStructure().get() != 0);
     testOk1(ntAttribute->getName().get() != 0);
     testOk1(ntAttribute->getValue().get() != 0);
@@ -166,7 +169,7 @@ void test_wrap()
 }
 
 MAIN(testNTAttribute) {
-    testPlan(33);
+    testPlan(35);
     test_builder();
     test_ntattribute();
     test_wrap();

@@ -69,6 +69,8 @@ void test_ntmatrix()
             create();
     testOk1(ntMatrix.get() != 0);
 
+    testOk1(NTMatrix::is_a(ntMatrix->getPVStructure()));
+    testOk1(NTMatrix::isCompatible(ntMatrix->getPVStructure()));
 
     testOk1(ntMatrix->getPVStructure().get() != 0);
     testOk1(ntMatrix->getValue().get() != 0);
@@ -202,7 +204,7 @@ void test_wrap()
 }
 
 MAIN(testNTMatrix) {
-    testPlan(36);
+    testPlan(38);
     test_builder();
     test_ntmatrix();
     test_wrap();

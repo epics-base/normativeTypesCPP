@@ -119,6 +119,9 @@ void test_nttable()
             create();
     testOk1(ntTable.get() != 0);
 
+    testOk1(NTTable::is_a(ntTable->getPVStructure()));
+    testOk1(NTTable::isCompatible(ntTable->getPVStructure()));
+
     testOk1(ntTable->getPVStructure().get() != 0);
     testOk1(ntTable->getDescriptor().get() != 0);
     testOk1(ntTable->getAlarm().get() != 0);
@@ -236,7 +239,7 @@ void test_wrap()
 }
 
 MAIN(testNTTable) {
-    testPlan(48);
+    testPlan(50);
     test_builder();
     test_labels();
     test_nttable();

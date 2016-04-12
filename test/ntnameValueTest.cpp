@@ -81,6 +81,9 @@ void test_ntnameValue()
             create();
     testOk1(ntNameValue.get() != 0);
 
+    testOk1(NTNameValue::is_a(ntNameValue->getPVStructure()));
+    testOk1(NTNameValue::isCompatible(ntNameValue->getPVStructure()));
+
     testOk1(ntNameValue->getPVStructure().get() != 0);
     testOk1(ntNameValue->getDescriptor().get() != 0);
     testOk1(ntNameValue->getAlarm().get() != 0);
@@ -245,7 +248,7 @@ void test_extra()
 
 
 MAIN(testNTNameValue) {
-    testPlan(48);
+    testPlan(50);
     test_builder();
     test_ntnameValue();
     test_wrap();

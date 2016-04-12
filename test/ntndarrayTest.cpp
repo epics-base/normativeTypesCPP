@@ -75,7 +75,7 @@ void test_all()
             add("extra1",fieldCreate->createScalar(pvString)) ->
             add("extra2",fieldCreate->createScalarArray(pvString)) ->
             createPVStructure();
-    std::cout << *pvStructure << std::endl;
+    testOk1(NTNDArray::is_a(pvStructure)==true);
     testOk1(NTNDArray::isCompatible(pvStructure)==true);
 }
 
@@ -113,7 +113,7 @@ void test_wrap()
 }
 
 MAIN(testNTNDArray) {
-    testPlan(59);
+    testPlan(60);
     test_builder(true);
     test_builder(false);
     test_builder(false); // called twice to test caching

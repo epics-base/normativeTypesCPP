@@ -67,6 +67,9 @@ void test_ntenum()
             create();
     testOk1(ntEnum.get() != 0);
 
+    testOk1(NTEnum::is_a(ntEnum->getPVStructure()));
+    testOk1(NTEnum::isCompatible(ntEnum->getPVStructure()));
+
     testOk1(ntEnum->getPVStructure().get() != 0);
     testOk1(ntEnum->getValue().get() != 0);
     testOk1(ntEnum->getDescriptor().get() != 0);
@@ -178,7 +181,7 @@ void test_wrap()
 }
 
 MAIN(testNTEnum) {
-    testPlan(30);
+    testPlan(32);
     test_builder();
     test_ntenum();
     test_wrap();

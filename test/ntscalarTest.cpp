@@ -86,6 +86,9 @@ void test_ntscalar()
             create();
     testOk1(ntScalar.get() != 0);
 
+    testOk1(NTScalar::is_a(ntScalar->getPVStructure()));
+    testOk1(NTScalar::isCompatible(ntScalar->getPVStructure()));
+
     testOk1(ntScalar->getPVStructure().get() != 0);
     testOk1(ntScalar->getValue().get() != 0);
     testOk1(ntScalar->getDescriptor().get() != 0);
@@ -226,7 +229,7 @@ void test_wrap()
 }
 
 MAIN(testNTScalar) {
-    testPlan(35);
+    testPlan(37);
     test_builder();
     test_ntscalar();
     test_wrap();

@@ -54,6 +54,9 @@ static void test()
             create();
     testOk1(multiChannel.get() != 0);
 
+    testOk1(NTMultiChannel::is_a(multiChannel->getPVStructure()));
+    testOk1(NTMultiChannel::isCompatible(multiChannel->getPVStructure()));
+
     PVStructurePtr pvStructure = multiChannel->getPVStructure();
     testOk1(pvStructure.get()!=NULL);
     testOk1(NTMultiChannel::is_a(pvStructure->getStructure()));
@@ -186,7 +189,7 @@ void test_wrap()
 
 MAIN(testCreateRequest)
 {
-    testPlan(25);
+    testPlan(27);
     test();
     test_wrap();
     return testDone();

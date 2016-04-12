@@ -76,6 +76,9 @@ void test_ntndarrayAttribute()
             create();
     testOk1(ntNDArrayAttribute.get() != 0);
 
+    testOk1(NTNDArrayAttribute::is_a(ntNDArrayAttribute->getPVStructure()));
+    testOk1(NTNDArrayAttribute::isCompatible(ntNDArrayAttribute->getPVStructure()));
+
     testOk1(ntNDArrayAttribute->getPVStructure().get() != 0);
     testOk1(ntNDArrayAttribute->getName().get() != 0);
     testOk1(ntNDArrayAttribute->getValue().get() != 0);
@@ -168,7 +171,7 @@ void test_wrap()
 }
 
 MAIN(testNTNDArrayAttribute) {
-    testPlan(37);
+    testPlan(39);
     test_builder();
     test_ntndarrayAttribute();
     test_wrap();

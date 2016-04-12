@@ -72,6 +72,9 @@ void test_ntcontinuum()
             create();
     testOk1(ntContinuum.get() != 0);
 
+    testOk1(NTContinuum::is_a(ntContinuum->getPVStructure()));
+    testOk1(NTContinuum::isCompatible(ntContinuum->getPVStructure()));
+
     testOk1(ntContinuum->getPVStructure().get() != 0);
     testOk1(ntContinuum->getDescriptor().get() != 0);
     testOk1(ntContinuum->getAlarm().get() != 0);
@@ -265,7 +268,7 @@ void test_extra()
 
 
 MAIN(testNTContinuum) {
-    testPlan(59);
+    testPlan(61);
     test_builder();
     test_ntcontinuum();
     test_wrap();

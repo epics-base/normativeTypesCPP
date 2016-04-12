@@ -84,6 +84,9 @@ void test_nthistogram()
             create();
     testOk1(ntHistogram.get() != 0);
 
+    testOk1(NTHistogram::is_a(ntHistogram->getPVStructure()));
+    testOk1(NTHistogram::isCompatible(ntHistogram->getPVStructure()));
+
     testOk1(ntHistogram->getPVStructure().get() != 0);
     testOk1(ntHistogram->getDescriptor().get() != 0);
     testOk1(ntHistogram->getAlarm().get() != 0);
@@ -250,7 +253,7 @@ void test_extra()
 
 
 MAIN(testNTHistogram) {
-    testPlan(50);
+    testPlan(52);
     test_builder();
     test_nthistogram();
     test_wrap();

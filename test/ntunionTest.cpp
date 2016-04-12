@@ -65,6 +65,9 @@ void test_ntunion()
             create();
     testOk1(ntUnion.get() != 0);
 
+    testOk1(NTUnion::is_a(ntUnion->getPVStructure()));
+    testOk1(NTUnion::isCompatible(ntUnion->getPVStructure()));
+
     testOk1(ntUnion->getPVStructure().get() != 0);
     testOk1(ntUnion->getValue().get() != 0);
     testOk1(ntUnion->getDescriptor().get() != 0);
@@ -157,7 +160,7 @@ void test_wrap()
 }
 
 MAIN(testNTUnion) {
-    testPlan(27);
+    testPlan(29);
     test_builder();
     test_ntunion();
     test_wrap();
