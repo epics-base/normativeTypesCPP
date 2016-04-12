@@ -61,11 +61,11 @@ ntndarrayAttributeTest_SRCS = ntndarrayAttributeTest.cpp
 TESTS += ntndarrayAttributeTest
 
 TESTPROD_HOST += ntcontinuumTest
-ntattributeTest_SRCS = ntcontinuumTest.cpp
+ntcontinuumTest = ntcontinuumTest.cpp
 TESTS += ntcontinuumTest
 
 TESTPROD_HOST += nthistogramTest
-ntattributeTest_SRCS = nthistogramTest.cpp
+nthistogramTest_SRCS = nthistogramTest.cpp
 TESTS += nthistogramTest
 
 TESTPROD_HOST += ntutilsTest
