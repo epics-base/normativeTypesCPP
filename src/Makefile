@@ -47,7 +47,7 @@ LIBRARY = nt
 nt_LIBS += pvData Com
 
 # shared library ABI version.
-SHRLIB_VERSION ?= 5.1
+SHRLIB_VERSION ?= 5.2
 
 include $(TOP)/configure/RULES
 
