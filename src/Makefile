@@ -21,6 +21,7 @@ INC += pv/ntcontinuum.h
 INC += pv/nthistogram.h
 INC += pv/nturi.h
 INC += pv/ntndarrayAttribute.h
+INC += pv/ntcomplexTable.h
 
 LIBSRCS += ntutils.cpp
 LIBSRCS += ntid.cpp
@@ -41,6 +42,7 @@ LIBSRCS += ntcontinuum.cpp
 LIBSRCS += nthistogram.cpp
 LIBSRCS += nturi.cpp
 LIBSRCS += ntndarrayAttribute.cpp
+LIBSRCS += ntcomplexTable.cpp
 
 LIBRARY = nt
 
