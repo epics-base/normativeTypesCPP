@@ -42,7 +42,7 @@ MB=${MB:-"NO_MICROBENCH"}
 ###########################################
 # Dependent module branches
 
-PVDATA_BRANCH="master"
+PVDATA_BRANCH="release-6.0"
 
 ###########################################
 # Fetch and unpack dependencies
