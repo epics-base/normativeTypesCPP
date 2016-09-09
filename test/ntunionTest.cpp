@@ -47,7 +47,6 @@ void test_builder()
     testOk(valueField.get() != 0, "value is enum");
 
     std::cout << *structure << std::endl;
-
 }
 
 void test_ntunion()
@@ -158,11 +157,43 @@ void test_wrap()
     testOk(ptr.get() != 0, "wrapUnsafe OK");
 }
 
+
+void test_variant_union()
+{
+    StructureConstPtr structure = NTUnion::createBuilder()->
+            addDescriptor()->
+            addAlarm()->
+            addTimeStamp()->
+            createStructure();
+    testOk1(structure->getField<Union>("value")->isVariant());
+}
+
+void test_regular_union()
+{
+    UnionConstPtr u = getFieldCreate()->createFieldBuilder()->
+        add("x", pvDouble)->
+        add("i", pvInt)->
+        createUnion();
+
+    StructureConstPtr structure = NTUnion::createBuilder()->
+            value(u)->
+            addDescriptor()->
+            addAlarm()->
+            addTimeStamp()->
+            createStructure();
+    testOk1(!structure->getField<Union>("value")->isVariant());
+    testOk1(structure->getField<Union>("value") == u);
+}
+
+
+
 MAIN(testNTUnion) {
-    testPlan(29);
+    testPlan(32);
     test_builder();
     test_ntunion();
     test_wrap();
+    test_variant_union();
+    test_regular_union();
     return testDone();
 }
 
