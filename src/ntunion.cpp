@@ -18,6 +18,12 @@ static NTFieldPtr ntField = NTField::get();
 namespace detail {
 
 
+NTUnionBuilder::shared_pointer NTUnionBuilder::value(UnionConstPtr unionType)
+{
+    valueType = unionType;
+    return shared_from_this();
+}
+
 StructureConstPtr NTUnionBuilder::createStructure()
 {
     FieldBuilderPtr builder =

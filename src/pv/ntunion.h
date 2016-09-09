@@ -41,6 +41,14 @@ namespace detail {
         POINTER_DEFINITIONS(NTUnionBuilder);
 
         /**
+         * Specifies the union for the value field.
+         * If this is not called then a variant union is the default.
+         * @param unionType  the introspection object for the union value field
+         * @return this      instance of  NTUnionBuilder
+         */
+        shared_pointer value(epics::pvData::UnionConstPtr unionType);
+
+        /**
          * Adds descriptor field to the NTUnion.
          * @return this instance of <b>NTUnionBuilder</b>.
          */
