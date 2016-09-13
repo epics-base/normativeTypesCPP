@@ -1,3 +1,12 @@
+Release 5.1.2
+=============
+
+The main changes since release 5.1.1 are:
+
+* NTUnionBuilder: Add missing value() function
+* Updated document: Now document all Normative Types
+
+
 Release 5.1.1
 =============
 
