@@ -93,6 +93,7 @@ NTNDArrayAttributeBuilder::NTNDArrayAttributeBuilder()
 
 void NTNDArrayAttributeBuilder::reset()
 {
+    tags = false;
     descriptor = false;
     alarm = false;
     timeStamp = false;
