@@ -16,7 +16,7 @@ install:
 script:
  - ./.ci/travis-build.sh
 env:
- - BRCORE=master BRLIBCOM=master
+ - BRCORE=master BRLIBCOM=master BRPVD=master
  - CMPLR=clang
  - EXTRA="CMD_CXXFLAGS=-std=c++11"
  - CMPLR=clang EXTRA="CMD_CXXFLAGS=-std=c++11"
