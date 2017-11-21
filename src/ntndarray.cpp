@@ -350,10 +350,10 @@ bool NTNDArray::isCompatible(StructureConstPtr const &structure)
 
 
     StructureArrayConstPtr attributeField = structure->getField<StructureArray>( "attribute");
+    if (!attributeField)
+        return false;
 
-    StructureConstPtr attributeElementStruc = attributeField->getStructure();
-
-    if (!NTNDArrayAttribute::isCompatible(attributeElementStruc))
+    if (!NTNDArrayAttribute::isCompatible(attributeField->getStructure()))
         return false;
 
 
@@ -361,7 +361,7 @@ bool NTNDArray::isCompatible(StructureConstPtr const &structure)
     if (field.get())
     {
         ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
+        if (!descriptorField || descriptorField->getScalarType() != pvString)
             return false;
     }
 
