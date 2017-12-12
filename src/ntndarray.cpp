@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include <pv/lock.h>
+
 #define epicsExportSharedSymbols
 #include <pv/ntndarray.h>
 #include <pv/ntndarrayAttribute.h>
