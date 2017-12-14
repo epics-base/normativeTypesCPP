@@ -1,3 +1,9 @@
+Release 5.2.0
+=============
+
+This release contains bug fixes and minor source updates needed to
+build against the latest version of pvData.
+
 Release 5.1.2
 =============
 
