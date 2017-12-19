@@ -198,12 +198,6 @@ public:
     epics::pvData::PVStructurePtr createDisplay();
 
     /**
-     * Creates an alarmLimit PVStructure.
-     * @return an alarmLimit PVStructure.
-     */
-    epics::pvData::PVStructurePtr createAlarmLimit();
-
-    /**
      * Creates a control PVStructure.
      * @return a control PVStructure.
      */
