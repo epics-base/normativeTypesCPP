@@ -93,7 +93,6 @@ namespace detail {
 
         void reset();
 
-        bool dim;
         bool descriptor;
         bool alarm;
         bool timeStamp;

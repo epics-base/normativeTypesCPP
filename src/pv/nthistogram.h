@@ -103,7 +103,6 @@ namespace detail {
         bool valueTypeSet;
         epics::pvData::ScalarType valueType;
 
-        bool dim;
         bool descriptor;
         bool alarm;
         bool timeStamp;
