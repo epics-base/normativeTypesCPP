@@ -1,3 +1,9 @@
+Release 5.2.1
+=============
+
+No functional change.
+Removal of declaration for unimplemented PVNTField::createAlarmLimit() and elimination of unused variables.
+
 Release 5.2.0
 =============
 
