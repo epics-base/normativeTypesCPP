@@ -1,17 +1,21 @@
-Release 5.2.1
-=============
+# normativeTypes Module
 
-No functional change.
-Removal of declaration for unimplemented PVNTField::createAlarmLimit() and elimination of unused variables.
+This document summarizes the changes to the module between releases.
 
-Release 5.2.0
-=============
+
+## Release 5.2.1 (EPICS 7.0.2, Dec 2018)
+
+* No functional changes.
+* Removal of declaration for unimplemented PVNTField::createAlarmLimit() and elimination of unused variables.
+
+
+## Release 5.2.0 (EPICS 7.0.1, Dec 2017)
 
 This release contains bug fixes and minor source updates needed to
 build against the latest version of pvData.
 
-Release 5.1.2
-=============
+
+## Release 5.1.2 (EPICS V4.6, Aug 2016)
 
 The main changes since release 5.1.1 are:
 
@@ -19,8 +23,7 @@ The main changes since release 5.1.1 are:
 * Updated document: Now document all Normative Types
 
 
-Release 5.1.1
-=============
+## Release 5.1.1
 
 The main changes since release 5.0 are:
 
@@ -30,15 +33,13 @@ The main changes since release 5.0 are:
 * NTAttribute::addTags() is now non-virtual
 * New license file replaces LICENSE and COPYRIGHT
 
-Shared library version added
-----------------------------
+### Shared library version added
 
 Linux shared library version numbers have been added by setting SHRLIB_VERSION
 (to 5.1 in this case). So shared object will be libnt.so.5.1 instead of
 libpvData.so.
 
-Headers and source locations have changed
------------------------------------------
+### Headers and source locations have changed
 
 Source has moved out of nt directory directly into src.
 
@@ -48,14 +49,12 @@ such as Qt Creator.
 src/nt/ntscalar.cpp -> src/ntscalar.cpp
 src/nt/ntscalar.h   -> src/pv/ntscalar.h
 
-Missing is_a implementations added
-----------------------------------
+### Missing is_a implementations added
 
 is_a(PVStructurePtr const &) implementation has been added for each type.
 
 
-Release 5.0
-===========
+## Release 5.0 (EPICS V4.5, Oct 2015)
 
 This release adds support through wrapper classes and builders for the
 remaining Normative Types:
@@ -96,8 +95,7 @@ Other changes are:
   wrapper and builder respectively.
 * Unit tests for all new classes.
 
-Release 4.0
-===========
+## Release 4.0 (EPICS V4.4, Dec 2014)
 
 This is the first release of normativeTypesCPP that is part of an official
 EPICS V4 release.
