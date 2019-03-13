@@ -2,6 +2,9 @@
 
 This document summarizes the changes to the module between releases.
 
+## Release 5.2.2
+
+- Fix NTTable::getColumnNames().
 
 ## Release 5.2.1 (EPICS 7.0.2, Dec 2018)
 
