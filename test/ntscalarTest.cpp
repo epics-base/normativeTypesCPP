@@ -159,7 +159,6 @@ void test_ntscalar()
         display.setLow(-15);
         display.setHigh(15);
         display.setDescription("This is a test scalar");
-        display.setFormat("%d");
         display.setUnits("A");
         pvDisplay.set(display);
     }
