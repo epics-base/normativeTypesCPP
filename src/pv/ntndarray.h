@@ -101,6 +101,7 @@ namespace detail {
 
     private:
         NTNDArrayBuilder();
+        static void once(void*);
 
         void reset();
 

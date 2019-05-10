@@ -6,135 +6,91 @@
 
 #include <algorithm>
 
+#include <epicsThread.h>
+
 #include <pv/lock.h>
+#include <pv/sharedPtr.h>
 
 #define epicsExportSharedSymbols
 #include <pv/ntndarray.h>
 #include <pv/ntndarrayAttribute.h>
 #include <pv/ntutils.h>
+#include <pv/ntvalidator.h>
 
 using namespace std;
 using namespace epics::pvData;
 
 namespace epics { namespace nt {
 
-static NTFieldPtr ntField = NTField::get();
-
-
 namespace detail {
 
-static FieldCreatePtr fieldCreate = getFieldCreate();
-static PVDataCreatePtr pvDataCreate = getPVDataCreate();
+static StructureConstPtr *base_s;
+static epicsThreadOnceId base_once = EPICS_THREAD_ONCE_INIT;
 
-static Mutex mutex;
+void NTNDArrayBuilder::once(void *)
+{
+    FieldBuilderPtr fb(FieldBuilder::begin());
+    StandardFieldPtr standardField = getStandardField();
+
+    for (int i = pvBoolean; i < pvString; ++i) {
+        ScalarType st = static_cast<ScalarType>(i);
+        fb->addArray(std::string(ScalarTypeFunc::name(st)) + "Value", st);
+    }
+
+    UnionConstPtr value(fb->createUnion());
+
+    StructureConstPtr codec(fb->setId("codec_t")->
+        add("name", pvString)->
+        add("parameters", getFieldCreate()->createVariantUnion())->
+        createStructure());
+
+    StructureConstPtr dimension(fb->setId("dimension_t")->
+        add("size", pvInt)->
+        add("offset",  pvInt)->
+        add("fullSize",  pvInt)->
+        add("binning",  pvInt)->
+        add("reverse",  pvBoolean)->
+        createStructure());
+
+    StructureConstPtr attribute(NTNDArrayAttribute::createBuilder()->createStructure());
+
+    base_s = new StructureConstPtr;
+    *base_s = fb->setId(NTNDArray::URI)->
+        add("value", value)->
+        add("codec", codec)->
+        add("compressedSize", pvLong)->
+        add("uncompressedSize", pvLong)->
+        addArray("dimension", dimension)->
+        add("uniqueId", pvInt)->
+        add("dataTimeStamp", standardField->timeStamp())->
+        addArray("attribute", attribute)->
+        createStructure();
+}
 
 StructureConstPtr NTNDArrayBuilder::createStructure()
 {
-    enum
-    {
-        DISCRIPTOR_INDEX,
-        TIMESTAMP_INDEX,
-        ALARM_INDEX,
-        DISPLAY_INDEX
-    };
+    epicsThreadOnce(&base_once, &NTNDArrayBuilder::once, 0);
 
-    const size_t NUMBER_OF_INDICES = DISPLAY_INDEX+1;
-    const size_t NUMBER_OF_STRUCTURES = 1 << NUMBER_OF_INDICES;
+    StandardFieldPtr standardField(getStandardField());
+    FieldBuilderPtr fb(FieldBuilder::begin(*base_s));
 
-    Lock xx(mutex);
+    if (descriptor)
+        fb->add("descriptor", pvString);
 
-    static StructureConstPtr ntndarrayStruc[NUMBER_OF_STRUCTURES];
-    static UnionConstPtr valueType;
-    static StructureConstPtr codecStruc;
-    static StructureConstPtr dimensionStruc;
-    static StructureConstPtr attributeStruc;
+    if (alarm)
+        fb->add("alarm", standardField->alarm());
 
-    StructureConstPtr returnedStruc;
+    if (timeStamp)
+        fb->add("timeStamp", standardField->timeStamp());
 
-    size_t index = 0;
-    if (descriptor) index  |= 1 << DISCRIPTOR_INDEX;
-    if (timeStamp)  index  |= 1 << TIMESTAMP_INDEX;
-    if (alarm)      index  |= 1 << ALARM_INDEX;
-    if (display)    index  |= 1 << DISPLAY_INDEX;
+    if (display)
+        fb->add("display", standardField->display());
 
-    bool isExtended = !extraFieldNames.empty();
+    size_t extraCount = extraFieldNames.size();
+    for (size_t i = 0; i< extraCount; i++)
+        fb->add(extraFieldNames[i], extraFields[i]);
 
-    if (isExtended || !ntndarrayStruc[index])
-    {
-        StandardFieldPtr standardField = getStandardField();
-        FieldBuilderPtr fb = fieldCreate->createFieldBuilder();
-
-        if (!valueType)
-        {
-            for (int i = pvBoolean; i < pvString; ++i)
-            {
-                ScalarType st = static_cast<ScalarType>(i);
-                fb->addArray(std::string(ScalarTypeFunc::name(st)) + "Value", st);
-            }
-            valueType = fb->createUnion();                
-        }
-
-        if (!codecStruc)
-        {
-            codecStruc = fb->setId("codec_t")->
-                add("name", pvString)->
-                add("parameters", fieldCreate->createVariantUnion())->
-                createStructure();
-        }
-
-        if (!dimensionStruc)
-        {
-            dimensionStruc = fb->setId("dimension_t")->
-                add("size", pvInt)->
-                add("offset",  pvInt)->
-                add("fullSize",  pvInt)->
-                add("binning",  pvInt)->
-                add("reverse",  pvBoolean)->
-                createStructure();
-        }
-
-        if (!attributeStruc)
-        {
-            attributeStruc = NTNDArrayAttribute::createBuilder()->createStructure();
-        }
-
-        fb->setId(NTNDArray::URI)->
-            add("value", valueType)->
-            add("codec", codecStruc)->
-            add("compressedSize", pvLong)->
-            add("uncompressedSize", pvLong)->
-            addArray("dimension", dimensionStruc)->
-            add("uniqueId", pvInt)->
-            add("dataTimeStamp", standardField->timeStamp())->
-            addArray("attribute", attributeStruc);
-
-        if (descriptor)
-            fb->add("descriptor", pvString);
-
-        if (alarm)
-            fb->add("alarm", standardField->alarm());
-
-        if (timeStamp)
-            fb->add("timeStamp", standardField->timeStamp());
-
-        if (display)
-            fb->add("display", standardField->display());
-
-        size_t extraCount = extraFieldNames.size();
-        for (size_t i = 0; i< extraCount; i++)
-            fb->add(extraFieldNames[i], extraFields[i]);
-
-        returnedStruc = fb->createStructure();
-
-        if (!isExtended)
-            ntndarrayStruc[index] = returnedStruc; 
-    }
-    else
-    {
-        return ntndarrayStruc[index];
-    }
-
-    return returnedStruc;
+    return fb->createStructure();
 }
 
 NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::addDescriptor()
@@ -192,94 +148,10 @@ NTNDArrayBuilder::shared_pointer NTNDArrayBuilder::add(string const & name, Fiel
     return shared_from_this();
 }
 
-
 }
 
 const std::string NTNDArray::URI("epics:nt/NTNDArray:1.0");
 const std::string ntAttrStr("epics:nt/NTAttribute:1.0");
-
-static FieldCreatePtr fieldCreate = getFieldCreate();
-static PVDataCreatePtr pvDataCreate = getPVDataCreate();
-
-class NTValueType
-{
-public:
-    static bool isCompatible(UnionConstPtr const &u)
-    {
-        if(!u.get()) return false;
-
-        if (u->getID() != Union::defaultId()) return false;
-        if (u->isVariant()) return false;
-
-        for (int i = pvBoolean; i != pvString; ++i)
-        {
-            ScalarType scalarType = static_cast<ScalarType>(i);
-            std::string name(ScalarTypeFunc::name(scalarType));
-            name += "Value";
-            ScalarArrayConstPtr scalarField = u->getField<ScalarArray>(name);
-            if (scalarField.get() == 0 ||
-                    scalarField->getElementType() != scalarType)
-                return false;
-        }
-
-        return true;
-    }
-};
-
-class NTCodec
-{
-public:
-    static bool isCompatible(StructureConstPtr const &structure)
-    {
-        if(!structure.get()) return false;
-
-        if (structure->getID() != "codec_t") return false;
-
-        ScalarConstPtr scalarField = structure->getField<Scalar>("name");
-        if (scalarField.get() == 0 || scalarField->getScalarType() != pvString)
-            return false;
-
-        UnionConstPtr paramField = structure->getField<Union>("parameters");
-        if (paramField.get() == 0 || !paramField->isVariant())
-            return false;
-
-        return true;
-    }
-};
-
-
-class NTDimension
-{
-public:
-    static bool isCompatible(StructureConstPtr const &structure)
-    {
-        if(!structure.get()) return false;
-
-        if (structure->getID() != "dimension_t") return false;
-
-        ScalarConstPtr scalarField = structure->getField<Scalar>("size");
-        if (scalarField.get() == 0 || scalarField->getScalarType() != pvInt)
-            return false;
-
-        scalarField = structure->getField<Scalar>("offset");
-        if (scalarField.get() == 0 || scalarField->getScalarType() != pvInt)
-            return false;
-
-        scalarField = structure->getField<Scalar>("fullSize");
-        if (scalarField.get() == 0 || scalarField->getScalarType() != pvInt)
-            return false;
-
-        scalarField = structure->getField<Scalar>("binning");
-        if (scalarField.get() == 0 || scalarField->getScalarType() != pvInt)
-            return false;
-
-        scalarField = structure->getField<Scalar>("reverse");
-        if (scalarField.get() == 0 || scalarField->getScalarType() != pvBoolean)
-            return false;
-
-        return true;
-    }
-};
 
 NTNDArray::shared_pointer NTNDArray::wrap(PVStructurePtr const & pvStructure)
 {
@@ -302,84 +174,47 @@ bool NTNDArray::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
+static Validator::Definition* definition;
+static epicsThreadOnceId definition_once = EPICS_THREAD_ONCE_INIT;
+
+static void definition_init(void *)
+{
+    StructureConstPtr structure(
+        NTNDArray::createBuilder()->
+            addDescriptor()->
+            addAlarm()->
+            addDisplay()->
+            addTimeStamp()->
+            createStructure());
+
+    definition = new Validator::Definition;
+    definition->structure = std::static_pointer_cast<const Field>(structure);
+
+    // TODO: these should be all getFieldT
+    definition->optional.insert(structure->getField("descriptor").get());
+    definition->optional.insert(structure->getField("alarm").get());
+    definition->optional.insert(structure->getField("timeStamp").get());
+    definition->optional.insert(structure->getField("display").get());
+
+    // TODO: the following should be a helper in NTNDArrayAttribute
+    StructureConstPtr attribute(
+        std::static_pointer_cast<const StructureArray>(
+            structure->getField("attribute")
+        )->getStructure()
+    );
+
+    definition->optional.insert(attribute->getField("tags").get());
+    definition->optional.insert(attribute->getField("alarm").get());
+    definition->optional.insert(attribute->getField("timeStamp").get());
+}
+
 bool NTNDArray::isCompatible(StructureConstPtr const &structure)
 {
     if(!structure.get()) return false;
 
-    UnionConstPtr valueField = structure->getField<Union>("value");
-    if(!NTValueType::isCompatible(valueField)) return false;
+    epicsThreadOnce(&definition_once, &definition_init, 0);
 
-    StructureConstPtr codecField = structure->getField<Structure>("codec");
-    if(!NTCodec::isCompatible(codecField)) return false;
-
-    ScalarConstPtr compressedSizeField = structure->getField<Scalar>("compressedSize");
-    if (compressedSizeField.get() == 0)
-        return false;
-
-    if (compressedSizeField->getScalarType() != pvLong)
-        return false;
-
-
-    ScalarConstPtr uncompressedSizeField = structure->getField<Scalar>("uncompressedSize");
-    if (uncompressedSizeField.get() == 0)
-        return false;
-
-    if (uncompressedSizeField->getScalarType() != pvLong)
-        return false;
-
-    StructureArrayConstPtr dimensionField = structure->getField<StructureArray>("dimension");
-    if (dimensionField.get() == 0)
-        return false;
-    StructureConstPtr dimElementStruc = dimensionField->getStructure();
-
-    if(!NTDimension::isCompatible(dimElementStruc))
-       return false;
-
-    NTFieldPtr ntField = NTField::get();
-
-    StructureConstPtr dataTimeStampField = structure->getField<Structure>(
-        "dataTimeStamp");
-    if (dataTimeStampField.get() == 0 || !ntField->isTimeStamp(dataTimeStampField))
-        return false;
-
-
-    ScalarConstPtr uniqueIdField = structure->getField<Scalar>("uniqueId");
-    if (uniqueIdField.get() == 0)
-        return false;
-
-    if (uniqueIdField->getScalarType() != pvInt)
-        return false;
-
-
-    StructureArrayConstPtr attributeField = structure->getField<StructureArray>( "attribute");
-    if (!attributeField)
-        return false;
-
-    if (!NTNDArrayAttribute::isCompatible(attributeField->getStructure()))
-        return false;
-
-
-    FieldConstPtr field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField || descriptorField->getScalarType() != pvString)
-            return false;
-    }
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    field = structure->getField("display");
-    if (field.get() && !ntField->isDisplay(field))
-        return false;
-
-    return true;
+    return Validator::isCompatible(*definition, *structure);
 }
 
 
@@ -389,7 +224,6 @@ bool NTNDArray::isCompatible(PVStructurePtr const & pvStructure)
 
     return isCompatible(pvStructure->getStructure());
 }
-
 
 bool NTNDArray::isValid()
 {
