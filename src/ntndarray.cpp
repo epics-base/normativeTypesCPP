@@ -11,11 +11,12 @@
 #include <pv/lock.h>
 #include <pv/sharedPtr.h>
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntndarray.h>
 #include <pv/ntndarrayAttribute.h>
 #include <pv/ntutils.h>
-#include <pv/ntvalidator.h>
 
 using namespace std;
 using namespace epics::pvData;
