@@ -72,9 +72,9 @@ TESTPROD_HOST += ntutilsTest
 ntutilsTest_SRCS = ntutilsTest.cpp
 TESTS += ntutilsTest
 
-TESTPROD_HOST += ntvalidatorTest
-ntutilsTest_SRCS = ntvalidatorTest.cpp
-TESTS += ntvalidatorTest
+TESTPROD_HOST += validatorTest
+ntutilsTest_SRCS = validatorTest.cpp
+TESTS += validatorTest
 
 TESTSCRIPTS_HOST += $(TESTS:%=%.t)
 

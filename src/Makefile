@@ -21,7 +21,6 @@ INC += pv/ntcontinuum.h
 INC += pv/nthistogram.h
 INC += pv/nturi.h
 INC += pv/ntndarrayAttribute.h
-INC += pv/ntvalidator.h
 
 LIBSRCS += ntutils.cpp
 LIBSRCS += ntid.cpp
@@ -42,7 +41,7 @@ LIBSRCS += ntcontinuum.cpp
 LIBSRCS += nthistogram.cpp
 LIBSRCS += nturi.cpp
 LIBSRCS += ntndarrayAttribute.cpp
-LIBSRCS += ntvalidator.cpp
+LIBSRCS += validator.cpp
 
 LIBRARY = nt
 

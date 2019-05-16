@@ -6,7 +6,7 @@
 #include <epicsUnitTest.h>
 #include <testMain.h>
 
-#include <pv/ntvalidator.h>
+#include "../src/validator.h"
 #include <pv/ntndarray.h>
 
 using namespace epics::nt;
