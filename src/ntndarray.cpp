@@ -207,7 +207,7 @@ static void validator_init(void *)
     optional.insert(attribute->getField("alarm").get());
     optional.insert(attribute->getField("timeStamp").get());
 
-    validator = new Validator(structure);
+    validator = new Validator(structure, optional);
 }
 
 // TODO: I want to deprecate this and replace it with one that accepts
