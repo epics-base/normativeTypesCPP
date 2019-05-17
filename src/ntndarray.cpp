@@ -175,10 +175,10 @@ bool NTNDArray::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
-static Validator::Definition* definition;
-static epicsThreadOnceId definition_once = EPICS_THREAD_ONCE_INIT;
+static Validator* validator;
+static epicsThreadOnceId validator_once = EPICS_THREAD_ONCE_INIT;
 
-static void definition_init(void *)
+static void validator_init(void *)
 {
     StructureConstPtr structure(
         NTNDArray::createBuilder()->
@@ -188,34 +188,37 @@ static void definition_init(void *)
             addTimeStamp()->
             createStructure());
 
-    definition = new Validator::Definition;
-    definition->structure = std::static_pointer_cast<const Field>(structure);
+    std::set<Field const *> optional;
 
     // TODO: these should be all getFieldT
-    definition->optional.insert(structure->getField("descriptor").get());
-    definition->optional.insert(structure->getField("alarm").get());
-    definition->optional.insert(structure->getField("timeStamp").get());
-    definition->optional.insert(structure->getField("display").get());
+    optional.insert(structure->getField("descriptor").get());
+    optional.insert(structure->getField("alarm").get());
+    optional.insert(structure->getField("timeStamp").get());
+    optional.insert(structure->getField("display").get());
 
-    // TODO: the following should be a helper in NTNDArrayAttribute
+    // TODO: the following should come from a helper in NTNDArrayAttribute
     StructureConstPtr attribute(
         std::static_pointer_cast<const StructureArray>(
             structure->getField("attribute")
         )->getStructure()
     );
 
-    definition->optional.insert(attribute->getField("tags").get());
-    definition->optional.insert(attribute->getField("alarm").get());
-    definition->optional.insert(attribute->getField("timeStamp").get());
+    optional.insert(attribute->getField("tags").get());
+    optional.insert(attribute->getField("alarm").get());
+    optional.insert(attribute->getField("timeStamp").get());
+
+    validator = new Validator(structure);
 }
 
+// TODO: I want to deprecate this and replace it with one that accepts
+// "Field const &" so nullptr shouldn't have to be checked for here
 bool NTNDArray::isCompatible(StructureConstPtr const &structure)
 {
     if(!structure.get()) return false;
 
-    epicsThreadOnce(&definition_once, &definition_init, 0);
+    epicsThreadOnce(&validator_once, &validator_init, 0);
 
-    return Validator::isCompatible(*definition, *structure);
+    return validator->isCompatible(*structure);
 }
 
 
