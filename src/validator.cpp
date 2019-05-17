@@ -158,21 +158,16 @@ bool Validator::Helper::validate(Structure const &ref, Structure const &struc)
     // TODO: This assumes getField doesn't fail (there's no Field::getFieldT (yet?))
     bool ok = true;
     StringArray::const_iterator ri;
-    for (ri = rnames.cbegin(); ri != rnames.cend(); ++ri)
-    {
-
+    for (ri = rnames.cbegin(); ri != rnames.cend(); ++ri) {
         FieldConstPtr rfield(ref.getField(*ri));
 
-        if (std::find(snames.cbegin(), snames.cend(), *ri) == snames.end())
-        {
+        if (std::find(snames.cbegin(), snames.cend(), *ri) == snames.end()) {
             if (isOptional(*rfield))
                 continue;
 
             appendError(Validator::ErrorType::MISSING_FIELD, *ri);
             ok = false;
-        }
-        else
-        {
+        } else {
             path.push_back(*ri);
             if (!validate(*rfield, *struc.getField(*ri)))
             {
@@ -192,8 +187,7 @@ bool Validator::Helper::validate(Field const &reference, Field const &field)
     if (referenceType != field.getType())
         return false;
 
-    switch (referenceType)
-    {
+    switch (referenceType) {
     case Type::scalar:
     case Type::scalarArray:
         return true;
