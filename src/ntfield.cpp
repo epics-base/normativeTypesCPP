@@ -5,6 +5,7 @@
  */
 
 #include <pv/lock.h>
+#include "validator.h"
 
 #define epicsExportSharedSymbols
 #include <pv/ntfield.h>
@@ -31,198 +32,103 @@ NTField::NTField()
 {
 }
 
+Result& NTField::isEnumerated(Result& result)
+{
+    return result
+        .is<Structure>()
+        .has<Scalar>("index")
+        .has<ScalarArray>("choices");
+}
+
 bool NTField::isEnumerated(FieldConstPtr const & field)
 {
-   if(field->getType()!=structure) return false;
-   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
-   FieldConstPtrArray fields = structurePtr->getFields();
-   StringArray names = structurePtr->getFieldNames();
-   size_t n = structurePtr->getNumberFields();
-   if(n!=2) return false;
-   FieldConstPtr f = fields[0];
-   if(names[0].compare("index")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[1];
-   if(names[1].compare("choices")!=0) return false;
-   if(f->getType()!=scalarArray) return false;
-   ScalarConstPtr sa = static_pointer_cast<const Scalar>(f);
-   if(sa->getScalarType()!=pvString) return false;
-   return true;
+    Result result(field);
+    return isEnumerated(result).valid();
+}
+
+Result& NTField::isTimeStamp(Result& result)
+{
+    return result
+        .is<Structure>()
+        .has<Scalar>("secondsPastEpoch")
+        .has<Scalar>("nanoseconds")
+        .has<Scalar>("userTag");
 }
 
 bool NTField::isTimeStamp(FieldConstPtr const & field)
 {
-   if(field->getType()!=structure) return false;
-   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
-   FieldConstPtrArray fields = structurePtr->getFields();
-   StringArray names = structurePtr->getFieldNames();
-   size_t  n = structurePtr->getNumberFields();
-   if(n!=3) return false;
-   FieldConstPtr f = fields[0];
-   if(names[0].compare("secondsPastEpoch")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvLong) return false;
-   f = fields[1];
-   if(names[1].compare("nanoseconds")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[2];
-   if(names[2].compare("userTag")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   return true;
+    Result result(field);
+    return isTimeStamp(result).valid();
+}
+
+Result& NTField::isAlarm(Result& result)
+{
+    return result
+        .is<Structure>()
+        .has<Scalar>("severity")
+        .has<Scalar>("status")
+        .has<Scalar>("message");
 }
 
 bool NTField::isAlarm(FieldConstPtr const & field)
 {
-   if(field->getType()!=structure) return false;
-   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
-   FieldConstPtrArray fields = structurePtr->getFields();
-   StringArray names = structurePtr->getFieldNames();
-   size_t n = structurePtr->getNumberFields();
-   if(n!=3) return false;
-   FieldConstPtr f = fields[0];
-   if(names[0].compare("severity")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[1];
-   if(names[1].compare("status")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[2];
-   if(names[2].compare("message")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvString) return false;
-   return true;
+    Result result(field);
+    return isAlarm(result).valid();
+}
+
+Result& NTField::isDisplay(Result& result)
+{
+    return result
+        .is<Structure>()
+        .has<Scalar>("limitLow")
+        .has<Scalar>("limitHigh")
+        .has<Scalar>("description")
+        .has<Scalar>("format")
+        .has<Scalar>("units");
+
 }
 
 bool NTField::isDisplay(FieldConstPtr const & field)
 {
-   if(field->getType()!=structure) return false;
-   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
-   FieldConstPtrArray fields = structurePtr->getFields();
-   StringArray names = structurePtr->getFieldNames();
-   size_t n = structurePtr->getNumberFields();
-   if(n!=5) return false;
-   FieldConstPtr f = fields[0];
-   if(names[0].compare("limitLow")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[1];
-   if(names[1].compare("limitHigh")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[2];
-   if(names[2].compare("description")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvString) return false;
-   f = fields[3];
-   if(names[3].compare("format")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvString) return false;
-   f = fields[4];
-   if(names[4].compare("units")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvString) return false;
-   return true;
+    Result result(field);
+    return isDisplay(result).valid();
+}
+
+Result& NTField::isAlarmLimit(Result& result)
+{
+    return result
+        .is<Structure>()
+        .has<Scalar>("active")
+        .has<Scalar>("lowAlarmLimit")
+        .has<Scalar>("lowWarningLimit")
+        .has<Scalar>("highWarningLimit")
+        .has<Scalar>("highAlarmLimit")
+        .has<Scalar>("lowAlarmSeverity")
+        .has<Scalar>("lowWarningSeverity")
+        .has<Scalar>("highWarningSeverity")
+        .has<Scalar>("highAlarmSeverity")
+        .has<Scalar>("hysteresis");
 }
 
 bool NTField::isAlarmLimit(FieldConstPtr const & field)
 {
-   if(field->getType()!=structure) return false;
-   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
-   FieldConstPtrArray fields = structurePtr->getFields();
-   StringArray names = structurePtr->getFieldNames();
-   size_t n = structurePtr->getNumberFields();
-   if(n!=10) return false;
-   FieldConstPtr f = fields[0];
-   if(names[0].compare("active")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvBoolean) return false;
-   f = fields[1];
-   if(names[1].compare("lowAlarmLimit")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[2];
-   if(names[2].compare("lowWarningLimit")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[3];
-   if(names[3].compare("highWarningLimit")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[4];
-   if(names[4].compare("highAlarmLimit")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[5];
-   if(names[5].compare("lowAlarmSeverity")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[6];
-   if(names[6].compare("lowWarningSeverity")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[7];
-   if(names[7].compare("highWarningSeverity")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[8];
-   if(names[8].compare("highAlarmSeverity")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvInt) return false;
-   f = fields[9];
-   if(names[9].compare("hysteresis")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   return true;
+    Result result(field);
+    return isAlarmLimit(result).valid();
+}
+
+Result& NTField::isControl(Result& result)
+{
+    return result
+        .is<Structure>()
+        .has<Scalar>("limitLow")
+        .has<Scalar>("limitHigh")
+        .has<Scalar>("minStep");
 }
 
 bool NTField::isControl(FieldConstPtr const & field)
 {
-   if(field->getType()!=structure) return false;
-   StructureConstPtr structurePtr = static_pointer_cast<const Structure>(field);
-   FieldConstPtrArray fields = structurePtr->getFields();
-   StringArray names = structurePtr->getFieldNames();
-   size_t n = structurePtr->getNumberFields();
-   if(n!=3) return false;
-   FieldConstPtr f = fields[0];
-   if(names[0].compare("limitLow")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   ScalarConstPtr s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[1];
-   if(names[1].compare("limitHigh")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   f = fields[2];
-   if(names[2].compare("minStep")!=0) return false;
-   if(f->getType()!=scalar) return false;
-   s = static_pointer_cast<const Scalar>(f);
-   if(s->getScalarType()!=pvDouble) return false;
-   return true;
+    Result result(field);
+    return isControl(result).valid();
 }
 
 StructureConstPtr NTField::createEnumerated()
