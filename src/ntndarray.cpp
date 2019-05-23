@@ -175,50 +175,75 @@ bool NTNDArray::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
-static Validator* validator;
-static epicsThreadOnceId validator_once = EPICS_THREAD_ONCE_INIT;
+namespace {
+    Result& isValue(Result& result)
+    {
+        result.is<Union>(Union::defaultId());
 
-static void validator_init(void *)
-{
-    StructureConstPtr structure(
-        NTNDArray::createBuilder()->
-            addDescriptor()->
-            addAlarm()->
-            addDisplay()->
-            addTimeStamp()->
-            createStructure());
+        for (int i = pvBoolean; i < pvString; ++i) {
+            ScalarType type = static_cast<ScalarType>(i);
+            string name(ScalarTypeFunc::name(type));
+            result.has<ScalarArray>(name + "Value");
+        }
 
-    std::set<Field const *> optional;
+        return result;
+    }
 
-    // TODO: these should be all getFieldT
-    optional.insert(structure->getField("descriptor").get());
-    optional.insert(structure->getField("alarm").get());
-    optional.insert(structure->getField("timeStamp").get());
-    optional.insert(structure->getField("display").get());
+    Result& isCodec(Result& result)
+    {
+        return result
+            .is<Structure>("codec_t")
+            .has<Scalar>("name")
+            .has<Union>("parameters");
+    }
 
-    // TODO: the following should come from a helper in NTNDArrayAttribute
-    StructureConstPtr attribute(
-        std::static_pointer_cast<const StructureArray>(
-            structure->getField("attribute")
-        )->getStructure()
-    );
+    Result& isDimension(Result& result)
+    {
+        return result
+            .is<StructureArray>("dimension_t[]")
+            .has<Scalar>("size")
+            .has<Scalar>("offset")
+            .has<Scalar>("fullSize")
+            .has<Scalar>("binning")
+            .has<Scalar>("reverse");
+    }
 
-    optional.insert(attribute->getField("tags").get());
-    optional.insert(attribute->getField("alarm").get());
-    optional.insert(attribute->getField("timeStamp").get());
-
-    validator = new Validator(structure, optional);
+    // TODO: move to NTNDArrayAttribute
+    Result& isAttribute(Result& result)
+    {
+        return result
+            .is<StructureArray>()
+            .has<Scalar>("name")
+            .has<Union>("value")
+            .maybeHas<ScalarArray>("tags")
+            .has<Scalar>("descriptor")
+            .maybeHas<&NTField::isAlarm>("alarm")
+            .maybeHas<&NTField::isTimeStamp>("timeStamp");
+    }
 }
 
-// TODO: I want to deprecate this and replace it with one that accepts
-// "Field const &" so nullptr shouldn't have to be checked for here
 bool NTNDArray::isCompatible(StructureConstPtr const &structure)
 {
-    if(!structure.get()) return false;
+    if (!structure)
+        return false;
 
-    epicsThreadOnce(&validator_once, &validator_init, 0);
+    Result result(structure);
 
-    return validator->isCompatible(*structure);
+    return result
+        .is<Structure>()
+        .has<&isValue>("value")
+        .has<&isCodec>("codec")
+        .has<Scalar>("compressedSize")
+        .has<Scalar>("uncompressedSize")
+        .has<&isDimension>("dimension")
+        .has<Scalar>("uniqueId")
+        .has<&NTField::isTimeStamp>("dataTimeStamp")
+        .has<&isAttribute>("attribute")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm>("alarm")
+        .maybeHas<&NTField::isTimeStamp>("timeStamp")
+        .maybeHas<&NTField::isDisplay>("display")
+        .valid();
 }
 
 

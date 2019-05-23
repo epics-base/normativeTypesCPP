@@ -41,7 +41,6 @@ LIBSRCS += ntcontinuum.cpp
 LIBSRCS += nthistogram.cpp
 LIBSRCS += nturi.cpp
 LIBSRCS += ntndarrayAttribute.cpp
-LIBSRCS += validator.cpp
 
 LIBRARY = nt
 

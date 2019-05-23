@@ -30,6 +30,8 @@
 
 namespace epics { namespace nt {
 
+class Result;
+
 class NTField;
 typedef std::tr1::shared_ptr<NTField> NTFieldPtr;
 
@@ -149,6 +151,16 @@ private:
     NTField();
     epics::pvData::FieldCreatePtr fieldCreate;
     epics::pvData::StandardFieldPtr standardField;
+
+    // These won't be public just yet
+    static Result& isEnumerated(Result&);
+    static Result& isTimeStamp(Result&);
+    static Result& isAlarm(Result&);
+    static Result& isDisplay(Result&);
+    static Result& isAlarmLimit(Result&);
+    static Result& isControl(Result&);
+
+    friend class NTNDArray;
 };
 
 /**

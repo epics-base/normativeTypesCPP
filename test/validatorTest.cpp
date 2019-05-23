@@ -12,156 +12,311 @@
 
 using namespace epics::nt;
 using epics::pvData::StructureConstPtr;
+using epics::pvData::UnionConstPtr;
 using epics::pvData::Field;
 using epics::pvData::ScalarType;
+using epics::pvData::ScalarTypeFunc::name;
 using epics::pvData::FieldConstPtr;
 using epics::pvData::FieldBuilder;
 using epics::pvData::FieldBuilderPtr;
+using epics::pvData::Scalar;
+using epics::pvData::ScalarArray;
+using epics::pvData::Structure;
+using epics::pvData::Union;
 
 static epics::pvData::FieldCreatePtr FC;
 
-void test_result()
+void test_is()
 {
-    testDiag("test_result");
+    testDiag("test_is");
 
-    Validator::Result result;
-    testOk(result.valid(), "Result with no errors means valid");
+    // Result::is<Scalar> must be valid for Scalars of any type
+    for(int i = ScalarType::pvBoolean; i <= ScalarType::pvString; ++i) {
+        ScalarType t = static_cast<ScalarType>(i);
+        testOk(Result(FC->createScalar(t)).is<Scalar>().valid(),
+            "Result(Scalar<%s>).is<Scalar>().valid()", name(t));
+    }
 
-    result.errors.push_back(Validator::Error("a.b.c", Validator::ErrorType::MISSING_FIELD));
-    testOk(!result.valid(), "Result with one error means invalid");
-}
-
-void test_scalar()
-{
-    testDiag("test_scalar");
-
-    {
-        FieldConstPtr def(FC->createScalar(ScalarType::pvBoolean));
-        FieldConstPtr field(FC->createScalar(ScalarType::pvBoolean));
-        testOk(Validator(def).isCompatible(*field), "isCompatible(Scalar<bool>, Scalar<bool>)");
+    // Result::is<ScalarArray> must be valid for ScalarArray of any type
+    for(int i = ScalarType::pvBoolean; i <= ScalarType::pvString; ++i) {
+        ScalarType t = static_cast<ScalarType>(i);
+        testOk(Result(FC->createScalarArray(t)).is<ScalarArray>().valid(),
+            "Result(ScalarArray<%s>).is<ScalarArray>().valid()", name(t));
     }
 
     {
-        FieldConstPtr def(FC->createScalar(ScalarType::pvBoolean));
-        FieldConstPtr field(FC->createScalar(ScalarType::pvInt));
-        testOk(Validator(def).isCompatible(*field), "isCompatible(Scalar<bool>, Scalar<int>)");
+        // Result::is<Scalar> must be invalid for non-Scalar
+        Result result(FC->createScalarArray(ScalarType::pvInt));
+        result.is<Scalar>();
+        testOk(!result.valid(), "!Result(ScalarArray<pvInt>).is<Scalar>.valid()");
+        testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
     }
 
     {
-        FieldConstPtr def(FC->createScalar(ScalarType::pvString));
-        FieldConstPtr field(FC->createScalar(ScalarType::pvFloat));
-        testOk(Validator(def).isCompatible(*field), "isCompatible(Scalar<string>, Scalar<float>)");
-    }
-
-    {
-        FieldConstPtr def(FC->createScalarArray(ScalarType::pvString));
-        FieldConstPtr field(FC->createScalarArray(ScalarType::pvFloat));
-        testOk(Validator(def).isCompatible(*field), "isCompatible(ScalarArray<string>, ScalarArray<float>)");
-    }
-
-    {
-        FieldConstPtr def(FC->createScalarArray(ScalarType::pvByte));
-        FieldConstPtr field(FC->createScalar(ScalarType::pvByte));
-        testOk(!Validator(def).isCompatible(*field), "!isCompatible(ScalarArray<byte>, Scalar<byte>)");
-    }
-
-    {
-        FieldConstPtr def(FC->createScalar(ScalarType::pvByte));
-        FieldConstPtr field(FC->createScalarArray(ScalarType::pvByte));
-        testOk(!Validator(def).isCompatible(*field), "!isCompatible(Scalar<byte>, ScalarArray<byte>)");
+        // Result::is<ScalarArray> must be invalid for non-ScalarArray
+        Result result(FC->createScalar(ScalarType::pvInt));
+        result.is<ScalarArray>();
+        testOk(!result.valid(), "!Result(ScalarArray<pvInt>).is<Scalar>.valid()");
+        testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
     }
 }
 
-void test_union()
+void test_is_id()
 {
-    testDiag("test_union");
+    testDiag("test_is_id");
+
     FieldBuilderPtr FB(FieldBuilder::begin());
 
-    FieldConstPtr unionVar(FC->createVariantUnion());
-    FieldConstPtr unionABC(FB->
-        add("A", ScalarType::pvInt)->
-        add("B", ScalarType::pvInt)->
-        add("C", ScalarType::pvInt)->
-        createUnion());
-
-    FieldConstPtr unionABC2(FB->
-        add("A", ScalarType::pvFloat)->
-        add("B", ScalarType::pvDouble)->
-        add("C", ScalarType::pvString)->
-        createUnion());
-
-    FieldConstPtr unionBAC(FB->
-        add("B", ScalarType::pvInt)->
-        add("A", ScalarType::pvInt)->
-        add("C", ScalarType::pvInt)->
-        createUnion());
-
-    FieldConstPtr unionAB(FB->
-        add("A", ScalarType::pvInt)->
-        add("B", ScalarType::pvInt)->
-        createUnion());
-
-    FieldConstPtr unionNested1(FB->
-        add("A", unionABC)->
-        add("B", unionABC)->
-        createUnion());
-
-    FieldConstPtr unionNested2(FB->
-        add("A", unionABC)->
-        add("B", unionBAC)->
-        createUnion());
-
-    testOk(Validator(unionVar).isCompatible(*unionVar),
-        "isCompatible(VarUnion, VarUnion)");
-    testOk(!Validator(unionVar).isCompatible(*unionABC),
-        "!isCompatible(VarUnion, Union{A:int, B:int, C:int})");
-    testOk(!Validator(unionABC).isCompatible(*unionVar),
-        "!isCompatible(Union{A:int, B:int, C:int}, VarUnion)");
-    testOk(Validator(unionABC).isCompatible(*unionABC),
-        "isCompatible(Union{A:int, B:int, C:int}, Union{A:int, B:int, C:int})");
-
-    testOk(Validator(unionABC).isCompatible(*unionABC2),
-        "isCompatible(Union{A:int, B:int, C:int}, Union{A:float, B:double, C:string})");
-    testOk(Validator(unionABC2).isCompatible(*unionABC),
-        "isCompatible(Union{A:float, B:double, C:string}, Union{A:int, B:int, C:int})");
-
-    testOk(!Validator(unionABC).isCompatible(*unionBAC),
-        "!isCompatible(Union{A:int, B:int, C:int}, Union{B:int, A:int, C:int})");
-
-    testOk(Validator(unionAB).isCompatible(*unionABC),  "Extra Union field");
-    testOk(!Validator(unionABC).isCompatible(*unionAB), "Missing Union field");
-
     {
-        Validator::Result result = Validator(unionABC).validate(*unionAB);
-        testOk(result.errors.size() == 1 &&
-               result.errors[0] == Validator::Error("C", Validator::ErrorType::MISSING_FIELD),
-               "Missing Union field Error");
+        // Both type and ID match for Structure
+        Result result(FB->setId("TEST_ID")->createStructure());
+        result.is<Structure>("TEST_ID");
+        testOk(result.valid(), "Result(Structure['TEST_ID']).is<Structure>('TEST_ID').valid()");
     }
 
-    testOk(!Validator(unionNested1).isCompatible(*unionNested2), "Nested Unions");
+    {
+        // Both type and ID match for Union
+        UnionConstPtr un(FB->
+            setId("TEST_ID")->
+            add("A", ScalarType::pvInt)->
+            add("B", ScalarType::pvString)->
+            createUnion()
+        );
+        Result result(un);
+        result.is<Union>("TEST_ID");
+        testOk(result.valid(), "Result(Union{A:int,B:string}['TEST_ID']).is<Union>('TEST_ID').valid()");
+    }
+
+    {
+        // Both type and ID match for Variant Union
+        Result result(FB-> createUnion());
+        result.is<Union>(Union::ANY_ID);
+        testOk(result.valid(), "Result(Union).is<Union>('%s').valid()", Union::ANY_ID.c_str());
+    }
+
+    {
+        // ID matches, type doesn't
+        Result result(FB->setId("TEST_ID")->createStructure());
+        result.is<Union>("TEST_ID");
+        testOk(!result.valid(), "!Result(Union['TEST_ID']).is<Structure>('TEST_ID').valid()");
+        testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
+    }
+    
+    {
+        // Type matches, ID doesn't
+        Result result(FB->setId("WRONG_ID")->createStructure());
+        result.is<Structure>("TEST_ID");
+        testOk(!result.valid(), "!Result(Structure['WRONG_ID']).is<Structure>('TEST_ID').valid()");
+        testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectId));
+    }
+
+    {
+        // Neither type nor ID match (ID is not even checked in this case since it doesn't exist)
+        Result result(FC->createScalar(ScalarType::pvDouble));
+        result.is<Structure>("SOME_ID");
+        testOk(!result.valid(), "!Result(Scalar).is<Structure>('SOME_ID').valid()");
+        testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
+    }
 }
 
-void test_isCompatible()
+void test_has()
 {
-    testDiag("test_isCompatible");
+    testDiag("test_has");
 
-    std::set<Field const *> opt;
-    StructureConstPtr ref(NTNDArray::createBuilder()->addAlarm()->createStructure());
-    opt.insert(ref->getField("alarm").get());
+    FieldBuilderPtr FB(FieldBuilder::begin());
 
-    StructureConstPtr struc(NTNDArray::createBuilder()->createStructure());
+    StructureConstPtr struc(FB->
+        add("A", ScalarType::pvInt)->
+        add("B", ScalarType::pvString)->
+        createStructure()
+    );
 
-    testOk1(Validator(ref, opt).isCompatible(*struc));
+    std::string strucRepr("Structure{A:int,B:String}");
+
+    {
+        // Test that struc has both A and B, both being Scalars
+        Result result(struc);
+        result
+           .has<Scalar>("A")
+           .has<Scalar>("B");
+
+        testOk(result.valid(),
+            "Result(%s).has<Scalar>('A').has<Scalar>('B').valid()",
+            strucRepr.c_str());
+    }
+
+    {
+        // Test that struc does not have a field B of type ScalarArray
+        Result result(struc);
+        result
+           .has<Scalar>("A")
+           .has<ScalarArray>("B");
+        testOk(!result.valid(), 
+            "!Result(%s).has<Scalar>('A').has<ScalarArray>('B').valid()",
+            strucRepr.c_str());
+        testOk1(result.errors.at(0) == Result::Error("B", Result::Error::IncorrectType));
+    }
+
+    {
+        // Test that struc does not have a field C
+        Result result(struc);
+        result
+           .has<Scalar>("A")
+           .has<Scalar>("C");
+        testOk(!result.valid(), 
+            "!Result(%s).has<Scalar>('A').has<Scalar>('C').valid()",
+            strucRepr.c_str());
+        testOk1(result.errors.at(0) == Result::Error("C", Result::Error::MissingField));
+    }
+
+    {
+        // Test that 'has' fails for non-structure-like Fields
+        Result result(FC->createScalar(ScalarType::pvByte));
+        result.has<Scalar>("X");
+        testOk(!result.valid(), "!Result(Scalar<pvByte>).has<Scalar>('X').valid()");
+        testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
+    }
+}
+
+void test_maybe_has()
+{
+    testDiag("test_maybe_has");
+
+    FieldBuilderPtr FB(FieldBuilder::begin());
+
+    StructureConstPtr struc(FB->
+        add("A", ScalarType::pvInt)->
+        add("B", ScalarType::pvString)->
+        createStructure()
+    );
+
+    std::string strucRepr("Structure{A:int,B:String}");
+
+    {
+        // Test that struc maybe has A and B, both being Scalars
+        Result result(struc);
+        result
+           .maybeHas<Scalar>("A")
+           .maybeHas<Scalar>("B");
+
+        testOk(result.valid(),
+            "Result(%s).maybeHas<Scalar>('A').maybeHas<Scalar>('B').valid()",
+            strucRepr.c_str());
+    }
+
+    {
+        // Test that if struc has a field B, it must be of type ScalarArray
+        Result result(struc);
+        result
+           .maybeHas<Scalar>("A")
+           .maybeHas<ScalarArray>("B");
+        testOk(!result.valid(), 
+            "!Result(%s).maybeHas<Scalar>('A').maybeHas<ScalarArray>('B').valid()",
+            strucRepr.c_str());
+        testOk1(result.errors.at(0) == Result::Error("B", Result::Error::IncorrectType));
+    }
+
+    {
+        // Test that struc maybe has A (which it does) and B (which it doesn't)
+        Result result(struc);
+        result
+           .maybeHas<Scalar>("A")
+           .maybeHas<Scalar>("C");
+        testOk(result.valid(), 
+            "Result(%s).maybeHas<Scalar>('A').maybeHas<Scalar>('C').valid()",
+            strucRepr.c_str());
+    }
+
+    {
+        // Test that 'maybeHas' fails for non-structure-like Fields
+        Result result(FC->createScalar(ScalarType::pvByte));
+        result.maybeHas<Scalar>("X");
+        testOk(!result.valid(), "!Result(Scalar<pvByte>).maybeHas<Scalar>('X').valid()");
+        testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
+    }
+}
+
+Result& isStructABC(Result& result)
+{
+    return result
+        .is<Structure>("ABC")
+        .has<Scalar>("A")
+        .has<ScalarArray>("B")
+        .maybeHas<Scalar>("C");
+}
+
+void test_has_fn()
+{
+    testDiag("test_has_fn");
+    FieldBuilderPtr FB(FieldBuilder::begin());
+
+    {
+        StructureConstPtr inner(FB->
+            setId("ABC")->
+            add("A", ScalarType::pvInt)->
+            addArray("B", ScalarType::pvDouble)->
+            add("C", ScalarType::pvString)->
+            createStructure()
+        );
+
+        Result result(FB->add("inner", inner)->createStructure());
+        result.has<&isStructABC>("inner");
+
+        testOk(result.valid(), "Result({inner:<valid structABC>}).has<&isStructAbc>('inner').valid()");
+    }
+
+    {
+        StructureConstPtr inner(FB->
+            setId("ABC")->
+            add("A", ScalarType::pvInt)->
+            addArray("B", ScalarType::pvDouble)->
+            createStructure()
+        );
+
+        Result result(FB->add("inner", inner)->createStructure());
+        result.has<&isStructABC>("inner");
+
+        testOk(result.valid(), "Result({inner:<valid structABC w/o C>}).has<&isStructAbc>('inner').valid()");
+    }
+
+    {
+        StructureConstPtr inner(FB->
+            setId("XYZ")->
+            add("A", ScalarType::pvInt)->
+            addArray("B", ScalarType::pvDouble)->
+            createStructure()
+        );
+
+        Result result(FB->add("inner", inner)->createStructure());
+        result.has<&isStructABC>("inner");
+
+        testOk(!result.valid(), "!Result({inner:<structABC wrong id>}).has<&isStructAbc>('inner').valid()");
+        testOk1(result.errors.at(0) == Result::Error("inner", Result::Error::IncorrectId));
+    }
+
+    {
+        StructureConstPtr inner(FB->
+            setId("XYZ")->
+            add("A", ScalarType::pvInt)->
+            add("B", ScalarType::pvDouble)->
+            createStructure()
+        );
+
+        Result result(FB->add("inner", inner)->createStructure());
+        result.has<&isStructABC>("inner");
+
+        testOk(!result.valid(), "!Result({inner:<structABC wrong id and fields>}).has<&isStructAbc>('inner').valid()");
+        testOk1(result.errors.size() == 2);
+    }
 }
 
 MAIN(testValidator) {
-    testPlan(0);
+    testPlan(56);
     FC = epics::pvData::getFieldCreate();
-    test_result();
-    test_scalar();
-    test_union();
-    test_isCompatible();
+    test_is();
+    test_is_id();
+    test_has();
+    test_maybe_has();
+    test_has_fn();
     return testDone();
 }
-
-
