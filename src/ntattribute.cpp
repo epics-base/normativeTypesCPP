@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntattribute.h>
 #include <pv/ntutils.h>
@@ -130,45 +132,21 @@ bool NTAttribute::is_a(PVStructurePtr const & pvStructure)
 
 bool NTAttribute::isCompatible(StructureConstPtr const & structure)
 {
-    if (structure.get() == 0) return false;
-
-    ScalarConstPtr nameField = structure->getField<Scalar>("name");
-    if (nameField.get() == 0 || nameField->getScalarType() != pvString)
+    if (!structure)
         return false;
 
-    UnionConstPtr valueField = structure->getField<Union>("value");
-    if (valueField.get() == 0 || !valueField->isVariant())
-        return false;
+    Result result(structure);
 
-    FieldConstPtr field = structure->getField("tags");
-    if (field.get())
-    {
-        ScalarArrayConstPtr tagsField = structure->getField<ScalarArray>("tags");
-        if (tagsField.get() == 0 || tagsField->getElementType() != pvString)
-            return false;
-    }
-
-    field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
-
-    NTFieldPtr ntField = NTField::get();
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    return true;
+    return result
+       .is<Structure>()
+       .has<Scalar>("name")
+       .has<Union>("value")
+       .maybeHas<ScalarArray>("tags")
+       .maybeHas<Scalar>("descriptor")
+       .maybeHas<&NTField::isAlarm, Structure>("alarm")
+       .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+       .valid();
 }
-
 
 bool NTAttribute::isCompatible(PVStructurePtr const & pvStructure)
 {

@@ -250,19 +250,6 @@ namespace {
             .has<Scalar>("binning")
             .has<Scalar>("reverse");
     }
-
-    // TODO: move to NTNDArrayAttribute
-    Result& isAttribute(Result& result)
-    {
-        return result
-            .is<StructureArray>()
-            .has<Scalar>("name")
-            .has<Union>("value")
-            .maybeHas<ScalarArray>("tags")
-            .has<Scalar>("descriptor")
-            .maybeHas<&NTField::isAlarm>("alarm")
-            .maybeHas<&NTField::isTimeStamp>("timeStamp");
-    }
 }
 
 bool NTNDArray::isCompatible(StructureConstPtr const &structure)
@@ -280,12 +267,12 @@ bool NTNDArray::isCompatible(StructureConstPtr const &structure)
         .has<Scalar>("uncompressedSize")
         .has<&isDimension>("dimension")
         .has<Scalar>("uniqueId")
-        .has<&NTField::isTimeStamp>("dataTimeStamp")
-        .has<&isAttribute>("attribute")
+        .has<&NTField::isTimeStamp, Structure>("dataTimeStamp")
+        .has<&NTNDArrayAttribute::isAttribute, StructureArray>("attribute")
         .maybeHas<Scalar>("descriptor")
-        .maybeHas<&NTField::isAlarm>("alarm")
-        .maybeHas<&NTField::isTimeStamp>("timeStamp")
-        .maybeHas<&NTField::isDisplay>("display")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .maybeHas<&NTField::isDisplay, Structure>("display")
         .valid();
 }
 
