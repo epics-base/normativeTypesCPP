@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/nthistogram.h>
 #include <pv/ntutils.h>
@@ -135,37 +137,19 @@ bool NTHistogram::is_a(PVStructurePtr const & pvStructure)
 
 bool NTHistogram::isCompatible(StructureConstPtr const &structure)
 {
-    if(!structure.get()) return false;
-
-    ScalarArrayConstPtr rangesField = structure->getField<ScalarArray>("ranges");
-    if(!rangesField.get() || rangesField->getElementType() != pvDouble) return false;
-
-    ScalarArrayConstPtr valueField = structure->getField<ScalarArray>("value");
-    if(!valueField.get()) return false;
-
-    ScalarType scalarType = valueField->getElementType();
-    if (scalarType != pvShort &&
-        scalarType != pvInt &&
-        scalarType != pvLong)
+    if (!structure)
         return false;
 
-    FieldConstPtr field = structure->getField("descriptor");
-    if(field)
-    {
-       ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-       if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-           return false;
-    }
+    Result result(structure);
 
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    return true;
+    return result
+        .is<Structure>()
+        .has<ScalarArray>("ranges")
+        .has<ScalarArray>("value")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .valid();
 }
 
 bool NTHistogram::isCompatible(PVStructurePtr const & pvStructure)

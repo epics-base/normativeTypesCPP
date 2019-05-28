@@ -160,9 +160,21 @@ private:
     static Result& isAlarmLimit(Result&);
     static Result& isControl(Result&);
 
+    friend class NTAggregate;
     friend class NTAttribute;
+    friend class NTContinuum;
+    friend class NTEnum;
+    friend class NTHistogram;
+    friend class NTMatrix;
+    friend class NTMultiChannel;
+    friend class NTNameValue;
     friend class NTNDArray;
     friend class NTNDArrayAttribute;
+    friend class NTScalar;
+    friend class NTScalarArray;
+    friend class NTScalarMultiChannel;
+    friend class NTTable;
+    friend class NTUnion;
 };
 
 /**

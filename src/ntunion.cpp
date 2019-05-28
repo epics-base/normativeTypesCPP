@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntunion.h>
 #include <pv/ntutils.h>
@@ -128,31 +130,18 @@ bool NTUnion::is_a(PVStructurePtr const & pvStructure)
 
 bool NTUnion::isCompatible(StructureConstPtr const &structure)
 {
-    if (structure.get() == 0) return false;
-
-    UnionConstPtr valueField = structure->getField<Union>("value");
-    if (valueField.get() == 0)
+    if (!structure)
         return false;
 
-    FieldConstPtr field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
+    Result result(structure);
 
-    NTFieldPtr ntField = NTField::get();
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    return true;
+    return result
+        .is<Structure>()
+        .has<Union>("value")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .valid();
 }
 
 bool NTUnion::isCompatible(PVStructurePtr const & pvStructure)
