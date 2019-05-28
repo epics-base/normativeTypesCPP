@@ -11,7 +11,6 @@
 
 #include <pv/pvIntrospect.h>
 
-
 namespace epics { namespace nt {
 
 /**
@@ -222,16 +221,18 @@ private:
                 return *this;
         }
 
+        std::string fieldPath(path.empty() ? name : path + "." + name);
+
         if (!field) {
             if (!optional) {
                 result = Fail;
-                errors.push_back(Error(path + "." + name, Error::Type::MissingField));
+                errors.push_back(Error(fieldPath, Error::Type::MissingField));
             }
         } else if (!dynamic_cast<T const *>(field.get())) {
             result = Fail;
-            errors.push_back(Error(path + "." + name, Error::Type::IncorrectType));
+            errors.push_back(Error(fieldPath, Error::Type::IncorrectType));
         } else if (check) {
-            Result r(field, path + "." + name);
+            Result r(field, fieldPath);
             *this |= check(r);
         }
 
