@@ -29,8 +29,8 @@ struct Result {
             IncorrectId,
         } type;
 
-        Error(std::string const & ref_path, Type type)
-        : path(), type(type) {}
+        Error(std::string const & path, Type type)
+        : path(path), type(type) {}
 
         bool operator==(const Error& other) const {
             return type == other.type && path == other.path;
@@ -93,14 +93,14 @@ struct Result {
         return *this;
     }
 
-    template<Result& (*fn)(Result&)>
+    template<Result& (*fn)(Result&), typename T=epics::pvData::Field>
     Result& has(const std::string& name) {
-        return has<epics::pvData::Field>(name, false, fn);
+        return has<T>(name, false, fn);
     }
 
-    template<Result& (*fn)(Result&)>
+    template<Result& (*fn)(Result&), typename T=epics::pvData::Field>
     Result& maybeHas(const std::string& name) {
-        return has<epics::pvData::Field>(name, true, fn);
+        return has<T>(name, true, fn);
     }
 
     template<typename T>
@@ -114,7 +114,7 @@ struct Result {
     }
 
     std::ostream& dump(std::ostream& os) const {
-        os << "Result(valid=" << valid() << ", errors=[ ";
+        os << "Result(valid=" << (result == Pass) << ", errors=[ ";
         
         std::vector<Error>::const_iterator it;
         for (it = errors.cbegin(); it != errors.cend(); ++it) {
