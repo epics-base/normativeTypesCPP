@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntndarrayAttribute.h>
 #include <pv/ntattribute.h>
@@ -132,24 +134,25 @@ bool NTNDArrayAttribute::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
+Result& NTNDArrayAttribute::isAttribute(Result& result) {
+    return result
+        .has<Scalar>("name")
+        .has<Union>("value")
+        .maybeHas<ScalarArray>("tags")
+        .has<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .has<Scalar>("sourceType")
+        .has<Scalar>("source");
+}
+
 bool NTNDArrayAttribute::isCompatible(StructureConstPtr const & structure)
 {
-    if (!NTAttribute::isCompatible(structure)) return false;
-
-    // descriptor required field for attibute in an ndarray
-    ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-    if (descriptorField.get() == 0 || descriptorField->getScalarType() != pvString)
+    if (!structure)
         return false;
 
-    ScalarConstPtr sourcedTypeField = structure->getField<Scalar>("sourceType");
-    if (sourcedTypeField.get() == 0 || sourcedTypeField->getScalarType() != pvInt)
-        return false;
-
-    ScalarConstPtr sourcedField = structure->getField<Scalar>("source");
-    if (sourcedField.get() == 0 || sourcedField->getScalarType() != pvString)
-        return false;
-
-    return true;
+    Result result(structure);
+    return isAttribute(result.is<Structure>()).valid();
 }
 
 bool NTNDArrayAttribute::isCompatible(PVStructurePtr const & pvStructure)

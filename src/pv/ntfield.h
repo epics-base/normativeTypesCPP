@@ -160,7 +160,9 @@ private:
     static Result& isAlarmLimit(Result&);
     static Result& isControl(Result&);
 
+    friend class NTAttribute;
     friend class NTNDArray;
+    friend class NTNDArrayAttribute;
 };
 
 /**

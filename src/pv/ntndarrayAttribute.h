@@ -22,6 +22,7 @@
 
 namespace epics { namespace nt {
 
+class Result;
 class NTNDArrayAttribute;
 typedef std::tr1::shared_ptr<NTNDArrayAttribute> NTNDArrayAttributePtr;
 
@@ -302,10 +303,13 @@ public:
 
 private:
     NTNDArrayAttribute(epics::pvData::PVStructurePtr const & pvStructure);
+    static Result& isAttribute(Result& result);
+
     epics::pvData::PVStructurePtr pvNTNDArrayAttribute;
     epics::pvData::PVUnionPtr pvValue;
 
     friend class detail::NTNDArrayAttributeBuilder;
+    friend class NTNDArray;
 };
 
 }}
