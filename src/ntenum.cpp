@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntenum.h>
 #include <pv/ntutils.h>
@@ -121,33 +123,19 @@ bool NTEnum::is_a(PVStructurePtr const & pvStructure)
 
 bool NTEnum::isCompatible(StructureConstPtr const &structure)
 {
-    if (structure.get() == 0) return false;
-
-    NTFieldPtr ntField = NTField::get();
-
-    FieldConstPtr valueField = structure->getField("value");
-    if (!valueField.get() || !ntField->isEnumerated(valueField))
+    if (!structure)
         return false;
 
-    FieldConstPtr field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
+    Result result(structure);
 
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    return true;
+    return result
+        .is<Structure>()
+        .has<&NTField::isEnumerated, Structure>("value")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .valid();
 }
-
 
 bool NTEnum::isCompatible(PVStructurePtr const & pvStructure)
 {

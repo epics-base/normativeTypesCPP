@@ -4,6 +4,7 @@
  * found in the file LICENSE that is included with the distribution
  */
 #include <algorithm>
+#include "validator.h"
 
 #define epicsExportSharedSymbols
 #include <pv/ntscalarMultiChannel.h>
@@ -228,85 +229,26 @@ bool NTScalarMultiChannel::is_a(PVStructurePtr const & pvStructure)
 
 bool NTScalarMultiChannel::isCompatible(StructureConstPtr const & structure)
 {
-    if (!structure.get()) return false;
-
-    ScalarArrayConstPtr valueField = structure->getField<ScalarArray>("value");
-    if (!valueField.get()) return false;
-
-    ScalarArrayConstPtr channelNameField = structure->getField<ScalarArray>(
-        "channelName");
-    if (!channelNameField.get()) return false;
-    if (channelNameField->getElementType() != pvString) return false;
-
-    FieldConstPtr field = structure->getField("severity");
-    if (field.get())
-    {
-        ScalarArrayConstPtr severityField = structure->getField<ScalarArray>("severity");
-        if (!severityField.get() || severityField->getElementType() != pvInt)
-            return false;
-    }
-
-    field = structure->getField("status");
-    if (field.get())
-    {
-        ScalarArrayConstPtr statusField = structure->getField<ScalarArray>("status");
-        if (!statusField.get() || statusField->getElementType() != pvInt)
-            return false;
-    }
-
-    field = structure->getField("message");
-    if (field.get())
-    {
-        ScalarArrayConstPtr messageField = structure->getField<ScalarArray>("message");
-        if (!messageField.get() || messageField->getElementType() != pvString)
-           return false;
-    }
-
-    field = structure->getField("secondsPastEpoch");
-    if (field.get())
-    {
-        ScalarArrayConstPtr secondsPastEpochField = structure->getField<ScalarArray>("secondsPastEpoch");
-        if (!secondsPastEpochField.get() || secondsPastEpochField->getElementType() != pvLong)
-            return false;
-    }
-
-    field = structure->getField("nanoseconds");
-    if (field.get())
-    {
-        ScalarArrayConstPtr nanosecondsField = structure->getField<ScalarArray>("nanoseconds");
-        if (!nanosecondsField.get() || nanosecondsField->getElementType() != pvInt)
-            return false;
-    }
-
-    field = structure->getField("userTag");
-    if (field.get())
-    {
-        ScalarArrayConstPtr userTagField = structure->getField<ScalarArray>("userTag");
-        if (!userTagField.get() || userTagField->getElementType() != pvInt)
-            return false;
-    }
-
-    field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
-
-    NTFieldPtr ntField = NTField::get();
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
+    if (!structure)
         return false;
 
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
+    Result result(structure);
 
-    return true;
+    return result
+        .is<Structure>()
+        .has<ScalarArray>("value")
+        .has<ScalarArray>("channelName")
+        .maybeHas<ScalarArray>("severity")
+        .maybeHas<ScalarArray>("status")
+        .maybeHas<ScalarArray>("message")
+        .maybeHas<ScalarArray>("secondsPastEpoch")
+        .maybeHas<ScalarArray>("nanoseconds")
+        .maybeHas<ScalarArray>("userTag")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .valid();
 }
-
 
 bool NTScalarMultiChannel::isCompatible(PVStructurePtr const &pvStructure)
 {

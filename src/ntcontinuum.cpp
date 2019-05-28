@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntcontinuum.h>
 #include <pv/ntutils.h>
@@ -122,41 +124,21 @@ bool NTContinuum::is_a(PVStructurePtr const & pvStructure)
 
 bool NTContinuum::isCompatible(StructureConstPtr const & structure)
 {
-    if (structure.get() == 0) return false;
-
-    ScalarArrayConstPtr baseField = structure->getField<ScalarArray>("base");
-    if (baseField.get() == 0 || baseField->getElementType() != pvDouble)
+    if (!structure)
         return false;
 
-    ScalarArrayConstPtr valueField = structure->getField<ScalarArray>("value");
-    if (valueField.get() == 0 || valueField->getElementType() != pvDouble)
-        return false;
+    Result result(structure);
 
-    ScalarArrayConstPtr unitsField = structure->getField<ScalarArray>("units");
-    if (unitsField.get() == 0 || unitsField->getElementType() != pvString)
-        return false;
-
-    FieldConstPtr field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
-
-    NTFieldPtr ntField = NTField::get();
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    return true;
+    return result
+        .is<Structure>()
+        .has<ScalarArray>("base")
+        .has<ScalarArray>("value")
+        .has<ScalarArray>("units")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .valid();
 }
-
 
 bool NTContinuum::isCompatible(PVStructurePtr const & pvStructure)
 {

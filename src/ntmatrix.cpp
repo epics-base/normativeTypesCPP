@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntmatrix.h>
 #include <pv/ntutils.h>
@@ -139,43 +141,20 @@ bool NTMatrix::is_a(PVStructurePtr const & pvStructure)
 
 bool NTMatrix::isCompatible(StructureConstPtr const & structure)
 {
-    if (structure.get() == 0) return false;
-
-    ScalarArrayConstPtr valueField = structure->getField<ScalarArray>("value");
-    if (valueField.get() == 0 || valueField->getElementType() != pvDouble)
+    if (!structure)
         return false;
 
-    FieldConstPtr field = structure->getField("dim");
-    if (field.get())
-    {
-        ScalarArrayConstPtr dimField = structure->getField<ScalarArray>("dim");
-        if (dimField.get() == 0 || dimField->getElementType() != pvInt)
-            return false;
-    }
+    Result result(structure);
 
-    field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
-
-    NTFieldPtr ntField = NTField::get();
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    field = structure->getField("display");
-    if (field.get() && !ntField->isDisplay(field))
-        return false;
-
-    return true;
+    return result
+        .is<Structure>()
+        .has<ScalarArray>("value")
+        .maybeHas<ScalarArray>("dim")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .maybeHas<&NTField::isDisplay, Structure>("display")
+        .valid();
 }
 
 bool NTMatrix::isCompatible(PVStructurePtr const & pvStructure)

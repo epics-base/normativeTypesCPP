@@ -5,6 +5,7 @@
  */
 
 #include <algorithm>
+#include "validator.h"
 
 #define epicsExportSharedSymbols
 #include <pv/nturi.h>
@@ -149,45 +150,31 @@ bool NTURI::is_a(PVStructurePtr const & pvStructure)
 
 bool NTURI::isCompatible(StructureConstPtr const & structure)
 {
-    if (!structure.get()) return false;
-
-    ScalarConstPtr schemeField = structure->getField<Scalar>("scheme");
-    if (schemeField.get() == 0 || schemeField->getScalarType() != pvString)
+    if (!structure)
         return false;
 
-    ScalarConstPtr pathField = structure->getField<Scalar>("path");
-    if (pathField.get() == 0 || pathField->getScalarType() != pvString)
-        return false;
+    Result result(structure);
 
-    FieldConstPtr field = structure->getField("authority");
-    if (field.get())
-    {
-        ScalarConstPtr authorityField = structure->getField<Scalar>("authority");
-        if (!authorityField.get() || authorityField->getScalarType() != pvString)
-            return false;
+    result
+        .is<Structure>()
+        .has<Scalar>("scheme")
+        .has<Scalar>("path")
+        .maybeHas<Scalar>("authority")
+        .maybeHas<Structure>("query");
+
+    StructureConstPtr query(structure->getField<Structure>("query"));
+    if (query) {
+        Result r(query);
+        StringArray const & names(query->getFieldNames());
+        StringArray::const_iterator it;
+
+        for (it = names.begin(); it != names.end(); ++it)
+            r.has<ScalarArray>(*it);
+
+        result |= r;
     }
 
-    field = structure->getField("query");
-    if (field.get())
-    {
-        StructureConstPtr queryField = structure->getField<Structure>("query");
-        if (!queryField.get())
-            return false;
-
-        FieldConstPtrArray const & fields = queryField->getFields();
-        for (FieldConstPtrArray::const_iterator it = fields.begin();
-             it != fields.end(); ++it)
-        {
-            if ((*it)->getType() != scalar) return false;
-            ScalarType scalarType = std::tr1::dynamic_pointer_cast<const Scalar>(
-               (*it))->getScalarType();
-            if (scalarType != pvString &&
-                scalarType != pvInt &&
-                scalarType != pvDouble) return false;
-        }
-    }
-
-    return true;
+    return result.valid();
 }
 
 

@@ -5,6 +5,7 @@
  */
 
 #include <algorithm>
+#include "validator.h"
 
 #define epicsExportSharedSymbols
 #include <pv/nttable.h>
@@ -149,42 +150,32 @@ bool NTTable::is_a(PVStructurePtr const & pvStructure)
 
 bool NTTable::isCompatible(StructureConstPtr const & structure)
 {
-    if (!structure.get()) return false;
-
-    StructureConstPtr valueField = structure->getField<Structure>("value");
-    if (!valueField.get())
+    if (!structure)
         return false;
 
-    FieldConstPtrArray const & fields = valueField->getFields();
-    for (FieldConstPtrArray::const_iterator it = fields.begin();
-         it != fields.end(); ++it)
-    {
-        if ((*it)->getType() != scalarArray) return false;
+    Result result(structure);
+
+    result
+        .is<Structure>()
+        .has<Structure>("value")
+        .has<ScalarArray>("labels")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp");
+
+    StructureConstPtr value(structure->getField<Structure>("value"));
+    if (value) {
+        Result r(value);
+        StringArray const & names(value->getFieldNames());
+        StringArray::const_iterator it;
+
+        for (it = names.begin(); it != names.end(); ++it)
+            r.has<ScalarArray>(*it);
+
+        result |= r;
     }
 
-    ScalarArrayConstPtr labelsField = structure->getField<ScalarArray>("labels");
-    if (!labelsField.get() || labelsField->getElementType() != pvString)
-        return false;
-
-    FieldConstPtr field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
-
-    NTFieldPtr ntField = NTField::get();
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    return true;
+    return result.valid();
 }
 
 bool NTTable::isCompatible(PVStructurePtr const & pvStructure)

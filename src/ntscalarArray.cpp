@@ -4,6 +4,8 @@
  * found in the file LICENSE that is included with the distribution
  */
 
+#include "validator.h"
+
 #define epicsExportSharedSymbols
 #include <pv/ntscalarArray.h>
 #include <pv/ntutils.h>
@@ -161,39 +163,20 @@ bool NTScalarArray::is_a(PVStructurePtr const & pvStructure)
 
 bool NTScalarArray::isCompatible(StructureConstPtr const & structure)
 {
-    if (structure.get() == 0) return false;
-
-    ScalarArrayConstPtr valueField = structure->getField<ScalarArray>("value");
-    if (valueField.get() == 0)
+    if (!structure)
         return false;
 
-    FieldConstPtr field = structure->getField("descriptor");
-    if (field.get())
-    {
-        ScalarConstPtr descriptorField = structure->getField<Scalar>("descriptor");
-        if (!descriptorField.get() || descriptorField->getScalarType() != pvString)
-            return false;
-    }
+    Result result(structure);
 
-    NTFieldPtr ntField = NTField::get();
-
-    field = structure->getField("alarm");
-    if (field.get() && !ntField->isAlarm(field))
-        return false;
-
-    field = structure->getField("timeStamp");
-    if (field.get() && !ntField->isTimeStamp(field))
-        return false;
-
-    field = structure->getField("display");
-    if (field.get() && !ntField->isDisplay(field))
-        return false;
-
-    field = structure->getField("control");
-    if (field.get() && !ntField->isControl(field))
-        return false;
-
-    return true;
+    return result
+        .is<Structure>()
+        .has<ScalarArray>("value")
+        .maybeHas<Scalar>("descriptor")
+        .maybeHas<&NTField::isAlarm, Structure>("alarm")
+        .maybeHas<&NTField::isTimeStamp, Structure>("timeStamp")
+        .maybeHas<&NTField::isDisplay, Structure>("display")
+        .maybeHas<&NTField::isControl, Structure>("control")
+        .valid();
 }
 
 bool NTScalarArray::isCompatible(PVStructurePtr const & pvStructure)
