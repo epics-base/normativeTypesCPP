@@ -35,7 +35,6 @@ NTField::NTField()
 Result& NTField::isEnumerated(Result& result)
 {
     return result
-        .is<Structure>()
         .has<Scalar>("index")
         .has<ScalarArray>("choices");
 }
@@ -43,13 +42,12 @@ Result& NTField::isEnumerated(Result& result)
 bool NTField::isEnumerated(FieldConstPtr const & field)
 {
     Result result(field);
-    return isEnumerated(result).valid();
+    return isEnumerated(result.is<Structure>()).valid();
 }
 
 Result& NTField::isTimeStamp(Result& result)
 {
     return result
-        .is<Structure>()
         .has<Scalar>("secondsPastEpoch")
         .has<Scalar>("nanoseconds")
         .has<Scalar>("userTag");
@@ -58,13 +56,12 @@ Result& NTField::isTimeStamp(Result& result)
 bool NTField::isTimeStamp(FieldConstPtr const & field)
 {
     Result result(field);
-    return isTimeStamp(result).valid();
+    return isTimeStamp(result.is<Structure>()).valid();
 }
 
 Result& NTField::isAlarm(Result& result)
 {
     return result
-        .is<Structure>()
         .has<Scalar>("severity")
         .has<Scalar>("status")
         .has<Scalar>("message");
@@ -73,13 +70,12 @@ Result& NTField::isAlarm(Result& result)
 bool NTField::isAlarm(FieldConstPtr const & field)
 {
     Result result(field);
-    return isAlarm(result).valid();
+    return isAlarm(result.is<Structure>()).valid();
 }
 
 Result& NTField::isDisplay(Result& result)
 {
     return result
-        .is<Structure>()
         .has<Scalar>("limitLow")
         .has<Scalar>("limitHigh")
         .has<Scalar>("description")
@@ -91,13 +87,12 @@ Result& NTField::isDisplay(Result& result)
 bool NTField::isDisplay(FieldConstPtr const & field)
 {
     Result result(field);
-    return isDisplay(result).valid();
+    return isDisplay(result.is<Structure>()).valid();
 }
 
 Result& NTField::isAlarmLimit(Result& result)
 {
     return result
-        .is<Structure>()
         .has<Scalar>("active")
         .has<Scalar>("lowAlarmLimit")
         .has<Scalar>("lowWarningLimit")
@@ -113,13 +108,12 @@ Result& NTField::isAlarmLimit(Result& result)
 bool NTField::isAlarmLimit(FieldConstPtr const & field)
 {
     Result result(field);
-    return isAlarmLimit(result).valid();
+    return isAlarmLimit(result.is<Structure>()).valid();
 }
 
 Result& NTField::isControl(Result& result)
 {
     return result
-        .is<Structure>()
         .has<Scalar>("limitLow")
         .has<Scalar>("limitHigh")
         .has<Scalar>("minStep");
@@ -128,7 +122,7 @@ Result& NTField::isControl(Result& result)
 bool NTField::isControl(FieldConstPtr const & field)
 {
     Result result(field);
-    return isControl(result).valid();
+    return isControl(result.is<Structure>()).valid();
 }
 
 StructureConstPtr NTField::createEnumerated()
