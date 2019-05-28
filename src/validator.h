@@ -67,10 +67,22 @@ struct Result {
         return *this;
     }
 
+    /**
+     * Returns whether this Result is valid.
+     *
+     * @return true if all tests passed, false otherwise.
+     */
     bool valid(void) const {
         return result == Pass;
     }
 
+    /**
+     * Test that this Result's field is of a particular type 'T'.
+     *
+     * Appends an Error::Type::IncorrectType if the field is not of type 'T'.
+     *
+     * @return itself
+     */
     template<typename T>
     Result& is(void) {
         if (!dynamic_cast<T const *>(f.get())) {
@@ -80,6 +92,16 @@ struct Result {
         return *this;
     }
 
+    /**
+     * Test that this Result's field is of a particular type 'T' and has
+     * an ID equal to 'id'.
+     *
+     * Appends an Error::Type::IncorrectType if the field is not of type 'T'.
+     * Appends an Error::Type::IncorrectId if the field does not have an ID
+     * equal to 'id'.
+     *
+     * @return itself
+     */
     template<typename T>
     Result& is(const std::string& id) {
         T const *s = dynamic_cast<T const *>(f.get());
@@ -93,21 +115,71 @@ struct Result {
         return *this;
     }
 
+    /**
+     * Test that this Result's field has a subfield with name 'name',
+     * apply the function 'fn' to the subfield and, optionally,
+     * test that the subfield is of type 'T' (if specified).
+     *
+     * Appends an Error::Type::IncorrectType if the field is not one of
+     * Structure, StructureArray, Union, UnionArray.
+     * Appends an Error::Type::IncorrectType if the subfield is not of
+     * type 'T' (if 'T' was specified).
+     * Appends an Error::Type::MissingField if the subfield is not
+     * present.
+     *
+     * @return itself
+     */
     template<Result& (*fn)(Result&), typename T=epics::pvData::Field>
     Result& has(const std::string& name) {
         return has<T>(name, false, fn);
     }
 
+    /**
+     * Test that this Result's field has an optional subfield with name
+     * 'name' and, if it has, apply the function 'fn' to the subfield and
+     * test that the subfield is of type 'T' (if specified).
+     *
+     * Appends an Error::Type::IncorrectType if the field is not one of
+     * Structure, StructureArray, Union, UnionArray.
+     * Appends an Error::Type::IncorrectType if the subfield exists and
+     * is not of type 'T' (if 'T' was specified).
+     *
+     * @return itself
+     */
     template<Result& (*fn)(Result&), typename T=epics::pvData::Field>
     Result& maybeHas(const std::string& name) {
         return has<T>(name, true, fn);
     }
 
+    /**
+     * Test that this Result's field has a subfield with name 'name' and
+     * test that the subfield is of type 'T'.
+     *
+     * Appends an Error::Type::IncorrectType if the field is not one of
+     * Structure, StructureArray, Union, UnionArray.
+     * Appends an Error::Type::IncorrectType if the subfield is not of
+     * type 'T'.
+     * Appends an Error::Type::MissingField if the subfield is not
+     * present.
+     *
+     * @return itself
+     */
     template<typename T>
     Result& has(const std::string& name) {
         return has<T>(name, false, NULL);
     }
 
+    /**
+     * Test that this Result's field has an optional subfield with name
+     * 'name' and, if it has, test that the subfield is of type 'T'.
+     *
+     * Appends an Error::Type::IncorrectType if the field is not one of
+     * Structure, StructureArray, Union, UnionArray.
+     * Appends an Error::Type::IncorrectType if the subfield exists and
+     * is not of type 'T'.
+     *
+     * @return itself
+     */
     template<typename T>
     Result& maybeHas(const std::string& name) {
         return has<T>(name, true, NULL);
@@ -115,7 +187,7 @@ struct Result {
 
     std::ostream& dump(std::ostream& os) const {
         os << "Result(valid=" << (result == Pass) << ", errors=[ ";
-        
+
         std::vector<Error>::const_iterator it;
         for (it = errors.cbegin(); it != errors.cend(); ++it) {
             (*it).dump(os);
