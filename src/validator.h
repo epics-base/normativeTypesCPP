@@ -295,7 +295,7 @@ private:
             default:
                 // Expected a structure-like Field
                 result = Fail;
-                errors.push_back(Error(path, Error::Type::IncorrectType));
+                errors.push_back(Error(path, Error::IncorrectType));
                 return *this;
         }
 
@@ -304,11 +304,11 @@ private:
         if (!subField) {
             if (!optional) {
                 result = Fail;
-                errors.push_back(Error(subFieldPath, Error::Type::MissingField));
+                errors.push_back(Error(subFieldPath, Error::MissingField));
             }
         } else if (!dynamic_cast<T const *>(subField.get())) {
             result = Fail;
-            errors.push_back(Error(subFieldPath, Error::Type::IncorrectType));
+            errors.push_back(Error(subFieldPath, Error::IncorrectType));
         } else if (check) {
             Result r(subField, subFieldPath);
             *this |= check(r);
