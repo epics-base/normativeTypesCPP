@@ -11,18 +11,7 @@
 #include <pv/pvIntrospect.h>
 
 using namespace epics::nt;
-using epics::pvData::StructureConstPtr;
-using epics::pvData::UnionConstPtr;
-using epics::pvData::Field;
-using epics::pvData::ScalarType;
-using epics::pvData::ScalarTypeFunc::name;
-using epics::pvData::FieldConstPtr;
-using epics::pvData::FieldBuilder;
-using epics::pvData::FieldBuilderPtr;
-using epics::pvData::Scalar;
-using epics::pvData::ScalarArray;
-using epics::pvData::Structure;
-using epics::pvData::Union;
+using namespace epics::pvData;
 
 static epics::pvData::FieldCreatePtr FC;
 
@@ -31,22 +20,22 @@ void test_is()
     testDiag("test_is");
 
     // Result::is<Scalar> must be valid for Scalars of any type
-    for(int i = ScalarType::pvBoolean; i <= ScalarType::pvString; ++i) {
+    for(int i = pvBoolean; i <= pvString; ++i) {
         ScalarType t = static_cast<ScalarType>(i);
         testOk(Result(FC->createScalar(t)).is<Scalar>().valid(),
-            "Result(Scalar<%s>).is<Scalar>().valid()", name(t));
+            "Result(Scalar<%s>).is<Scalar>().valid()", ScalarTypeFunc::name(t));
     }
 
     // Result::is<ScalarArray> must be valid for ScalarArray of any type
-    for(int i = ScalarType::pvBoolean; i <= ScalarType::pvString; ++i) {
+    for(int i = pvBoolean; i <= pvString; ++i) {
         ScalarType t = static_cast<ScalarType>(i);
         testOk(Result(FC->createScalarArray(t)).is<ScalarArray>().valid(),
-            "Result(ScalarArray<%s>).is<ScalarArray>().valid()", name(t));
+            "Result(ScalarArray<%s>).is<ScalarArray>().valid()", ScalarTypeFunc::name(t));
     }
 
     {
         // Result::is<Scalar> must be invalid for non-Scalar
-        Result result(FC->createScalarArray(ScalarType::pvInt));
+        Result result(FC->createScalarArray(pvInt));
         result.is<Scalar>();
         testOk(!result.valid(), "!Result(ScalarArray<pvInt>).is<Scalar>.valid()");
         testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
@@ -54,7 +43,7 @@ void test_is()
 
     {
         // Result::is<ScalarArray> must be invalid for non-ScalarArray
-        Result result(FC->createScalar(ScalarType::pvInt));
+        Result result(FC->createScalar(pvInt));
         result.is<ScalarArray>();
         testOk(!result.valid(), "!Result(ScalarArray<pvInt>).is<Scalar>.valid()");
         testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
@@ -78,8 +67,8 @@ void test_is_id()
         // Both type and ID match for Union
         UnionConstPtr un(FB->
             setId("TEST_ID")->
-            add("A", ScalarType::pvInt)->
-            add("B", ScalarType::pvString)->
+            add("A", pvInt)->
+            add("B", pvString)->
             createUnion()
         );
         Result result(un);
@@ -112,7 +101,7 @@ void test_is_id()
 
     {
         // Neither type nor ID match (ID is not even checked in this case since it doesn't exist)
-        Result result(FC->createScalar(ScalarType::pvDouble));
+        Result result(FC->createScalar(pvDouble));
         result.is<Structure>("SOME_ID");
         testOk(!result.valid(), "!Result(Scalar).is<Structure>('SOME_ID').valid()");
         testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
@@ -126,8 +115,8 @@ void test_has()
     FieldBuilderPtr FB(FieldBuilder::begin());
 
     StructureConstPtr struc(FB->
-        add("A", ScalarType::pvInt)->
-        add("B", ScalarType::pvString)->
+        add("A", pvInt)->
+        add("B", pvString)->
         createStructure()
     );
 
@@ -171,7 +160,7 @@ void test_has()
 
     {
         // Test that 'has' fails for non-structure-like Fields
-        Result result(FC->createScalar(ScalarType::pvByte));
+        Result result(FC->createScalar(pvByte));
         result.has<Scalar>("X");
         testOk(!result.valid(), "!Result(Scalar<pvByte>).has<Scalar>('X').valid()");
         testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
@@ -185,8 +174,8 @@ void test_maybe_has()
     FieldBuilderPtr FB(FieldBuilder::begin());
 
     StructureConstPtr struc(FB->
-        add("A", ScalarType::pvInt)->
-        add("B", ScalarType::pvString)->
+        add("A", pvInt)->
+        add("B", pvString)->
         createStructure()
     );
 
@@ -229,7 +218,7 @@ void test_maybe_has()
 
     {
         // Test that 'maybeHas' fails for non-structure-like Fields
-        Result result(FC->createScalar(ScalarType::pvByte));
+        Result result(FC->createScalar(pvByte));
         result.maybeHas<Scalar>("X");
         testOk(!result.valid(), "!Result(Scalar<pvByte>).maybeHas<Scalar>('X').valid()");
         testOk1(result.errors.at(0) == Result::Error("", Result::Error::IncorrectType));
@@ -253,9 +242,9 @@ void test_has_fn()
     {
         StructureConstPtr inner(FB->
             setId("ABC")->
-            add("A", ScalarType::pvInt)->
-            addArray("B", ScalarType::pvDouble)->
-            add("C", ScalarType::pvString)->
+            add("A", pvInt)->
+            addArray("B", pvDouble)->
+            add("C", pvString)->
             createStructure()
         );
 
@@ -268,8 +257,8 @@ void test_has_fn()
     {
         StructureConstPtr inner(FB->
             setId("ABC")->
-            add("A", ScalarType::pvInt)->
-            addArray("B", ScalarType::pvDouble)->
+            add("A", pvInt)->
+            addArray("B", pvDouble)->
             createStructure()
         );
 
@@ -282,8 +271,8 @@ void test_has_fn()
     {
         StructureConstPtr inner(FB->
             setId("XYZ")->
-            add("A", ScalarType::pvInt)->
-            addArray("B", ScalarType::pvDouble)->
+            add("A", pvInt)->
+            addArray("B", pvDouble)->
             createStructure()
         );
 
@@ -297,8 +286,8 @@ void test_has_fn()
     {
         StructureConstPtr inner(FB->
             setId("XYZ")->
-            add("A", ScalarType::pvInt)->
-            add("B", ScalarType::pvDouble)->
+            add("A", pvInt)->
+            add("B", pvDouble)->
             createStructure()
         );
 
