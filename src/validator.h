@@ -163,20 +163,50 @@ struct Result {
     }
 
     /**
-     * Test that this Result's field has a subfield with name 'name',
-     * apply the function 'fn' to the subfield and, optionally,
-     * test that the subfield is of type 'T' (if specified).
+     * Test that this Result's field has a subfield with name 'name' and
+     * apply the function 'fn' to the subfield.
      *
      * Appends an Error::Type::IncorrectType if the field is not one of
      * Structure, StructureArray, Union, UnionArray.
-     * Appends an Error::Type::IncorrectType if the subfield is not of
-     * type 'T' (if 'T' was specified).
      * Appends an Error::Type::MissingField if the subfield is not
      * present.
      *
      * @return itself
      */
-    template<Result& (*fn)(Result&), typename T=epics::pvData::Field>
+    template<Result& (*fn)(Result&)>
+    Result& has(const std::string& name) {
+        return has<epics::pvData::Field>(name, false, fn);
+    }
+
+    /**
+     * Test that this Result's field has an optional subfield with name
+     * 'name' and, if it has, apply the function 'fn' to the subfield.
+     *
+     * Appends an Error::Type::IncorrectType if the field is not one of
+     * Structure, StructureArray, Union, UnionArray.
+     *
+     * @return itself
+     */
+    template<Result& (*fn)(Result&)>
+    Result& maybeHas(const std::string& name) {
+        return has<epics::pvData::Field>(name, true, fn);
+    }
+
+    /**
+     * Test that this Result's field has a subfield with name 'name',
+     * apply the function 'fn' to the subfield and
+     * test that the subfield is of type 'T'.
+     *
+     * Appends an Error::Type::IncorrectType if the field is not one of
+     * Structure, StructureArray, Union, UnionArray.
+     * Appends an Error::Type::IncorrectType if the subfield is not of
+     * type 'T'.
+     * Appends an Error::Type::MissingField if the subfield is not
+     * present.
+     *
+     * @return itself
+     */
+    template<Result& (*fn)(Result&), typename T>
     Result& has(const std::string& name) {
         return has<T>(name, false, fn);
     }
@@ -184,16 +214,16 @@ struct Result {
     /**
      * Test that this Result's field has an optional subfield with name
      * 'name' and, if it has, apply the function 'fn' to the subfield and
-     * test that the subfield is of type 'T' (if specified).
+     * test that the subfield is of type 'T'.
      *
      * Appends an Error::Type::IncorrectType if the field is not one of
      * Structure, StructureArray, Union, UnionArray.
      * Appends an Error::Type::IncorrectType if the subfield exists and
-     * is not of type 'T' (if 'T' was specified).
+     * is not of type 'T'.
      *
      * @return itself
      */
-    template<Result& (*fn)(Result&), typename T=epics::pvData::Field>
+    template<Result& (*fn)(Result&), typename T>
     Result& maybeHas(const std::string& name) {
         return has<T>(name, true, fn);
     }
@@ -236,7 +266,7 @@ struct Result {
         os << "Result(valid=" << (result == Pass) << ", errors=[ ";
 
         std::vector<Error>::const_iterator it;
-        for (it = errors.cbegin(); it != errors.cend(); ++it) {
+        for (it = errors.begin(); it != errors.end(); ++it) {
             (*it).dump(os);
             os << " ";
         }
@@ -250,16 +280,16 @@ private:
         epics::pvData::FieldConstPtr subField;
 
         switch(field->getType()) {
-            case epics::pvData::Type::structure:
+            case epics::pvData::structure:
                 subField = static_cast<epics::pvData::Structure const *>(field.get())->getField(name);
                 break;
-            case epics::pvData::Type::structureArray:
+            case epics::pvData::structureArray:
                 subField = static_cast<epics::pvData::StructureArray const *>(field.get())->getStructure()->getField(name);
                 break;
-            case epics::pvData::Type::union_:
+            case epics::pvData::union_:
                 subField = static_cast<epics::pvData::Union const *>(field.get())->getField(name);
                 break;
-            case epics::pvData::Type::unionArray:
+            case epics::pvData::unionArray:
                 subField = static_cast<epics::pvData::UnionArray const *>(field.get())->getUnion()->getField(name);
                 break;
             default:
