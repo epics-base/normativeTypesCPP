@@ -146,13 +146,20 @@ Result& NTNDArrayAttribute::isAttribute(Result& result) {
         .has<Scalar>("source");
 }
 
+static epicsThreadOnceId cachedResultOnceId = EPICS_THREAD_ONCE_INIT;
+static epicsThreadPrivateId cachedResultId;
+
 bool NTNDArrayAttribute::isCompatible(StructureConstPtr const & structure)
 {
     if (!structure)
         return false;
 
-    Result result(structure);
-    return isAttribute(result.is<Structure>()).valid();
+    Result& result = Result::fromCache(&cachedResultOnceId, &cachedResultId);
+
+    if (result.wraps(structure))
+        return result.valid();
+
+    return isAttribute(result.reset(structure).is<Structure>()).valid();
 }
 
 bool NTNDArrayAttribute::isCompatible(PVStructurePtr const & pvStructure)

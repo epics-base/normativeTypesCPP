@@ -128,14 +128,20 @@ bool NTUnion::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
+static epicsThreadOnceId cachedResultOnceId = EPICS_THREAD_ONCE_INIT;
+static epicsThreadPrivateId cachedResultId;
+
 bool NTUnion::isCompatible(StructureConstPtr const &structure)
 {
     if (!structure)
         return false;
 
-    Result result(structure);
+    Result& result = Result::fromCache(&cachedResultOnceId, &cachedResultId);
 
-    return result
+    if (result.wraps(structure))
+        return result.valid();
+
+    return result.reset(structure)
         .is<Structure>()
         .has<Union>("value")
         .maybeHas<Scalar>("descriptor")
