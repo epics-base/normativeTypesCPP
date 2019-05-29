@@ -148,14 +148,20 @@ bool NTTable::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
+static epicsThreadOnceId cachedResultOnceId = EPICS_THREAD_ONCE_INIT;
+static epicsThreadPrivateId cachedResultId;
+
 bool NTTable::isCompatible(StructureConstPtr const & structure)
 {
     if (!structure)
         return false;
 
-    Result result(structure);
+    Result& result = Result::fromCache(&cachedResultOnceId, &cachedResultId);
 
-    result
+    if (result.wraps(structure))
+        return result.valid();
+
+    result.reset(structure)
         .is<Structure>()
         .has<Structure>("value")
         .has<ScalarArray>("labels")

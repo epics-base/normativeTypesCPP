@@ -134,14 +134,20 @@ bool NTNameValue::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
+static epicsThreadOnceId cachedResultOnceId = EPICS_THREAD_ONCE_INIT;
+static epicsThreadPrivateId cachedResultId;
+
 bool NTNameValue::isCompatible(StructureConstPtr const & structure)
 {
     if (!structure)
         return false;
 
-    Result result(structure);
+    Result& result = Result::fromCache(&cachedResultOnceId, &cachedResultId);
+
+    if (result.wraps(structure))
+        return result.valid();
     
-    return result
+    return result.reset(structure)
         .is<Structure>()
         .has<ScalarArray>("name")
         .has<ScalarArray>("value")

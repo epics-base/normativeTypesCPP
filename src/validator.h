@@ -9,6 +9,8 @@
 #include <string>
 #include <set>
 
+#include <epicsThread.h>
+
 #include <pv/pvIntrospect.h>
 
 namespace epics { namespace nt {
@@ -48,8 +50,8 @@ struct Result {
         }
     };
 
-    const epics::pvData::FieldConstPtr f;
-    const std::string path;
+    epics::pvData::FieldConstPtr field;
+    std::string path;
     std::vector<Error> errors;
 
     enum result_t {
@@ -57,8 +59,10 @@ struct Result {
         Fail,
     } result;
 
-    explicit Result(const epics::pvData::FieldConstPtr& f, const std::string& path = std::string())
-    : f(f), path(path), errors(), result(Pass) {}
+    Result(const epics::pvData::FieldConstPtr& field, const std::string& path = std::string())
+    : field(field), path(path), errors(), result(Pass) {}
+
+    Result() {}
 
     Result& operator|=(const Result& other) {
         result = std::max(result, other.result);
@@ -67,11 +71,55 @@ struct Result {
     }
 
     /**
+     * Clears the contents of this Result.
+     *
+     * @return a reference to itself.
+     */
+    Result& reset(const epics::pvData::FieldConstPtr& newField) {
+        field = newField;
+        path.clear();
+        errors.clear();
+        result = Pass;
+        return *this;
+    }
+
+    /**
+     * Retrieves a Result from a thread-local cache. Allocates a new Result
+     * if it wasn't allocated yet.
+     *
+     * @return a reference to the stored Result.
+     *
+     */
+    static Result& fromCache(epicsThreadOnceId *onceId, epicsThreadPrivateId *cachedId) {
+        epicsThreadOnce(onceId, &once, static_cast<void*>(cachedId));
+
+        Result *result = static_cast<Result*>(epicsThreadPrivateGet(*cachedId));
+
+        if (!result) {
+            result = new Result;
+            epicsThreadPrivateSet(*cachedId, result);
+        }
+
+        return *result;
+    }
+
+    /**
+     * Returns whether this Result already wraps a particular Field.
+     * Note: this is done via pointer equality, which pvData guarantees
+     * will work if the pointed-to Fields are the same.
+     *
+     * @return true if it does wrap the passed-in field, false otherwise.
+     */
+    inline bool wraps(epics::pvData::FieldConstPtr const & other) const {
+        return field && field == other;
+    }
+
+    /**
      * Returns whether this Result is valid.
      *
      * @return true if all tests passed, false otherwise.
      */
-    bool valid(void) const {
+    inline bool valid(void) const {
         return result == Pass;
     }
 
@@ -84,7 +132,7 @@ struct Result {
      */
     template<typename T>
     Result& is(void) {
-        if (!dynamic_cast<T const *>(f.get())) {
+        if (!dynamic_cast<T const *>(field.get())) {
             result = Fail;
             errors.push_back(Error(path, Error::IncorrectType));
         }
@@ -103,7 +151,7 @@ struct Result {
      */
     template<typename T>
     Result& is(const std::string& id) {
-        T const *s = dynamic_cast<T const *>(f.get());
+        T const *s = dynamic_cast<T const *>(field.get());
         if (!s) {
             result = Fail;
             errors.push_back(Error(path, Error::IncorrectType));
@@ -199,20 +247,20 @@ struct Result {
 private:
     template<typename T>
     Result& has(const std::string& name, bool optional, Result& (*check)(Result&) = NULL) {
-        epics::pvData::FieldConstPtr field;
+        epics::pvData::FieldConstPtr subField;
 
-        switch(f->getType()) {
+        switch(field->getType()) {
             case epics::pvData::Type::structure:
-                field = static_cast<epics::pvData::Structure const *>(f.get())->getField(name);
+                subField = static_cast<epics::pvData::Structure const *>(field.get())->getField(name);
                 break;
             case epics::pvData::Type::structureArray:
-                field = static_cast<epics::pvData::StructureArray const *>(f.get())->getStructure()->getField(name);
+                subField = static_cast<epics::pvData::StructureArray const *>(field.get())->getStructure()->getField(name);
                 break;
             case epics::pvData::Type::union_:
-                field = static_cast<epics::pvData::Union const *>(f.get())->getField(name);
+                subField = static_cast<epics::pvData::Union const *>(field.get())->getField(name);
                 break;
             case epics::pvData::Type::unionArray:
-                field = static_cast<epics::pvData::UnionArray const *>(f.get())->getUnion()->getField(name);
+                subField = static_cast<epics::pvData::UnionArray const *>(field.get())->getUnion()->getField(name);
                 break;
             default:
                 // Expected a structure-like Field
@@ -221,22 +269,27 @@ private:
                 return *this;
         }
 
-        std::string fieldPath(path.empty() ? name : path + "." + name);
+        std::string subFieldPath(path.empty() ? name : path + "." + name);
 
-        if (!field) {
+        if (!subField) {
             if (!optional) {
                 result = Fail;
-                errors.push_back(Error(fieldPath, Error::Type::MissingField));
+                errors.push_back(Error(subFieldPath, Error::Type::MissingField));
             }
-        } else if (!dynamic_cast<T const *>(field.get())) {
+        } else if (!dynamic_cast<T const *>(subField.get())) {
             result = Fail;
-            errors.push_back(Error(fieldPath, Error::Type::IncorrectType));
+            errors.push_back(Error(subFieldPath, Error::Type::IncorrectType));
         } else if (check) {
-            Result r(field, fieldPath);
+            Result r(subField, subFieldPath);
             *this |= check(r);
         }
 
         return *this;
+    }
+
+    static void once(void *arg) {
+        epicsThreadPrivateId *id = static_cast<epicsThreadPrivateId *>(arg);
+        *id = epicsThreadPrivateCreate();
     }
 };
 }}

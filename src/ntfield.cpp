@@ -39,24 +39,12 @@ Result& NTField::isEnumerated(Result& result)
         .has<ScalarArray>("choices");
 }
 
-bool NTField::isEnumerated(FieldConstPtr const & field)
-{
-    Result result(field);
-    return isEnumerated(result.is<Structure>()).valid();
-}
-
 Result& NTField::isTimeStamp(Result& result)
 {
     return result
         .has<Scalar>("secondsPastEpoch")
         .has<Scalar>("nanoseconds")
         .has<Scalar>("userTag");
-}
-
-bool NTField::isTimeStamp(FieldConstPtr const & field)
-{
-    Result result(field);
-    return isTimeStamp(result.is<Structure>()).valid();
 }
 
 Result& NTField::isAlarm(Result& result)
@@ -67,12 +55,6 @@ Result& NTField::isAlarm(Result& result)
         .has<Scalar>("message");
 }
 
-bool NTField::isAlarm(FieldConstPtr const & field)
-{
-    Result result(field);
-    return isAlarm(result.is<Structure>()).valid();
-}
-
 Result& NTField::isDisplay(Result& result)
 {
     return result
@@ -81,13 +63,6 @@ Result& NTField::isDisplay(Result& result)
         .has<Scalar>("description")
         .has<Scalar>("format")
         .has<Scalar>("units");
-
-}
-
-bool NTField::isDisplay(FieldConstPtr const & field)
-{
-    Result result(field);
-    return isDisplay(result.is<Structure>()).valid();
 }
 
 Result& NTField::isAlarmLimit(Result& result)
@@ -105,12 +80,6 @@ Result& NTField::isAlarmLimit(Result& result)
         .has<Scalar>("hysteresis");
 }
 
-bool NTField::isAlarmLimit(FieldConstPtr const & field)
-{
-    Result result(field);
-    return isAlarmLimit(result.is<Structure>()).valid();
-}
-
 Result& NTField::isControl(Result& result)
 {
     return result
@@ -119,11 +88,24 @@ Result& NTField::isControl(Result& result)
         .has<Scalar>("minStep");
 }
 
-bool NTField::isControl(FieldConstPtr const & field)
-{
-    Result result(field);
-    return isControl(result.is<Structure>()).valid();
-}
+#define IS_NTFIELD_FUNC(name)                                               \
+    static epicsThreadOnceId cached##name##OnceId = EPICS_THREAD_ONCE_INIT; \
+    static epicsThreadPrivateId cached##name##Id;                           \
+    bool NTField::is##name(FieldConstPtr const & field) {                   \
+        Result& result = Result::fromCache(&cached##name##OnceId,           \
+            &cached##name##Id);                                             \
+        if (result.wraps(field)) return result.valid();                     \
+        return is##name(result.reset(field).is<Structure>()).valid();       \
+    }
+
+IS_NTFIELD_FUNC(Enumerated)
+IS_NTFIELD_FUNC(TimeStamp)
+IS_NTFIELD_FUNC(Alarm)
+IS_NTFIELD_FUNC(Display)
+IS_NTFIELD_FUNC(AlarmLimit)
+IS_NTFIELD_FUNC(Control)
+
+#undef IS_NTFIELD_FUNC
 
 StructureConstPtr NTField::createEnumerated()
 {
