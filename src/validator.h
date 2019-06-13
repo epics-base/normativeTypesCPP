@@ -9,8 +9,6 @@
 #include <string>
 #include <set>
 
-#include <epicsThread.h>
-
 #include <pv/pvIntrospect.h>
 
 namespace epics { namespace nt {
@@ -68,50 +66,6 @@ struct Result {
         result = std::max(result, other.result);
         errors.insert(errors.end(), other.errors.begin(), other.errors.end());
         return *this;
-    }
-
-    /**
-     * Clears the contents of this Result.
-     *
-     * @return a reference to itself.
-     */
-    Result& reset(const epics::pvData::FieldConstPtr& newField) {
-        field = newField;
-        path.clear();
-        errors.clear();
-        result = Pass;
-        return *this;
-    }
-
-    /**
-     * Retrieves a Result from a thread-local cache. Allocates a new Result
-     * if it wasn't allocated yet.
-     *
-     * @return a reference to the stored Result.
-     *
-     */
-    static Result& fromCache(epicsThreadOnceId *onceId, epicsThreadPrivateId *cachedId) {
-        epicsThreadOnce(onceId, &once, static_cast<void*>(cachedId));
-
-        Result *result = static_cast<Result*>(epicsThreadPrivateGet(*cachedId));
-
-        if (!result) {
-            result = new Result;
-            epicsThreadPrivateSet(*cachedId, result);
-        }
-
-        return *result;
-    }
-
-    /**
-     * Returns whether this Result already wraps a particular Field.
-     * Note: this is done via pointer equality, which pvData guarantees
-     * will work if the pointed-to Fields are the same.
-     *
-     * @return true if it does wrap the passed-in field, false otherwise.
-     */
-    inline bool wraps(epics::pvData::FieldConstPtr const & other) const {
-        return field && field == other;
     }
 
     /**
@@ -315,11 +269,6 @@ private:
         }
 
         return *this;
-    }
-
-    static void once(void *arg) {
-        epicsThreadPrivateId *id = static_cast<epicsThreadPrivateId *>(arg);
-        *id = epicsThreadPrivateCreate();
     }
 };
 }}
