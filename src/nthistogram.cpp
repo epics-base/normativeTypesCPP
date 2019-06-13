@@ -135,20 +135,14 @@ bool NTHistogram::is_a(PVStructurePtr const & pvStructure)
     return is_a(pvStructure->getStructure());
 }
 
-static epicsThreadOnceId cachedResultOnceId = EPICS_THREAD_ONCE_INIT;
-static epicsThreadPrivateId cachedResultId;
-
 bool NTHistogram::isCompatible(StructureConstPtr const &structure)
 {
     if (!structure)
         return false;
 
-    Result& result = Result::fromCache(&cachedResultOnceId, &cachedResultId);
+    Result result(structure);
 
-    if (result.wraps(structure))
-        return result.valid();
-
-    return result.reset(structure)
+    return result
         .is<Structure>()
         .has<ScalarArray>("ranges")
         .has<ScalarArray>("value")
