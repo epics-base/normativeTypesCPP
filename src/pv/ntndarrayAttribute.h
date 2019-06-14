@@ -22,7 +22,7 @@
 
 namespace epics { namespace nt {
 
-class Result;
+struct Result;
 class NTNDArrayAttribute;
 typedef std::tr1::shared_ptr<NTNDArrayAttribute> NTNDArrayAttributePtr;
 
