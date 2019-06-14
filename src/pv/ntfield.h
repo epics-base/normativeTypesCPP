@@ -30,7 +30,7 @@
 
 namespace epics { namespace nt {
 
-class Result;
+struct Result;
 
 class NTField;
 typedef std::tr1::shared_ptr<NTField> NTFieldPtr;
