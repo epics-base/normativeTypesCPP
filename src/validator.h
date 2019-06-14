@@ -8,6 +8,7 @@
 
 #include <string>
 #include <set>
+#include <algorithm>
 
 #include <pv/pvIntrospect.h>
 
