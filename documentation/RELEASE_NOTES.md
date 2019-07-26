@@ -2,6 +2,16 @@
 
 This document summarizes the changes to the module between releases.
 
+## Release 6.0.0 (EPICS 7.0.3, July 2019)
+
+* Reimplement `isCompatible` methods to use a new internal validation API in order to make the implementation uniform, less repetitive and less strict.
+
+The new implementation is less strict in the sense that it considers types that can be converted into one another compatible with each other. For example, any `Scalar` is considered compatible with any other `Scalar`, regardless of the underlying type. Normative Types users are advised to use `getAs` and `putFrom` when getting/putting data from/into `PVScalar`s and `PVScalarArray`s.
+
+Also, `isCompatible` methods now disregard field order and extra fields that are not part of the specification.
+
+This change is not expected to break any current server or client, but it will break existing clients that rely on the previous `isCompatible` strictness once servers start to take advantage of `isCompatible` now being less strict.
+
 ## Release 5.2.2
 
 - Fix NTTable::getColumnNames().
