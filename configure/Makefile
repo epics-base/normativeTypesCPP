@@ -10,6 +10,8 @@ include $(TOP)/configure/CONFIG
 # but continue the build even if conflicts are found.
 CHECK_RELEASE = YES
 
+CFG += CONFIG_NTYPES_VERSION
+
 TARGETS = $(CONFIG_TARGETS)
 CONFIGS += $(subst ../,,$(wildcard $(CONFIG_INSTALLS)))
 
