@@ -1,46 +1,45 @@
-=======================
-EPICS normativeTypesCPP
-=======================
+.. |_| unicode:: 0xA0
+   :trim:
+
+===========================
+normativeTypesCPP Reference
+===========================
 
 Release 5.3.0 - September 2019
 ------------------------------
 
 This software is published under the terms of the EPICS Open
-license. :ref:`licencestatement`
+license.
 
 --------------
 
 Abstract
 --------
 
-EPICS Version 4 provides efficient storage, access, and communication, of
-|   memory resident structured data. The EPICS V4 Normative Types are a
-|   collection of structured data types that can be used by the application
-|   level of EPICS V4 network endpoints, to interoperably exchange
-|   scientific data. normativeTypesCPP is the C++ implementation. It is one
-|   part of the set of related products in the EPICS V4 control system
-|   programming environment:
+The EPICS |_| 7 PVA modules provide efficient storage, access, and
+communication, of memory resident structured data.
+The PVA Normative Types are a collection of structured data types
+that can be used by the application level of EPICS |_| 7 network
+endpoints, to interoperably exchange scientific data.
+normativeTypesCPP is the C++ implementation. It is one part of the
+set of related products in the EPICS |_| 7 control system toolkit.
 
-
-`relatedDocumentsV4.html <http://epics-pvdata.sourceforge.net/relatedDocumentsV4.html>`__
 
 Status of this Document
 -----------------------
 
-This is the 03 September-2019 version for the 5.3.0 release of the C++
-implementation of normativeTypes.
+This is the 05 September 2019 version for the 5.3.0 release of the C++
+implementation of Normative Types.
 
 RELEASE\_NOTES.md provides changes since the last release. TODO.md
 describes things to do before the next release.
 
-Table of Contents
------------------
 
 Introduction
 ------------
 
-This manual assumes that the reader is familiar with the material in
-`pvDataCPP.html <http://epics-pvdata.sourceforge.net/docbuild/pvDataCPP/tip/documentation/pvDataCPP.html>`__
+This manual assumes that the reader is familiar with the material in the
+`pvDataCPP Documentation <https://docs.epics-controls.org/projects/pvdata-cpp/en/latest/>`_
 
 At present the following Normative Types are implemented:
 
@@ -88,6 +87,7 @@ with features common to all classes, then support in the Normative Type
 classes for property fields. Finally the classes for each Normative Type
 are described.
 
+
 Overview (Informative)
 ----------------------
 
@@ -115,14 +115,14 @@ of a NTScalar.
 The builder for each class is named in an obvious way, so for example
 the builder for ``NTScalar`` is ``NTScalarBuilder``.
 
-As usual in EPICS V4 C++ libraries extensive use is made of shared
+As usual in EPICS |_| 7 C++ libraries, extensive use is made of shared
 pointers and these can be dealt with via typedefs. So for NTScalar we
 have ``NTScalarPtr`` and ``NTScalarBuilderPtr``.
 
 In the following examples it is assumed that the namespaces
 ``epics::pvData`` , ``epics::nt`` and ``std`` are used.
 
-| 
+|
 
 Creating Normative Types
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -588,7 +588,7 @@ are declared for ``NTScalar::shared_pointer`` and
 Features common to all Normative Type Builder classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For a NormativeType NTType the builder class definition is equivalent to
+For a Normative Type NTType the builder class definition is equivalent to
 one of the form:
 
 ::
@@ -643,7 +643,7 @@ fields are reset by calling ``create()``, ``createStructure()`` or
 Features common to all Normative Type Wrapper classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For a NormativeType NTType the wrapper class definition is equivalent to
+For a Normative Type NTType the wrapper class definition is equivalent to
 one of the form:
 
 ::
@@ -1060,10 +1060,10 @@ attachControl()
 getControl()
     Returns the ``control`` field or null if no ``control`` field.
 
-Normative Types NTScalar
+NTScalar
 ------------------------
 
-NTScalar is the EPICS V4 Normative Type that describes a single scalar
+NTScalar is the EPICS |_| 7 Normative Type that describes a single scalar
 value plus metadata:
 
 Its structure is defined to be:
@@ -1229,10 +1229,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTScalarArray
+NTScalarArray
 ----------------------------
 
-NTScalarArray is the EPICS V4 Normative Type that describes an array of
+NTScalarArray is the EPICS |_| 7 Normative Type that describes an array of
 values, plus metadata. All the elements of the array of the same scalar
 type.
 
@@ -1372,10 +1372,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTEnum
+NTEnum
 ---------------------
 
-NTEnum is an EPICS V4 Normative Type that describes an enumeration (a
+NTEnum is an EPICS |_| 7 Normative Type that describes an enumeration (a
 closed set of possible values specified by an n-tuple).
 
 Its structure is defined to be:
@@ -1480,10 +1480,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTMatrix
+NTMatrix
 -----------------------
 
-NTMatrix is an EPICS V4 Normative Type used to define a matrix,
+NTMatrix is an EPICS |_| 7 Normative Type used to define a matrix,
 specifically a 2-dimensional array of real numbers.
 
 Its structure is defined to be:
@@ -1607,10 +1607,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTURI
+NTURI
 --------------------
 
-NTURI is the EPICS V4 Normative Type that describes a Uniform Resource
+NTURI is the EPICS |_| 7 Normative Type that describes a Uniform Resource
 Identifier (URI).
 
 Its structure is defined to be:
@@ -1742,10 +1742,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTNameValue
+NTNameValue
 --------------------------
 
-NTNameValue is the EPICS V4 Normative Type that describes a system of
+NTNameValue is the EPICS |_| 7 Normative Type that describes a system of
 name and scalar values.
 
 Its structure is defined to be:
@@ -1867,10 +1867,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTTable
+NTTable
 ----------------------
 
-NTTable is the EPICS V4 Normative Type suitable for column-oriented
+NTTable is the EPICS |_| 7 Normative Type suitable for column-oriented
 tabular datasets.
 
 Its structure is defined to be:
@@ -1991,10 +1991,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTAttribute
+NTAttribute
 --------------------------
 
-NTAttribute is the EPICS V4 Normative Type for a named attribute of any
+NTAttribute is the EPICS |_| 7 Normative Type for a named attribute of any
 type. It is is essentially a key-value pair which optionally can be
 tagged with additional strings.
 
@@ -2179,10 +2179,10 @@ The class definitions are the same except that:
         // ...
     };
 
-Normative Type NTMultiChannel
+NTMultiChannel
 -----------------------------
 
-NTMultiChannel is an EPICS V4 Normative Type that aggregates an array of
+NTMultiChannel is an EPICS |_| 7 Normative Type that aggregates an array of
 values from different EPICS Process Variable (PV) channel sources, not
 necessarily of the same type, into a single variable.
 
@@ -2359,7 +2359,7 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTNDArray
+NTNDArray
 ------------------------
 
 NTNDArray is an EPICS Version 4 Normative Type designed to encode data
@@ -2536,10 +2536,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTContinuum
+NTContinuum
 --------------------------
 
-NTContinuum is the EPICS V4 Normative Type used to express a sequence of
+NTContinuum is the EPICS |_| 7 Normative Type used to express a sequence of
 point values in time or frequency domain. Each point has N values (N>=1)
 and an additional value which describes the index of the list. The
 additional value is carried in the base field. The value field carries
@@ -2659,10 +2659,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTHistogram
+NTHistogram
 --------------------------
 
-NTHistogram is the EPICS V4 Normative Type used to encode the data and
+NTHistogram is the EPICS |_| 7 Normative Type used to encode the data and
 representation of a (1-dimensional) histogram. Specifically, it
 encapsulates frequency binned data.
 
@@ -2787,10 +2787,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTAggregate
+NTAggregate
 --------------------------
 
-NTAggregate is the EPICS V4 Normative Type to compactly convey data
+NTAggregate is the EPICS |_| 7 Normative Type to compactly convey data
 which combines several measurements or observation. NTAggregate gives
 simple summary statistic about the central tendency and dispersion of a
 set of data points.
@@ -2965,7 +2965,7 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTUnion
+NTUnion
 ----------------------
 
 NTUnion is a Normative Type for interoperation of essentially any data
@@ -3077,10 +3077,10 @@ classes <#features_common_to_all_normative_type_wrapper_classes>`__ and
 `Normative Type Property
 Features <#normative_type_property_features>`__.
 
-Normative Type NTScalarMultiChannel
+NTScalarMultiChannel
 -----------------------------------
 
-NTScalarMultiChannel is an EPICS V4 Normative Type that aggregates an
+NTScalarMultiChannel is an EPICS |_| 7 Normative Type that aggregates an
 array of values from different EPICS Process Variable (PV) channel
 sources of the same scalar type into a single variable.
 
