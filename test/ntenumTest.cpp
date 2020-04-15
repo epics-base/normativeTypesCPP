@@ -84,7 +84,7 @@ void test_ntenum()
     choices[1] = "On";
     pvValue->getSubField<PVStringArray>("choices")->replace(freeze(choices));
     pvValue->getSubField<PVInt>("index")->put(1);
-    
+
     //
     // example how to get a value
     //

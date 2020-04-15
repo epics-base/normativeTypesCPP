@@ -78,7 +78,7 @@ void test_ntaggregate()
     // example how to set a value
     //
     ntAggregate->getValue()->put(1.0);
-    
+
     //
     // example how to get a value
     //
