@@ -120,5 +120,3 @@ MAIN(testNTNDArray) {
     test_wrap();
     return testDone();
 }
-
-

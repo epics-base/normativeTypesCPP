@@ -185,5 +185,3 @@ MAIN(testNTEnum) {
     test_wrap();
     return testDone();
 }
-
-
