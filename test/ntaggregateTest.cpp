@@ -173,5 +173,3 @@ MAIN(testNTAggregate) {
     test_wrap();
     return testDone();
 }
-
-
