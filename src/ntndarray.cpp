@@ -327,10 +327,8 @@ int64 NTNDArray::getValueSize()
 {
     int64 size = 0;
     PVScalarArrayPtr storedValue = getValue()->get<PVScalarArray>();
-    if (!storedValue.get())
-    {
+    if (storedValue.get())
         size = storedValue->getLength()*getValueTypeSize();
-    }
     return size;
 }
 
